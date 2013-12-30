@@ -35,6 +35,9 @@ class Aggregations {
 		Builder() {
 			aggr(Avg.class, COLUMN.or(scalar()));
 			aggr(Sum.class, COLUMN.or(scalar()));
+			aggr(Count.class, COLUMN.or(scalar()));
+			aggr(Min.class, COLUMN.or(scalar()));
+			aggr(Max.class, COLUMN.or(scalar()));
 			aggr(Rank.class, COLUMN.or(scalar()));
 		}
 

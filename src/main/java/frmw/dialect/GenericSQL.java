@@ -49,4 +49,25 @@ public class GenericSQL implements Dialect {
 	public void rank(StringBuilder sb) {
 		throw new UnsupportedOperationException();
 	}
+
+	@Override
+	public void min(StringBuilder sb, FormulaElement column) {
+		sb.append("min(");
+		column.sql(this, sb);
+		sb.append(')');
+	}
+
+	@Override
+	public void max(StringBuilder sb, FormulaElement column) {
+		sb.append("max(");
+		column.sql(this, sb);
+		sb.append(')');
+	}
+
+	@Override
+	public void count(StringBuilder sb, FormulaElement column) {
+		sb.append("count(");
+		column.sql(this, sb);
+		sb.append(')');
+	}
 }

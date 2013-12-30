@@ -21,4 +21,10 @@ public interface Dialect {
 	void validateColumnName(String name) throws SQLFrameworkException;
 
 	void rank(StringBuilder sb);
+
+	void min(StringBuilder sb, FormulaElement column);
+
+	void max(StringBuilder sb, FormulaElement column);
+
+	void count(StringBuilder sb, FormulaElement column);
 }
