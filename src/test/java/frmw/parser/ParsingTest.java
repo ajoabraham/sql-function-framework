@@ -1,9 +1,10 @@
 package frmw.parser;
 
-import frmw.dialect.GenericSQL;
 import frmw.model.Formula;
 import org.junit.Test;
 
+import static frmw.TestSupport.GENERIC_SQL;
+import static frmw.TestSupport.PARSER;
 import static org.junit.Assert.assertEquals;
 
 /**
@@ -11,19 +12,17 @@ import static org.junit.Assert.assertEquals;
  */
 public class ParsingTest {
 
-	private final static GenericSQL DIALECT = new GenericSQL();
-
 	@Test
 	public void avg() {
-		Formula f = new Formula("avg(\"name\")");
-		String sql = f.sql(DIALECT);
+		Formula f = new Formula("avg(\"name\")", PARSER);
+		String sql = f.sql(GENERIC_SQL);
 		assertEquals("avg(name)", sql);
 	}
 
 	@Test
 	public void avgWithWhitespaces() {
-		Formula f = new Formula(" \t avg ( \" name \n\" ) \n\r");
-		String sql = f.sql(DIALECT);
+		Formula f = new Formula(" \t avg ( \" name \n\" ) \n\r", PARSER);
+		String sql = f.sql(GENERIC_SQL);
 		assertEquals("avg(name)", sql);
 	}
 }

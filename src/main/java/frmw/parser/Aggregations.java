@@ -1,59 +1,47 @@
 package frmw.parser;
 
-import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.ImmutableList;
 import frmw.model.FormulaElement;
-import frmw.model.aggregation.Avg;
-import frmw.model.aggregation.Rank;
-import frmw.model.aggregation.Sum;
-import frmw.model.exception.SQLFrameworkException;
+import frmw.model.aggregation.*;
 import org.codehaus.jparsec.Parser;
 import org.codehaus.jparsec.Parsers;
 
-import java.lang.reflect.Field;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import static frmw.parser.Common.*;
-import static java.lang.reflect.Modifier.isStatic;
 
 /**
  * @author Alexey Paramonov
  */
 class Aggregations {
 
-	private static final Parser<FormulaElement> AVG = fun(Avg.class, COLUMN.or(scalar()));
-	private static final Parser<FormulaElement> SUM = fun(Sum.class, COLUMN.or(scalar()));
-	private static final Parser<FormulaElement> RANK = fun(Rank.class, COLUMN.or(scalar()));
+	public final List<String> names;
 
-	public static final Set<String> AGGREGATION_NAMES;
+	public final Parser<FormulaElement> parser;
 
-	public static final Parser<FormulaElement> AGGREGATIONS;
+	public Aggregations() {
+		Builder builder = new Builder();
 
-	// should be always in the end of the class
-	static {
-		Field[] fields = Aggregations.class.getDeclaredFields();
-		Set<String> functions = new HashSet<String>(fields.length);
-		List<Parser<FormulaElement>> parsers = new ArrayList<Parser<FormulaElement>>(fields.length);
+		this.names = ImmutableList.copyOf(builder.names);
+		this.parser = Parsers.or(builder.parsers);
+	}
 
-		for (Field f : fields) {
-			if ("AGGREGATIONS".equalsIgnoreCase(f.getName())) {
-				continue;
-			}
+	private static class Builder {
 
-			if (isStatic(f.getModifiers()) && f.getType().isAssignableFrom(Parser.class)) {
-				functions.add(f.getName());
+		List<String> names = new ArrayList<String>();
+		List<Parser<FormulaElement>> parsers = new ArrayList<Parser<FormulaElement>>();
 
-				try {
-					parsers.add((Parser<FormulaElement>) f.get(null));
-				} catch (IllegalAccessException e) {
-					throw new SQLFrameworkException(e);
-				}
-			}
+		Builder() {
+			aggr(Avg.class, COLUMN.or(scalar()));
+			aggr(Sum.class, COLUMN.or(scalar()));
+			aggr(Rank.class, COLUMN.or(scalar()));
 		}
 
-		AGGREGATION_NAMES = ImmutableSet.copyOf(functions);
-		AGGREGATIONS = Parsers.or(parsers);
+		private void aggr(Class<? extends FormulaElement> clazz, Parser<?> arg) {
+			Parser<FormulaElement> result = fun(clazz, arg);
+			parsers.add(result);
+			names.add(funName(clazz));
+		}
 	}
 }

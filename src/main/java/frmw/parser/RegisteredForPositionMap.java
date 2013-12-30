@@ -8,13 +8,14 @@ import org.codehaus.jparsec.functors.Map;
 /**
  * @author Alexey Paramonov
  */
-abstract class RegisteredForPositionMap implements Map<Token, FormulaElement> {
+abstract class RegisteredForPositionMap <T extends FormulaElement> implements Map<Token, T> {
 
+	@SuppressWarnings("unchecked")
 	@Override
-	public FormulaElement map(Token t) {
+	public T map(Token t) {
 		FormulaElement res = build(t.value());
 		PositionHolder.INST.register(res, t.index(), t.length());
-		return res;
+		return (T) res;
 	}
 
 	protected abstract FormulaElement build(Object value);

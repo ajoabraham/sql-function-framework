@@ -32,7 +32,7 @@ class Common {
 		}
 	}, "word").many().source();
 
-	public static final Parser<FormulaElement> COLUMN = COLUMN_NAME.between(DQ, DQ).token().map(new RegisteredForPositionMap() {
+	public static final Parser<Column> COLUMN = COLUMN_NAME.between(DQ, DQ).token().map(new RegisteredForPositionMap<Column>() {
 		@Override
 		protected FormulaElement build(Object value) {
 			return new Column((String) value);
@@ -43,10 +43,10 @@ class Common {
 		return parser.between(TRAILED, TRAILED);
 	}
 
-	public static Parser<FormulaElement> fun(final Class<? extends FormulaElement> clazz, Parser<?> arg) {
+	public static <T extends FormulaElement> Parser<T> fun(final Class<? extends T> clazz, Parser<?> arg) {
 		Parser<?> body = arg.between(OPENED, CLOSED);
-		Parser<Void> functionName = trailed(stringCaseInsensitive(clazz.getSimpleName()));
-		return functionName.next(body).token().map(new RegisteredForPositionMap() {
+		Parser<Void> functionName = trailed(stringCaseInsensitive(funName(clazz)));
+		return functionName.next(body).token().map(new RegisteredForPositionMap<T>() {
 			@Override
 			protected FormulaElement build(Object value) {
 				Constructor<?> constructor = clazz.getConstructors()[0];
@@ -57,6 +57,10 @@ class Common {
 				}
 			}
 		});
+	}
+
+	public static <T extends FormulaElement> String funName(Class<T> clazz) {
+		return clazz.getSimpleName();
 	}
 
 	public static Parser<Column> scalar() {

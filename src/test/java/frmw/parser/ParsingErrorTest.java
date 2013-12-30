@@ -1,10 +1,12 @@
 package frmw.parser;
 
-import frmw.dialect.GenericSQL;
 import frmw.model.Formula;
+import frmw.model.exception.SQLFrameworkException;
 import frmw.model.exception.UnsupportedFunctionException;
 import org.junit.Test;
 
+import static frmw.TestSupport.GENERIC_SQL;
+import static frmw.TestSupport.PARSER;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
@@ -13,18 +15,23 @@ import static org.junit.Assert.fail;
  */
 public class ParsingErrorTest {
 
-	private final static GenericSQL DIALECT = new GenericSQL();
-
 	@Test
 	public void notExistedFunction() {
-		Formula f = new Formula("  ranl(\"name\")");
+		try {
+			Formula f = new Formula("  ranl(\"name\")", PARSER);
+			fail();
+		} catch (SQLFrameworkException e) {
+//			assertEquals("ranl", e.source);
+			assertEquals(0, e.index());
+			assertEquals(12, e.length());
+		}
 	}
 
 	@Test
 	public void unsupportedOperation() {
 		try {
-			Formula f = new Formula("rank(\"name\")");
-			f.sql(DIALECT);
+			Formula f = new Formula("rank(\"name\")", PARSER);
+			f.sql(GENERIC_SQL);
 			fail();
 		} catch (UnsupportedFunctionException e) {
 			assertEquals("Rank", e.source);

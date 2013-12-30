@@ -1,10 +1,11 @@
 package frmw.parser;
 
-import frmw.dialect.GenericSQL;
 import frmw.model.Formula;
 import frmw.model.exception.SQLFrameworkException;
 import org.junit.Test;
 
+import static frmw.TestSupport.GENERIC_SQL;
+import static frmw.TestSupport.PARSER;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
@@ -13,13 +14,11 @@ import static org.junit.Assert.fail;
  */
 public class ColumnParserTest {
 
-	private final static GenericSQL DIALECT = new GenericSQL();
-
 	@Test
 	public void wrongColumnName() {
 		try {
-			Formula f = new Formula("\"1name\"");
-			f.sql(DIALECT);
+			Formula f = new Formula("\"1name\"", PARSER);
+			f.sql(GENERIC_SQL);
 			fail();
 		} catch (SQLFrameworkException e) {
 			assertEquals("1name", e.source);

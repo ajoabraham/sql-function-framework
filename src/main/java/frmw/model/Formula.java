@@ -12,11 +12,11 @@ public class Formula {
 
 	private final FormulaElement root;
 
-	public Formula(String formula) {
+	public Formula(String formula, Parsing parsing) {
 		PositionHolder.INST.currentFormula(this);
 
 		try {
-			this.root = Parsing.parse(formula);
+			this.root = parsing.parse(formula);
 		} catch (ParserException e) {
 			throw e;
 //			throw new ParsingException();
