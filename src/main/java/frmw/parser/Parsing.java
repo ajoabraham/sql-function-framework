@@ -1,5 +1,6 @@
 package frmw.parser;
 
+import com.google.common.collect.ImmutableList;
 import frmw.model.FormulaElement;
 import org.codehaus.jparsec.Parser;
 import org.codehaus.jparsec.error.ParserException;
@@ -7,7 +8,7 @@ import org.codehaus.jparsec.error.ParserException;
 import java.util.List;
 
 import static frmw.parser.Common.COLUMN;
-import static frmw.parser.Common.scalar;
+import static org.codehaus.jparsec.Parsers.or;
 
 /**
  * Application should have one instance of this class,
@@ -19,12 +20,24 @@ import static frmw.parser.Common.scalar;
  */
 public class Parsing {
 
-	private final Aggregations aggr = new Aggregations();
+	private final Parser.Reference<FormulaElement> scalar = Parser.newReference();
+	private final Parser.Reference<FormulaElement> aggregation = Parser.newReference();
 
 	private final Parser<FormulaElement> parser;
 
+	private final List<String> scalarNames;
+	private final List<String> aggregationNames;
+
 	public Parsing() {
-		parser = aggr.parser.or(COLUMN).or(scalar());
+		Aggregations aggr = new Aggregations(scalar.lazy());
+		aggregationNames = ImmutableList.copyOf(aggr.names);
+		aggregation.set(or(aggr.parsers));
+
+		Scalars s = new Scalars(scalar.lazy(), aggregation.lazy());
+		scalarNames = ImmutableList.copyOf(s.names);
+		scalar.set(or(s.parsers));
+
+		parser = or(COLUMN, scalar.lazy(), aggregation.lazy());
 	}
 
 	public FormulaElement parse(String formula) {
@@ -36,7 +49,11 @@ public class Parsing {
 		}
 	}
 
+	public List<String> scalarFunctions() {
+		return scalarNames;
+	}
+
 	public List<String> aggregationFunctions() {
-		return aggr.names;
+		return aggregationNames;
 	}
 }

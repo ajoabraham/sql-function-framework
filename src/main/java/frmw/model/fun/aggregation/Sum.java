@@ -1,4 +1,4 @@
-package frmw.model.aggregation;
+package frmw.model.fun.aggregation;
 
 import frmw.dialect.Dialect;
 import frmw.model.Aggregation;
@@ -7,16 +7,16 @@ import frmw.model.FormulaElement;
 /**
  * @author Alexey Paramonov
  */
-public class Max extends Aggregation {
+public class Sum extends Aggregation {
 
 	private final FormulaElement column;
 
-	public Max(FormulaElement column) {
+	public Sum(FormulaElement column) {
 		this.column = column;
 	}
 
 	@Override
 	public void sql(Dialect dialect, StringBuilder sb) {
-		dialect.max(sb, column);
+		dialect.sum(sb, column);
 	}
 }

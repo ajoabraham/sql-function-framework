@@ -27,4 +27,6 @@ public interface Dialect {
 	void max(StringBuilder sb, FormulaElement column);
 
 	void count(StringBuilder sb, FormulaElement column);
+
+	void abs(StringBuilder sb, FormulaElement column);
 }

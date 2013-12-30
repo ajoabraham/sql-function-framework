@@ -18,4 +18,9 @@ public class Column implements FormulaElement {
 		dialect.validateColumnName(name);
 		sb.append(name);
 	}
+
+	@Override
+	public boolean hasAggregation() {
+		return false;
+	}
 }

@@ -70,4 +70,9 @@ public class GenericSQL implements Dialect {
 		column.sql(this, sb);
 		sb.append(')');
 	}
+
+	@Override
+	public void abs(StringBuilder sb, FormulaElement column) {
+		throw new UnsupportedOperationException();
+	}
 }

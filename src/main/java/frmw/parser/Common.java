@@ -4,7 +4,6 @@ import frmw.model.Column;
 import frmw.model.FormulaElement;
 import frmw.model.exception.SQLFrameworkException;
 import org.codehaus.jparsec.Parser;
-import org.codehaus.jparsec.Parsers;
 import org.codehaus.jparsec.pattern.CharPredicate;
 
 import java.lang.reflect.Constructor;
@@ -32,7 +31,7 @@ class Common {
 		}
 	}, "word").many().source();
 
-	public static final Parser<Column> COLUMN = COLUMN_NAME.between(DQ, DQ).token().map(new RegisteredForPositionMap<Column>() {
+	public static final Parser<FormulaElement> COLUMN = COLUMN_NAME.between(DQ, DQ).token().map(new RegisteredForPositionMap<FormulaElement>() {
 		@Override
 		protected FormulaElement build(Object value) {
 			return new Column((String) value);
@@ -61,9 +60,5 @@ class Common {
 
 	public static <T extends FormulaElement> String funName(Class<T> clazz) {
 		return clazz.getSimpleName();
-	}
-
-	public static Parser<Column> scalar() {
-		return Parsers.always();
 	}
 }
