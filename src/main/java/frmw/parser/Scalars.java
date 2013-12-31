@@ -20,7 +20,7 @@ class Scalars {
 	public List<Parser<FormulaElement>> parsers = new ArrayList<Parser<FormulaElement>>();
 
 	Scalars(Parser<FormulaElement> scalar, Parser<FormulaElement> aggregation) {
-		f(Abs.class, or(COLUMN, scalar, aggregation));
+		f(Abs.class, or(scalar, aggregation, COLUMN));
 	}
 
 	private void f(Class<? extends FormulaElement> clazz, Parser<?> arg) {

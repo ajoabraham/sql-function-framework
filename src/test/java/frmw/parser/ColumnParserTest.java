@@ -26,4 +26,25 @@ public class ColumnParserTest {
 			assertEquals(7, e.length());
 		}
 	}
+
+	@Test
+	public void quotedColumnName() {
+		Formula f = new Formula("\"name\"", PARSER);
+		String sql = f.sql(GENERIC_SQL);
+		assertEquals("name", sql);
+	}
+
+	@Test
+	public void columnName() {
+		Formula f = new Formula("name", PARSER);
+		String sql = f.sql(GENERIC_SQL);
+		assertEquals("name", sql);
+	}
+
+	@Test
+	public void columnNameWithBlanks() {
+		Formula f = new Formula(" \t name  \n", PARSER);
+		String sql = f.sql(GENERIC_SQL);
+		assertEquals("name", sql);
+	}
 }

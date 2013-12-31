@@ -4,16 +4,18 @@ import frmw.model.Column;
 import frmw.model.FormulaElement;
 import frmw.model.exception.SQLFrameworkException;
 import org.codehaus.jparsec.Parser;
+import org.codehaus.jparsec.Parsers;
 import org.codehaus.jparsec.pattern.CharPredicate;
 
 import java.lang.reflect.Constructor;
 
+import static org.codehaus.jparsec.Parsers.or;
 import static org.codehaus.jparsec.Scanners.*;
 
 /**
  * @author Alexey Paramonov
  */
-class Common {
+public class Common {
 
 	public static final Parser<Void> TRAILED = WHITESPACES.skipAtLeast(0);
 
@@ -24,19 +26,33 @@ class Common {
 	public static final Parser<Void> DQ = trailed(isChar('"'));
 	public static final Parser<Void> SQ = trailed(isChar('\''));
 
-	public static final Parser<String> COLUMN_NAME = isChar(new CharPredicate() {
+	public static final String COLUMN_NAME_ID = "COLUMN_NAME";
+	private static final Parser<String> QUOTED_COLUMN_NAME = isChar(new CharPredicate() {
 		@Override
 		public boolean isChar(char c) {
 			return c != '"';
 		}
-	}, "word").many().source();
+	}, COLUMN_NAME_ID).many1().source();
 
-	public static final Parser<FormulaElement> COLUMN = COLUMN_NAME.between(DQ, DQ).token().map(new RegisteredForPositionMap<FormulaElement>() {
-		@Override
-		protected FormulaElement build(Object value) {
-			return new Column((String) value);
-		}
-	});
+	private static final Parser<String> EMBED_COLUMN_NAME = or(Parsers.EOF.cast(),
+			isChar(new CharPredicate() {
+				@Override
+				public boolean isChar(char c) {
+					return c != '(' && c != ')' && c != ',' &&
+							c != '/' && c != '+' && c != '-';
+				}
+			}, COLUMN_NAME_ID)).many1().source();
+
+	/**
+	 * This parser should be always in the end every OR block.
+	 */
+	public static final Parser<FormulaElement> COLUMN = or(QUOTED_COLUMN_NAME.between(DQ, DQ), EMBED_COLUMN_NAME)
+			.token().map(new RegisteredForPositionMap<FormulaElement>() {
+				@Override
+				protected FormulaElement build(Object value) {
+					return new Column((String) value);
+				}
+			});
 
 	public static <T> Parser<T> trailed(Parser<T> parser) {
 		return parser.between(TRAILED, TRAILED);

@@ -20,8 +20,29 @@ public class TeradataTest {
 	}
 
 	@Test
+	public void abs_withoutQuotes() {
+		Formula f = new Formula("abs(name)", PARSER);
+		String sql = f.sql(TERADATA_SQL);
+		assertEquals("abs(name)", sql);
+	}
+
+	@Test
 	public void mixScalarWithAggregation() {
 		Formula f = new Formula("abs(sum(\"name\"))", PARSER);
+		String sql = f.sql(TERADATA_SQL);
+		assertEquals("abs(sum(name))", sql);
+	}
+
+	@Test
+	public void mixScalarWithScalar() {
+		Formula f = new Formula("abs(abs(\"name\"))", PARSER);
+		String sql = f.sql(TERADATA_SQL);
+		assertEquals("abs(abs(name))", sql);
+	}
+
+	@Test
+	public void mixScalarWithAggregation_withoutQuotes() {
+		Formula f = new Formula("abs(sum(name))", PARSER);
 		String sql = f.sql(TERADATA_SQL);
 		assertEquals("abs(sum(name))", sql);
 	}

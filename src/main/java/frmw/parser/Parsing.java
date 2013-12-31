@@ -37,7 +37,7 @@ public class Parsing {
 		scalarNames = ImmutableList.copyOf(s.names);
 		scalar.set(or(s.parsers));
 
-		parser = or(COLUMN, scalar.lazy(), aggregation.lazy());
+		parser = or(scalar.lazy(), aggregation.lazy(), COLUMN);
 	}
 
 	public FormulaElement parse(String formula) {
