@@ -20,6 +20,13 @@ public class GenericTest {
 	}
 
 	@Test
+	public void avg_caseInsensitivity() {
+		Formula f = new Formula("AvG(\"name\")", PARSER);
+		String sql = f.sql(GENERIC_SQL);
+		assertEquals("avg(name)", sql);
+	}
+
+	@Test
 	public void min() {
 		Formula f = new Formula("min(\"name\")", PARSER);
 		String sql = f.sql(GENERIC_SQL);

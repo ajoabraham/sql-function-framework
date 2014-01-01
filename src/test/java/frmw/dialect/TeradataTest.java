@@ -46,4 +46,53 @@ public class TeradataTest {
 		String sql = f.sql(TERADATA_SQL);
 		assertEquals("abs(sum(name))", sql);
 	}
+
+	@Test
+	public void exp() {
+		Formula f = new Formula("exp(\"name\")", PARSER);
+		String sql = f.sql(TERADATA_SQL);
+		assertEquals("exp(name)", sql);
+	}
+
+	@Test
+	public void ln() {
+		Formula f = new Formula("ln(name)", PARSER);
+		String sql = f.sql(TERADATA_SQL);
+		assertEquals("ln(name)", sql);
+	}
+
+	@Test
+	public void log() {
+		Formula f = new Formula("log(name)", PARSER);
+		String sql = f.sql(TERADATA_SQL);
+		assertEquals("log(name)", sql);
+	}
+
+	@Test
+	public void mod() {
+		Formula f = new Formula("mod(name)", PARSER);
+		String sql = f.sql(TERADATA_SQL);
+		assertEquals("mod(name)", sql);
+	}
+
+	@Test
+	public void pow() {
+		Formula f = new Formula("pow(name)", PARSER);
+		String sql = f.sql(TERADATA_SQL);
+		assertEquals("pow(name)", sql);
+	}
+
+	@Test
+	public void round() {
+		Formula f = new Formula("round(name)", PARSER);
+		String sql = f.sql(TERADATA_SQL);
+		assertEquals("round(name)", sql);
+	}
+
+	@Test
+	public void sqrt() {
+		Formula f = new Formula("sqrt(name)", PARSER);
+		String sql = f.sql(TERADATA_SQL);
+		assertEquals("sqrt(name)", sql);
+	}
 }

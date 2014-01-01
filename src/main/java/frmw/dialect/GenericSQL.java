@@ -75,4 +75,39 @@ public class GenericSQL implements Dialect {
 	public void abs(StringBuilder sb, FormulaElement column) {
 		throw new UnsupportedOperationException();
 	}
+
+	@Override
+	public void exp(StringBuilder sb, FormulaElement arg) {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public void ln(StringBuilder sb, FormulaElement arg) {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public void log(StringBuilder sb, FormulaElement arg) {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public void mod(StringBuilder sb, FormulaElement arg) {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public void pow(StringBuilder sb, FormulaElement arg) {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public void round(StringBuilder sb, FormulaElement arg) {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public void sqrt(StringBuilder sb, FormulaElement arg) {
+		throw new UnsupportedOperationException();
+	}
 }

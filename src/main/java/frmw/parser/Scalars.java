@@ -1,13 +1,14 @@
 package frmw.parser;
 
 import frmw.model.FormulaElement;
-import frmw.model.fun.math.Abs;
+import frmw.model.fun.math.*;
 import org.codehaus.jparsec.Parser;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static frmw.parser.Common.*;
+import static frmw.parser.Common.fun;
+import static frmw.parser.Common.funName;
 import static org.codehaus.jparsec.Parsers.or;
 
 /**
@@ -20,7 +21,19 @@ class Scalars {
 	public final List<Parser<FormulaElement>> parsers = new ArrayList<Parser<FormulaElement>>();
 
 	Scalars(Parser<FormulaElement> scalar, Parser<FormulaElement> aggregation, Parser<FormulaElement> common) {
-		f(Abs.class, or(aggregation, scalar, common));
+		Parser<FormulaElement> all = or(aggregation, scalar, common);
+		math(all);
+	}
+
+	private void math(Parser<FormulaElement> all) {
+		f(Abs.class, all);
+		f(Exp.class, all);
+		f(Ln.class, all);
+		f(Log.class, all);
+		f(Mod.class, all);
+		f(Pow.class, all);
+		f(Round.class, all);
+		f(Sqrt.class, all);
 	}
 
 	private void f(Class<? extends FormulaElement> clazz, Parser<?> arg) {

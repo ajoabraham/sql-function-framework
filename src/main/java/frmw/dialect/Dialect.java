@@ -29,4 +29,18 @@ public interface Dialect {
 	void count(StringBuilder sb, FormulaElement column);
 
 	void abs(StringBuilder sb, FormulaElement column);
+
+	void exp(StringBuilder sb, FormulaElement arg);
+
+	void ln(StringBuilder sb, FormulaElement arg);
+
+	void log(StringBuilder sb, FormulaElement arg);
+
+	void mod(StringBuilder sb, FormulaElement arg);
+
+	void pow(StringBuilder sb, FormulaElement arg);
+
+	void round(StringBuilder sb, FormulaElement arg);
+
+	void sqrt(StringBuilder sb, FormulaElement arg);
 }
