@@ -7,7 +7,6 @@ import org.codehaus.jparsec.error.ParserException;
 
 import java.util.List;
 
-import static frmw.parser.Common.COLUMN;
 import static org.codehaus.jparsec.Parsers.or;
 
 /**
@@ -22,6 +21,7 @@ public class Parsing {
 
 	private final Parser.Reference<FormulaElement> scalar = Parser.newReference();
 	private final Parser.Reference<FormulaElement> aggregation = Parser.newReference();
+	private final Parser.Reference<FormulaElement> commons = Parser.newReference();
 
 	private final Parser<FormulaElement> parser;
 
@@ -29,15 +29,18 @@ public class Parsing {
 	private final List<String> aggregationNames;
 
 	public Parsing() {
-		Aggregations aggr = new Aggregations(scalar.lazy());
+		Aggregations aggr = new Aggregations(scalar.lazy(), commons.lazy());
 		aggregationNames = ImmutableList.copyOf(aggr.names);
 		aggregation.set(or(aggr.parsers));
 
-		Scalars s = new Scalars(scalar.lazy(), aggregation.lazy());
+		Scalars s = new Scalars(scalar.lazy(), aggregation.lazy(), commons.lazy());
 		scalarNames = ImmutableList.copyOf(s.names);
 		scalar.set(or(s.parsers));
 
-		parser = or(scalar.lazy(), aggregation.lazy(), COLUMN);
+		Common c = new Common();
+		commons.set(or(c.parsers));
+
+		parser = or(aggregation.lazy(), scalar.lazy(), commons.lazy());
 	}
 
 	public FormulaElement parse(String formula) {

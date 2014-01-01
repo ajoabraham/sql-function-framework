@@ -4,11 +4,13 @@ import frmw.model.Column;
 import frmw.model.FormulaElement;
 import frmw.model.exception.SQLFrameworkException;
 import org.codehaus.jparsec.Parser;
-import org.codehaus.jparsec.Parsers;
 import org.codehaus.jparsec.pattern.CharPredicate;
 
 import java.lang.reflect.Constructor;
+import java.util.ArrayList;
+import java.util.List;
 
+import static org.codehaus.jparsec.Parsers.EOF;
 import static org.codehaus.jparsec.Parsers.or;
 import static org.codehaus.jparsec.Scanners.*;
 
@@ -16,6 +18,8 @@ import static org.codehaus.jparsec.Scanners.*;
  * @author Alexey Paramonov
  */
 public class Common {
+
+	public final List<Parser<FormulaElement>> parsers = new ArrayList<Parser<FormulaElement>>();
 
 	public static final Parser<Void> TRAILED = WHITESPACES.skipAtLeast(0);
 
@@ -27,32 +31,37 @@ public class Common {
 	public static final Parser<Void> SQ = trailed(isChar('\''));
 
 	public static final String COLUMN_NAME_ID = "COLUMN_NAME";
-	private static final Parser<String> QUOTED_COLUMN_NAME = isChar(new CharPredicate() {
-		@Override
-		public boolean isChar(char c) {
-			return c != '"';
-		}
-	}, COLUMN_NAME_ID).many1().source();
 
-	private static final Parser<String> EMBED_COLUMN_NAME = or(Parsers.EOF.cast(),
-			isChar(new CharPredicate() {
-				@Override
-				public boolean isChar(char c) {
-					return c != '(' && c != ')' && c != ',' &&
-							c != '/' && c != '+' && c != '-';
-				}
-			}, COLUMN_NAME_ID)).many1().source();
+	public Common() {
+		parsers.add(column());
+	}
 
 	/**
-	 * This parser should be always in the end every OR block.
+	 * This parser should be last parser in any sequence of parsers.
 	 */
-	public static final Parser<FormulaElement> COLUMN = or(QUOTED_COLUMN_NAME.between(DQ, DQ), EMBED_COLUMN_NAME)
-			.token().map(new RegisteredForPositionMap<FormulaElement>() {
-				@Override
-				protected FormulaElement build(Object value) {
-					return new Column((String) value);
-				}
-			});
+	private Parser<FormulaElement> column() {
+		Parser<String> quoted = isChar(new CharPredicate() {
+			@Override
+			public boolean isChar(char c) {
+				return c != '"';
+			}
+		}, COLUMN_NAME_ID).many1().source().between(DQ, DQ);
+
+		Parser<String> plain = or(EOF.cast(), isChar(new CharPredicate() {
+			@Override
+			public boolean isChar(char c) {
+				return c != '(' && c != ')' && c != ',' &&
+						c != '/' && c != '+' && c != '-';
+			}
+		}, COLUMN_NAME_ID)).many1().source();
+
+		return or(quoted, plain).token().map(new RegisteredForPositionMap<FormulaElement>() {
+			@Override
+			protected FormulaElement build(Object value) {
+				return new Column((String) value);
+			}
+		});
+	}
 
 	public static <T> Parser<T> trailed(Parser<T> parser) {
 		return parser.between(TRAILED, TRAILED);

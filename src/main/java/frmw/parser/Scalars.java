@@ -15,12 +15,12 @@ import static org.codehaus.jparsec.Parsers.or;
  */
 class Scalars {
 
-	public List<String> names = new ArrayList<String>();
+	public final List<String> names = new ArrayList<String>();
 
-	public List<Parser<FormulaElement>> parsers = new ArrayList<Parser<FormulaElement>>();
+	public final List<Parser<FormulaElement>> parsers = new ArrayList<Parser<FormulaElement>>();
 
-	Scalars(Parser<FormulaElement> scalar, Parser<FormulaElement> aggregation) {
-		f(Abs.class, or(scalar, aggregation, COLUMN));
+	Scalars(Parser<FormulaElement> scalar, Parser<FormulaElement> aggregation, Parser<FormulaElement> common) {
+		f(Abs.class, or(aggregation, scalar, common));
 	}
 
 	private void f(Class<? extends FormulaElement> clazz, Parser<?> arg) {

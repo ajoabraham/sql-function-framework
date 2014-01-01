@@ -16,17 +16,17 @@ import static org.codehaus.jparsec.Parsers.or;
  */
 class Aggregations {
 
-	public List<String> names = new ArrayList<String>();
+	public final List<String> names = new ArrayList<String>();
 
-	public List<Parser<FormulaElement>> parsers = new ArrayList<Parser<FormulaElement>>();
+	public final List<Parser<FormulaElement>> parsers = new ArrayList<Parser<FormulaElement>>();
 
-	Aggregations(Parser<FormulaElement> scalar) {
-		f(Avg.class, or(scalar, COLUMN));
-		f(Sum.class, or(scalar, COLUMN));
-		f(Count.class, or(scalar, COLUMN));
-		f(Min.class, or(scalar, COLUMN));
-		f(Max.class, or(scalar, COLUMN));
-		f(Rank.class, or(scalar, COLUMN));
+	Aggregations(Parser<FormulaElement> scalar, Parser<FormulaElement> common) {
+		f(Avg.class, or(scalar, common));
+		f(Sum.class, or(scalar, common));
+		f(Count.class, or(scalar, common));
+		f(Min.class, or(scalar, common));
+		f(Max.class, or(scalar, common));
+		f(Rank.class, or(scalar, common));
 	}
 
 	private void f(Class<? extends FormulaElement> clazz, Parser<?> arg) {
