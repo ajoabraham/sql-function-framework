@@ -9,10 +9,8 @@ import frmw.model.FormulaElement;
  */
 public class Sum extends Aggregation {
 
-	private final FormulaElement column;
-
 	public Sum(FormulaElement column) {
-		this.column = column;
+		super(column);
 	}
 
 	@Override

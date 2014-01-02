@@ -23,12 +23,22 @@ class Aggregations {
 	Aggregations(Parser<FormulaElement> scalar, Parser<FormulaElement> common) {
 		Parser<FormulaElement> all = withOperators(or(scalar, common));
 
+		aggregation(all);
+		olap(all);
+	}
+
+	private void olap(Parser<FormulaElement> all) {
+		f(Rank.class, all);
+	}
+
+	private void aggregation(Parser<FormulaElement> all) {
 		f(Avg.class, all);
 		f(Sum.class, all);
 		f(Count.class, all);
 		f(Min.class, all);
 		f(Max.class, all);
-		f(Rank.class, all);
+		f(StdDevP.class, all);
+		f(StdDevS.class, all);
 	}
 
 	private void f(Class<? extends FormulaElement> clazz, Parser<?> arg) {

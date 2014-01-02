@@ -9,10 +9,8 @@ import frmw.model.FormulaElement;
  */
 public class Avg extends Aggregation {
 
-	private final FormulaElement column;
-
 	public Avg(FormulaElement column) {
-		this.column = column;
+		super(column);
 	}
 
 	@Override

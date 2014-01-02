@@ -62,4 +62,18 @@ public class TeradataSQL extends GenericSQL {
 		arg.sql(this, sb);
 		sb.append(')');
 	}
+
+	@Override
+	public void stdDevS(StringBuilder sb, FormulaElement column) {
+		sb.append("stddev_samp(");
+		column.sql(this, sb);
+		sb.append(')');
+	}
+
+	@Override
+	public void stdDevP(StringBuilder sb, FormulaElement column) {
+		sb.append("stddev_pop(");
+		column.sql(this, sb);
+		sb.append(')');
+	}
 }

@@ -9,10 +9,8 @@ import frmw.model.FormulaElement;
  */
 public class Count extends Aggregation {
 
-	private final FormulaElement column;
-
 	public Count(FormulaElement column) {
-		this.column = column;
+		super(column);
 	}
 
 	@Override

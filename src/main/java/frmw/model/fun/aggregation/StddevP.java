@@ -7,14 +7,14 @@ import frmw.model.FormulaElement;
 /**
  * @author Alexey Paramonov
  */
-public class Min extends Aggregation {
+public class StdDevP extends Aggregation {
 
-	public Min(FormulaElement column) {
+	public StdDevP(FormulaElement column) {
 		super(column);
 	}
 
 	@Override
 	public void sql(Dialect dialect, StringBuilder sb) {
-		dialect.min(sb, column);
+		dialect.stdDevP(sb, column);
 	}
 }

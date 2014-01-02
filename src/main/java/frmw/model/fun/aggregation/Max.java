@@ -9,10 +9,8 @@ import frmw.model.FormulaElement;
  */
 public class Max extends Aggregation {
 
-	private final FormulaElement column;
-
 	public Max(FormulaElement column) {
-		this.column = column;
+		super(column);
 	}
 
 	@Override

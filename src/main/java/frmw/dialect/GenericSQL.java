@@ -110,4 +110,14 @@ public class GenericSQL implements Dialect {
 	public void sqrt(StringBuilder sb, FormulaElement arg) {
 		throw new UnsupportedOperationException();
 	}
+
+	@Override
+	public void stdDevP(StringBuilder sb, FormulaElement column) {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public void stdDevS(StringBuilder sb, FormulaElement column) {
+		throw new UnsupportedOperationException();
+	}
 }

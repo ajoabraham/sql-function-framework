@@ -24,6 +24,11 @@ class Scalars {
 	Scalars(Parser<FormulaElement> scalar, Parser<FormulaElement> aggregation, Parser<FormulaElement> common) {
 		Parser<FormulaElement> all = withOperators(or(aggregation, scalar, common));
 		math(all);
+		trigonometric(all);
+	}
+
+	private void trigonometric(Parser<FormulaElement> all) {
+
 	}
 
 	private void math(Parser<FormulaElement> all) {

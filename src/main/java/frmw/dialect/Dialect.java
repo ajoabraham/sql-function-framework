@@ -3,7 +3,12 @@ package frmw.dialect;
 import frmw.model.FormulaElement;
 import frmw.model.exception.SQLFrameworkException;
 
+import java.lang.UnsupportedOperationException;
+
 /**
+ * All methods may throw {@link UnsupportedOperationException}
+ * if dialect does not implement particular operation.
+ *
  * @author Alexey Paramonov
  */
 public interface Dialect {
@@ -43,4 +48,14 @@ public interface Dialect {
 	void round(StringBuilder sb, FormulaElement arg);
 
 	void sqrt(StringBuilder sb, FormulaElement arg);
+
+	/**
+	 * The population standard deviation
+	 */
+	void stdDevP(StringBuilder sb, FormulaElement column);
+
+	/**
+	 * The sample standard deviation
+	 */
+	void stdDevS(StringBuilder sb, FormulaElement column);
 }

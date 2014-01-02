@@ -10,7 +10,7 @@ import frmw.model.FormulaElement;
 public class Rank extends Aggregation {
 
 	public Rank(FormulaElement elem) {
-
+		super(elem);
 	}
 
 	@Override

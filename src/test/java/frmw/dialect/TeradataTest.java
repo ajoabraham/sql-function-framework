@@ -95,4 +95,18 @@ public class TeradataTest {
 		String sql = f.sql(TERADATA_SQL);
 		assertEquals("sqrt(name)", sql);
 	}
+
+	@Test
+	public void stdDevS() {
+		Formula f = new Formula("stdDevS(name)", PARSER);
+		String sql = f.sql(TERADATA_SQL);
+		assertEquals("stddev_samp(name)", sql);
+	}
+
+	@Test
+	public void stdDevP() {
+		Formula f = new Formula("stdDevP(name)", PARSER);
+		String sql = f.sql(TERADATA_SQL);
+		assertEquals("stddev_pop(name)", sql);
+	}
 }
