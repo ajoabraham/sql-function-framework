@@ -120,4 +120,64 @@ public class GenericSQL implements Dialect {
 	public void stdDevS(StringBuilder sb, FormulaElement column) {
 		throw new UnsupportedOperationException();
 	}
+
+	@Override
+	public void aCos(StringBuilder sb, FormulaElement arg) {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public void aCosH(StringBuilder sb, FormulaElement arg) {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public void aSin(StringBuilder sb, FormulaElement arg) {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public void aSinH(StringBuilder sb, FormulaElement arg) {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public void aTan(StringBuilder sb, FormulaElement arg) {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public void aTanH(StringBuilder sb, FormulaElement arg) {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public void cos(StringBuilder sb, FormulaElement arg) {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public void cosH(StringBuilder sb, FormulaElement arg) {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public void sin(StringBuilder sb, FormulaElement arg) {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public void sinH(StringBuilder sb, FormulaElement arg) {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public void tan(StringBuilder sb, FormulaElement arg) {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public void tanH(StringBuilder sb, FormulaElement arg) {
+		throw new UnsupportedOperationException();
+	}
 }

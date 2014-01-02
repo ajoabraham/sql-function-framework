@@ -109,4 +109,88 @@ public class TeradataTest {
 		String sql = f.sql(TERADATA_SQL);
 		assertEquals("stddev_pop(name)", sql);
 	}
+
+	@Test
+	public void aCos() {
+		Formula f = new Formula("acos(name)", PARSER);
+		String sql = f.sql(TERADATA_SQL);
+		assertEquals("aCos(name)", sql);
+	}
+
+	@Test
+	public void aCosH() {
+		Formula f = new Formula("acosh(name)", PARSER);
+		String sql = f.sql(TERADATA_SQL);
+		assertEquals("aCosH(name)", sql);
+	}
+
+	@Test
+	public void aSin() {
+		Formula f = new Formula("asin(name)", PARSER);
+		String sql = f.sql(TERADATA_SQL);
+		assertEquals("aSin(name)", sql);
+	}
+
+	@Test
+	public void aSinH() {
+		Formula f = new Formula("asinh(name)", PARSER);
+		String sql = f.sql(TERADATA_SQL);
+		assertEquals("aSinH(name)", sql);
+	}
+
+	@Test
+	public void aTan() {
+		Formula f = new Formula("atan(name)", PARSER);
+		String sql = f.sql(TERADATA_SQL);
+		assertEquals("aTan(name)", sql);
+	}
+
+	@Test
+	public void aTanH() {
+		Formula f = new Formula("atanh(name)", PARSER);
+		String sql = f.sql(TERADATA_SQL);
+		assertEquals("aTanH(name)", sql);
+	}
+
+	@Test
+	public void cos() {
+		Formula f = new Formula("cos(name)", PARSER);
+		String sql = f.sql(TERADATA_SQL);
+		assertEquals("cos(name)", sql);
+	}
+
+	@Test
+	public void cosH() {
+		Formula f = new Formula("cosh(name)", PARSER);
+		String sql = f.sql(TERADATA_SQL);
+		assertEquals("cosH(name)", sql);
+	}
+
+	@Test
+	public void sin() {
+		Formula f = new Formula("sin(name)", PARSER);
+		String sql = f.sql(TERADATA_SQL);
+		assertEquals("sin(name)", sql);
+	}
+
+	@Test
+	public void sinH() {
+		Formula f = new Formula("sinh(name)", PARSER);
+		String sql = f.sql(TERADATA_SQL);
+		assertEquals("sinH(name)", sql);
+	}
+
+	@Test
+	public void tan() {
+		Formula f = new Formula("tan(name)", PARSER);
+		String sql = f.sql(TERADATA_SQL);
+		assertEquals("tan(name)", sql);
+	}
+
+	@Test
+	public void tanH() {
+		Formula f = new Formula("tanH(name)", PARSER);
+		String sql = f.sql(TERADATA_SQL);
+		assertEquals("tanH(name)", sql);
+	}
 }

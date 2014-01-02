@@ -76,4 +76,88 @@ public class TeradataSQL extends GenericSQL {
 		column.sql(this, sb);
 		sb.append(')');
 	}
+
+	@Override
+	public void aCos(StringBuilder sb, FormulaElement arg) {
+		sb.append("aCos(");
+		arg.sql(this, sb);
+		sb.append(')');
+	}
+
+	@Override
+	public void aCosH(StringBuilder sb, FormulaElement arg) {
+		sb.append("aCosH(");
+		arg.sql(this, sb);
+		sb.append(')');
+	}
+
+	@Override
+	public void aSin(StringBuilder sb, FormulaElement arg) {
+		sb.append("aSin(");
+		arg.sql(this, sb);
+		sb.append(')');
+	}
+
+	@Override
+	public void aSinH(StringBuilder sb, FormulaElement arg) {
+		sb.append("aSinH(");
+		arg.sql(this, sb);
+		sb.append(')');
+	}
+
+	@Override
+	public void aTan(StringBuilder sb, FormulaElement arg) {
+		sb.append("aTan(");
+		arg.sql(this, sb);
+		sb.append(')');
+	}
+
+	@Override
+	public void aTanH(StringBuilder sb, FormulaElement arg) {
+		sb.append("aTanH(");
+		arg.sql(this, sb);
+		sb.append(')');
+	}
+
+	@Override
+	public void cos(StringBuilder sb, FormulaElement arg) {
+		sb.append("cos(");
+		arg.sql(this, sb);
+		sb.append(')');
+	}
+
+	@Override
+	public void cosH(StringBuilder sb, FormulaElement arg) {
+		sb.append("cosH(");
+		arg.sql(this, sb);
+		sb.append(')');
+	}
+
+	@Override
+	public void sin(StringBuilder sb, FormulaElement arg) {
+		sb.append("sin(");
+		arg.sql(this, sb);
+		sb.append(')');
+	}
+
+	@Override
+	public void sinH(StringBuilder sb, FormulaElement arg) {
+		sb.append("sinH(");
+		arg.sql(this, sb);
+		sb.append(')');
+	}
+
+	@Override
+	public void tan(StringBuilder sb, FormulaElement arg) {
+		sb.append("tan(");
+		arg.sql(this, sb);
+		sb.append(')');
+	}
+
+	@Override
+	public void tanH(StringBuilder sb, FormulaElement arg) {
+		sb.append("tanH(");
+		arg.sql(this, sb);
+		sb.append(')');
+	}
 }

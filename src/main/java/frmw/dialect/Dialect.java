@@ -58,4 +58,28 @@ public interface Dialect {
 	 * The sample standard deviation
 	 */
 	void stdDevS(StringBuilder sb, FormulaElement column);
+
+	void aCos(StringBuilder sb, FormulaElement arg);
+
+	void aCosH(StringBuilder sb, FormulaElement arg);
+
+	void aSin(StringBuilder sb, FormulaElement arg);
+
+	void aSinH(StringBuilder sb, FormulaElement arg);
+
+	void aTan(StringBuilder sb, FormulaElement arg);
+
+	void aTanH(StringBuilder sb, FormulaElement arg);
+
+	void cos(StringBuilder sb, FormulaElement arg);
+
+	void cosH(StringBuilder sb, FormulaElement arg);
+
+	void sin(StringBuilder sb, FormulaElement arg);
+
+	void sinH(StringBuilder sb, FormulaElement arg);
+
+	void tan(StringBuilder sb, FormulaElement arg);
+
+	void tanH(StringBuilder sb, FormulaElement arg);
 }
