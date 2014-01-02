@@ -7,6 +7,7 @@ import org.codehaus.jparsec.error.ParserException;
 
 import java.util.List;
 
+import static frmw.parser.Common.withOperators;
 import static org.codehaus.jparsec.Parsers.or;
 
 /**
@@ -37,10 +38,10 @@ public class Parsing {
 		scalarNames = ImmutableList.copyOf(s.names);
 		scalar.set(or(s.parsers));
 
-		Common c = new Common();
+		Common c = new Common(scalar.lazy(), aggregation.lazy(), commons.lazy());
 		commons.set(or(c.parsers));
 
-		parser = or(aggregation.lazy(), scalar.lazy(), commons.lazy());
+		parser = withOperators(or(aggregation.lazy(), scalar.lazy(), commons.lazy()));
 	}
 
 	public FormulaElement parse(String formula) {

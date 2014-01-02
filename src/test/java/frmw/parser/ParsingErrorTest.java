@@ -18,8 +18,8 @@ public class ParsingErrorTest {
 	@Test
 	public void notExistedFunction() {
 		try {
-			new Formula("  ranl(\"name\")", PARSER);
-			fail();
+			Formula f = new Formula("  ranl(\"name\")", PARSER);
+			fail(f.sql(GENERIC_SQL));
 		} catch (SQLFrameworkException e) {
 //			assertEquals("ranl", e.source);
 			assertEquals(0, e.index());

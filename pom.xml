@@ -58,6 +58,7 @@
                     <source>${java.version}</source>
                     <target>${java.version}</target>
                     <complianceLevel>${java.version}</complianceLevel>
+                    <XnoInline>true</XnoInline>
                 </configuration>
 
                 <executions>

@@ -21,12 +21,14 @@ class Aggregations {
 	public final List<Parser<FormulaElement>> parsers = new ArrayList<Parser<FormulaElement>>();
 
 	Aggregations(Parser<FormulaElement> scalar, Parser<FormulaElement> common) {
-		f(Avg.class, or(scalar, common));
-		f(Sum.class, or(scalar, common));
-		f(Count.class, or(scalar, common));
-		f(Min.class, or(scalar, common));
-		f(Max.class, or(scalar, common));
-		f(Rank.class, or(scalar, common));
+		Parser<FormulaElement> all = withOperators(or(scalar, common));
+
+		f(Avg.class, all);
+		f(Sum.class, all);
+		f(Count.class, all);
+		f(Min.class, all);
+		f(Max.class, all);
+		f(Rank.class, all);
 	}
 
 	private void f(Class<? extends FormulaElement> clazz, Parser<?> arg) {

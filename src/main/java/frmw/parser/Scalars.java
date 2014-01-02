@@ -7,6 +7,7 @@ import org.codehaus.jparsec.Parser;
 import java.util.ArrayList;
 import java.util.List;
 
+import static frmw.parser.Common.withOperators;
 import static frmw.parser.Common.fun;
 import static frmw.parser.Common.funName;
 import static org.codehaus.jparsec.Parsers.or;
@@ -21,7 +22,7 @@ class Scalars {
 	public final List<Parser<FormulaElement>> parsers = new ArrayList<Parser<FormulaElement>>();
 
 	Scalars(Parser<FormulaElement> scalar, Parser<FormulaElement> aggregation, Parser<FormulaElement> common) {
-		Parser<FormulaElement> all = or(aggregation, scalar, common);
+		Parser<FormulaElement> all = withOperators(or(aggregation, scalar, common));
 		math(all);
 	}
 
