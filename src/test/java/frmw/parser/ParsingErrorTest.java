@@ -40,4 +40,18 @@ public class ParsingErrorTest {
 			assertEquals(12, e.length());
 		}
 	}
+
+	@Test
+	public void unsupportedOperationEnhanced() {
+		try {
+			Formula f = new Formula("avg(ln(\"name\") + abs(col1))", PARSER);
+			f.sql(GENERIC_SQL);
+			fail();
+		} catch (UnsupportedFunctionException e) {
+			assertEquals("Ln", e.source);
+			assertEquals("GenericSQL", e.dialect);
+			assertEquals(4, e.index());
+			assertEquals(11, e.length());
+		}
+	}
 }

@@ -37,4 +37,8 @@ public class SQLFrameworkException extends RuntimeException {
 	public int length() {
 		return length;
 	}
+
+	public boolean positionSet() {
+		return index >= 0 && length >= 0;
+	}
 }

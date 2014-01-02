@@ -44,7 +44,7 @@ public class ProvidingPositionsOnExceptionAspect {
 
 			SQLFrameworkException ex = wrap(t);
 			PositionMap.Position pos = PositionHolder.INST.position(currentFormula.get(), e);
-			if (pos != null) {
+			if (pos != null && !ex.positionSet()) {
 				ex.position(pos.index, pos.length);
 			}
 			throw ex;
