@@ -43,14 +43,19 @@ class Common {
 	public static final String COLUMN_NAME_ID = "COLUMN_NAME";
 
 	public Common(Parser<FormulaElement> scalar, Parser<FormulaElement> aggregation, Parser<FormulaElement> common) {
-		Parser<FormulaElement> all = or(scalar, aggregation, column());
+		Parser<FormulaElement> all = or(scalar, aggregation, common);
 
 		parsers.add(column());
 	}
 
-	public static Parser<FormulaElement> withOperators(Parser<FormulaElement> all) {
+	/**
+	 * @param orig original parser
+	 * @return original parser with possibility to combine elements of grammar
+	 * with operators (such as '+', '/', '||')
+	 */
+	public static Parser<FormulaElement> withOperators(Parser<FormulaElement> orig) {
 		Parser.Reference<FormulaElement> ref = Parser.newReference();
-		Parser<FormulaElement> unit = ref.lazy().between(OPENED, CLOSED).or(all);
+		Parser<FormulaElement> unit = ref.lazy().between(OPENED, CLOSED).or(orig);
 		Parser<FormulaElement> parser = new OperatorTable<FormulaElement>()
 				.infixl(op(PLUS, BinaryOp.PLUS), 10)
 				.infixl(op(MINUS, BinaryOp.MINUS), 10)
