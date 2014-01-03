@@ -2,6 +2,7 @@ package frmw.parser;
 
 import frmw.model.FormulaElement;
 import frmw.model.fun.math.*;
+import frmw.model.fun.string.Trim;
 import frmw.model.fun.trigonometric.*;
 import org.codehaus.jparsec.Parser;
 
@@ -24,6 +25,11 @@ class Scalars {
 		Parser<FormulaElement> all = withOperators(or(aggregation, scalar, common));
 		math(all);
 		trigonometric(all);
+		string(all);
+	}
+
+	private void string(Parser<FormulaElement> all) {
+		f(Trim.class, all);
 	}
 
 	private void trigonometric(Parser<FormulaElement> all) {

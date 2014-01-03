@@ -53,4 +53,11 @@ public class GenericTest {
 		String sql = f.sql(GENERIC_SQL);
 		assertEquals("avg(name)", sql);
 	}
+
+	@Test
+	public void trim() {
+		Formula f = new Formula("trim(\"name\")", PARSER);
+		String sql = f.sql(GENERIC_SQL);
+		assertEquals("trim(name)", sql);
+	}
 }

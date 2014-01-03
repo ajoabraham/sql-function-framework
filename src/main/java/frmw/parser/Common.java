@@ -2,6 +2,7 @@ package frmw.parser;
 
 import frmw.model.Column;
 import frmw.model.FormulaElement;
+import frmw.model.constant.StringConstant;
 import frmw.model.exception.SQLFrameworkException;
 import frmw.model.fun.math.operator.BinaryOperator;
 import frmw.model.fun.math.operator.UnaryOperator;
@@ -18,6 +19,7 @@ import java.util.List;
 import static org.codehaus.jparsec.Parsers.EOF;
 import static org.codehaus.jparsec.Parsers.or;
 import static org.codehaus.jparsec.Scanners.*;
+import static org.codehaus.jparsec.StringLiteralScanner.literal;
 
 /**
  * @author Alexey Paramonov
@@ -41,11 +43,23 @@ class Common {
 	public static final Parser<Void> DIV = trailed(isChar('/'));
 
 	public static final String COLUMN_NAME_ID = "COLUMN_NAME";
+	public static final String STRING_LITERAL_ID = "STRING_LITERAL";
 
 	public Common(Parser<FormulaElement> scalar, Parser<FormulaElement> aggregation, Parser<FormulaElement> common) {
 		Parser<FormulaElement> all = or(scalar, aggregation, common);
 
+		parsers.add(stringLiteral());
 		parsers.add(column());
+	}
+
+	private Parser<FormulaElement> stringLiteral() {
+		return literal(STRING_LITERAL_ID).many1().source().between(SQ, SQ).token().map(
+				new RegisteredForPositionMap<FormulaElement>() {
+					@Override
+					protected FormulaElement build(Object value) {
+						return new StringConstant(value.toString());
+					}
+				});
 	}
 
 	/**

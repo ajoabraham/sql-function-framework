@@ -82,4 +82,6 @@ public interface Dialect {
 	void tan(StringBuilder sb, FormulaElement arg);
 
 	void tanH(StringBuilder sb, FormulaElement arg);
+
+	void trim(StringBuilder sb, FormulaElement arg);
 }

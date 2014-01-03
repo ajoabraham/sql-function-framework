@@ -180,4 +180,11 @@ public class GenericSQL implements Dialect {
 	public void tanH(StringBuilder sb, FormulaElement arg) {
 		throw new UnsupportedOperationException();
 	}
+
+	@Override
+	public void trim(StringBuilder sb, FormulaElement arg) {
+		sb.append("trim(");
+		arg.sql(this, sb);
+		sb.append(')');
+	}
 }
