@@ -19,9 +19,9 @@ import static frmw.model.exception.SQLFrameworkException.wrap;
 @Aspect
 public class ProvidingPositionsOnExceptionAspect {
 
-	private final static ThreadLocal<Formula> currentFormula = new ThreadLocal<Formula>();
+	public final static ThreadLocal<Formula> currentFormula = new ThreadLocal<Formula>();
 
-	@Pointcut("execution(* frmw.model.Formula+.*(..))")
+	@Pointcut("execution(* frmw.model.Formula+.*(..)) || execution(frmw.model.Formula+.new(..))")
 	public void formula() {
 	}
 
@@ -43,7 +43,7 @@ public class ProvidingPositionsOnExceptionAspect {
 			}
 
 			SQLFrameworkException ex = wrap(t);
-			PositionMap.Position pos = PositionHolder.INST.position(currentFormula.get(), e);
+			PositionMap.Position pos = currentFormula.get().position(e);
 			if (pos != null && !ex.positionSet()) {
 				ex.position(pos.index, pos.length);
 			}

@@ -1,9 +1,10 @@
 package frmw.parser;
 
 import frmw.model.FormulaElement;
-import frmw.model.position.PositionHolder;
 import org.codehaus.jparsec.Token;
 import org.codehaus.jparsec.functors.Map;
+
+import static frmw.model.position.ProvidingPositionsOnExceptionAspect.currentFormula;
 
 /**
  * @author Alexey Paramonov
@@ -14,7 +15,7 @@ abstract class RegisteredForPositionMap <T extends FormulaElement> implements Ma
 	@Override
 	public T map(Token t) {
 		FormulaElement res = build(t.value());
-		PositionHolder.INST.register(res, t.index(), t.length());
+		currentFormula.get().register(res, t.index(), t.length());
 		return (T) res;
 	}
 

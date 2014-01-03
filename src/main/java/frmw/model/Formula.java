@@ -2,23 +2,25 @@ package frmw.model;
 
 import frmw.dialect.Dialect;
 import frmw.model.exception.SQLFrameworkException;
-import frmw.model.position.PositionHolder;
+import frmw.model.position.PositionMap;
 import frmw.parser.Parsing;
 import org.codehaus.jparsec.error.ParserException;
 
 /**
+ * This class not thread safe.
+ *
  * @author Alexey Paramonov
  */
 public class Formula {
 
 	private final FormulaElement root;
 
+	private final PositionMap positions = new PositionMap();
+
 	/**
 	 * @throws SQLFrameworkException on any error during parsing
 	 */
 	public Formula(String formula, Parsing parser) throws SQLFrameworkException {
-		PositionHolder.INST.currentFormula(this);
-
 		try {
 			this.root = parser.parse(formula);
 		} catch (ParserException e) {
@@ -44,5 +46,13 @@ public class Formula {
 	 */
 	public void validate(Dialect dialect) throws SQLFrameworkException {
 		sql(dialect);
+	}
+
+	public void register(FormulaElement res, int index, int length) {
+		positions.add(res, index, length);
+	}
+
+	public PositionMap.Position position(FormulaElement e) {
+		return positions.find(e);
 	}
 }
