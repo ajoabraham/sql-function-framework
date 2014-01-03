@@ -1,6 +1,7 @@
 package frmw.parser;
 
 import frmw.model.FormulaElement;
+import frmw.model.fun.dateTime.*;
 import frmw.model.fun.math.*;
 import frmw.model.fun.string.Trim;
 import frmw.model.fun.trigonometric.*;
@@ -26,6 +27,17 @@ class Scalars {
 		math(all);
 		trigonometric(all);
 		string(all);
+		dateTime(all);
+	}
+
+	private void dateTime(Parser<FormulaElement> all) {
+		f(Year.class, all);
+		f(Month.class, all);
+		f(Day.class, all);
+		f(Week.class, all);
+		f(Hour.class, all);
+		f(Minute.class, all);
+		f(Second.class, all);
 	}
 
 	private void string(Parser<FormulaElement> all) {

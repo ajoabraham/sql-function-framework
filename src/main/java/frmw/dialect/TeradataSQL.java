@@ -160,4 +160,39 @@ public class TeradataSQL extends GenericSQL {
 		arg.sql(this, sb);
 		sb.append(')');
 	}
+
+	@Override
+	public void extractDateTime(StringBuilder sb, DateTimeElement e, FormulaElement arg) {
+		String element;
+
+		switch (e) {
+			case DAY:
+				element = "Day";
+				break;
+			case HOUR:
+				element = "Hour";
+				break;
+			case MINUTE:
+				element = "Minute";
+				break;
+			case MONTH:
+				element = "Month";
+				break;
+			case SECOND:
+				element = "Second";
+				break;
+			case WEEK:
+				element = "Week";
+				break;
+			case YEAR:
+				element = "Year";
+				break;
+			default:
+				throw new UnsupportedOperationException();
+		}
+
+		sb.append("extract(").append(element).append(" from ");
+		arg.sql(this, sb);
+		sb.append(')');
+	}
 }

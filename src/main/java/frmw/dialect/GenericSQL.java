@@ -187,4 +187,9 @@ public class GenericSQL implements Dialect {
 		arg.sql(this, sb);
 		sb.append(')');
 	}
+
+	@Override
+	public void extractDateTime(StringBuilder sb, DateTimeElement e, FormulaElement arg) {
+		throw new UnsupportedOperationException();
+	}
 }

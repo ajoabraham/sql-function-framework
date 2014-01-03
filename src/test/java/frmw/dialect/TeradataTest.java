@@ -193,4 +193,53 @@ public class TeradataTest {
 		String sql = f.sql(TERADATA_SQL);
 		assertEquals("tanH(name)", sql);
 	}
+
+	@Test
+	public void year() {
+		Formula f = new Formula("year(col1)", PARSER);
+		String sql = f.sql(TERADATA_SQL);
+		assertEquals("extract(Year from col1)", sql);
+	}
+
+	@Test
+	public void month() {
+		Formula f = new Formula("month(col1)", PARSER);
+		String sql = f.sql(TERADATA_SQL);
+		assertEquals("extract(Month from col1)", sql);
+	}
+
+	@Test
+	public void day() {
+		Formula f = new Formula("day(col1)", PARSER);
+		String sql = f.sql(TERADATA_SQL);
+		assertEquals("extract(Day from col1)", sql);
+	}
+
+	@Test
+	public void week() {
+		Formula f = new Formula("week(col1)", PARSER);
+		String sql = f.sql(TERADATA_SQL);
+		assertEquals("extract(Week from col1)", sql);
+	}
+
+	@Test
+	public void hour() {
+		Formula f = new Formula("hour(col1)", PARSER);
+		String sql = f.sql(TERADATA_SQL);
+		assertEquals("extract(Hour from col1)", sql);
+	}
+
+	@Test
+	public void minute() {
+		Formula f = new Formula("minute(col1)", PARSER);
+		String sql = f.sql(TERADATA_SQL);
+		assertEquals("extract(Minute from col1)", sql);
+	}
+
+	@Test
+	public void second() {
+		Formula f = new Formula("second(col1)", PARSER);
+		String sql = f.sql(TERADATA_SQL);
+		assertEquals("extract(Second from col1)", sql);
+	}
 }

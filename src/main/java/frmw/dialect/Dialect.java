@@ -84,4 +84,6 @@ public interface Dialect {
 	void tanH(StringBuilder sb, FormulaElement arg);
 
 	void trim(StringBuilder sb, FormulaElement arg);
+
+	void extractDateTime(StringBuilder sb, DateTimeElement e, FormulaElement arg);
 }
