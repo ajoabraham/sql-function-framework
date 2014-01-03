@@ -2,6 +2,7 @@ package frmw.parser;
 
 import frmw.model.Column;
 import frmw.model.FormulaElement;
+import frmw.model.constant.NumericConstant;
 import frmw.model.constant.StringConstant;
 import frmw.model.exception.SQLFrameworkException;
 import frmw.model.fun.math.operator.BinaryOperator;
@@ -11,6 +12,8 @@ import org.codehaus.jparsec.Parser;
 import org.codehaus.jparsec.functors.Binary;
 import org.codehaus.jparsec.functors.Unary;
 import org.codehaus.jparsec.pattern.CharPredicate;
+import org.codehaus.jparsec.pattern.Pattern;
+import org.codehaus.jparsec.pattern.Patterns;
 
 import java.lang.reflect.Constructor;
 import java.util.ArrayList;
@@ -20,6 +23,8 @@ import static org.codehaus.jparsec.Parsers.EOF;
 import static org.codehaus.jparsec.Parsers.or;
 import static org.codehaus.jparsec.Scanners.*;
 import static org.codehaus.jparsec.StringLiteralScanner.literal;
+import static org.codehaus.jparsec.pattern.Patterns.among;
+import static org.codehaus.jparsec.pattern.Patterns.sequence;
 
 /**
  * @author Alexey Paramonov
@@ -44,15 +49,33 @@ class Common {
 
 	public static final String COLUMN_NAME_ID = "COLUMN_NAME";
 	public static final String STRING_LITERAL_ID = "STRING_LITERAL";
+	public static final String NUMERIC_ID = "NUMERIC";
 
 	public Common(Parser<FormulaElement> scalar, Parser<FormulaElement> aggregation, Parser<FormulaElement> common) {
 		Parser<FormulaElement> all = or(scalar, aggregation, common);
 
 		parsers.add(stringLiteral());
+		parsers.add(number());
 		parsers.add(column());
 	}
 
-	private Parser<FormulaElement> stringLiteral() {
+	private static Parser<FormulaElement> number() {
+		Pattern integer = Patterns.among("0123456789 \t_").many();
+		Pattern strict = sequence(Patterns.INTEGER, integer, Patterns.isChar('.').next(integer).optional());
+		Pattern fraction = Patterns.isChar('.').next(integer);
+		Pattern decimal = strict.or(fraction);
+		Pattern scientific = sequence(decimal, among("eE"), among("+-").optional(), integer);
+
+		return pattern(scientific.or(decimal), NUMERIC_ID).source().token()
+				.map(new RegisteredForPositionMap<FormulaElement>() {
+					@Override
+					protected FormulaElement build(Object value) {
+						return new NumericConstant(value.toString());
+					}
+				});
+	}
+
+	private static Parser<FormulaElement> stringLiteral() {
 		return literal(STRING_LITERAL_ID).many1().source().between(SQ, SQ).token().map(
 				new RegisteredForPositionMap<FormulaElement>() {
 					@Override
