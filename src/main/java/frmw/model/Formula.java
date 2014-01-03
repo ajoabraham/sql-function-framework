@@ -7,7 +7,7 @@ import frmw.parser.Parsing;
 import org.codehaus.jparsec.error.ParserException;
 
 /**
- * This class not thread safe.
+ * This class is not thread safe.
  *
  * @author Alexey Paramonov
  */
