@@ -21,4 +21,9 @@ public class UnaryOperator extends Scalar {
 		sb.append(op);
 		arg.sql(dialect, sb);
 	}
+
+	@Override
+	public String toString() {
+		return op + arg;
+	}
 }

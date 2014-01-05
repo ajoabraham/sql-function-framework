@@ -15,4 +15,9 @@ public abstract class Scalar implements FormulaElement {
 	public boolean hasAggregation() {
 		return arg.hasAggregation();
 	}
+
+	@Override
+	public String toString() {
+		return getClass().getSimpleName() + '(' + arg + ')';
+	}
 }

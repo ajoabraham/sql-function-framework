@@ -17,4 +17,9 @@ public class CurrentTimestamp implements FormulaElement {
 	public boolean hasAggregation() {
 		return false;
 	}
+
+	@Override
+	public String toString() {
+		return getClass().getSimpleName();
+	}
 }

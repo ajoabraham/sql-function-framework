@@ -33,4 +33,9 @@ public class BinaryOperator implements FormulaElement {
 	public boolean hasAggregation() {
 		return left.hasAggregation() || right.hasAggregation();
 	}
+
+	@Override
+	public String toString() {
+		return "(" + left + ' ' + op + ' ' + right + ')';
+	}
 }

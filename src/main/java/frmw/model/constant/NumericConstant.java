@@ -42,4 +42,9 @@ public class NumericConstant implements FormulaElement {
 	public boolean hasAggregation() {
 		return false;
 	}
+
+	@Override
+	public String toString() {
+		return constant;
+	}
 }

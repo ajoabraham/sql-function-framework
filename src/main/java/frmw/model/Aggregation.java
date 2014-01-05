@@ -15,4 +15,9 @@ public abstract class Aggregation implements FormulaElement {
 	public boolean hasAggregation() {
 		return true;
 	}
+
+	@Override
+	public String toString() {
+		return getClass().getSimpleName() + '(' + column + ')';
+	}
 }

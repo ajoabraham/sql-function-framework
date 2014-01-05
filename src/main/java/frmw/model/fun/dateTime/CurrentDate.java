@@ -1,9 +1,7 @@
 package frmw.model.fun.dateTime;
 
-import frmw.dialect.DateTimeElement;
 import frmw.dialect.Dialect;
 import frmw.model.FormulaElement;
-import frmw.model.Scalar;
 
 /**
  * @author Alexey Paramonov
@@ -18,5 +16,10 @@ public class CurrentDate implements FormulaElement {
 	@Override
 	public boolean hasAggregation() {
 		return false;
+	}
+
+	@Override
+	public String toString() {
+		return getClass().getSimpleName();
 	}
 }

@@ -23,4 +23,9 @@ public class Column implements FormulaElement {
 	public boolean hasAggregation() {
 		return false;
 	}
+
+	@Override
+	public String toString() {
+		return name;
+	}
 }
