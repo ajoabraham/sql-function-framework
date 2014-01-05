@@ -1,4 +1,4 @@
-package frmw.model.fun.math.operator;
+package frmw.model.operator;
 
 import frmw.dialect.Dialect;
 import frmw.model.FormulaElement;

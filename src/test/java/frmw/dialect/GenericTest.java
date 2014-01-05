@@ -60,4 +60,25 @@ public class GenericTest {
 		String sql = f.sql(GENERIC_SQL);
 		assertEquals("trim(name)", sql);
 	}
+
+	@Test
+	public void concat() {
+		Formula f = new Formula("\"col1\" || \"col2\"", PARSER);
+		String sql = f.sql(GENERIC_SQL);
+		assertEquals("(col1 || col2)", sql);
+	}
+
+	@Test
+	public void concatInFunction() {
+		Formula f = new Formula("count(trim(\"col1\" || \"col2\"))", PARSER);
+		String sql = f.sql(GENERIC_SQL);
+		assertEquals("count(trim((col1 || col2)))", sql);
+	}
+
+	@Test
+	public void concatOperatorHasLowestPriorityWithArithmeticalOperators() {
+		Formula f = new Formula("col1 + col2 - col3 || col4 - col5", PARSER);
+		String sql = f.sql(GENERIC_SQL);
+		assertEquals("(((col1 + col2) - col3) || (col4 - col5))", sql);
+	}
 }

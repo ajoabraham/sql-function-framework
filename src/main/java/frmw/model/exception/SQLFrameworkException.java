@@ -12,7 +12,7 @@ public class SQLFrameworkException extends RuntimeException {
 	private int length = -1;
 
 	public SQLFrameworkException(String source, String message) {
-		super(message);
+		super(message + ", column name : " + source);
 		this.source = source;
 	}
 

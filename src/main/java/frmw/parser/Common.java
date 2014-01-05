@@ -5,8 +5,8 @@ import frmw.model.FormulaElement;
 import frmw.model.constant.NumericConstant;
 import frmw.model.constant.StringConstant;
 import frmw.model.exception.SQLFrameworkException;
-import frmw.model.fun.math.operator.BinaryOperator;
-import frmw.model.fun.math.operator.UnaryOperator;
+import frmw.model.operator.BinaryOperator;
+import frmw.model.operator.UnaryOperator;
 import org.codehaus.jparsec.OperatorTable;
 import org.codehaus.jparsec.Parser;
 import org.codehaus.jparsec.functors.Binary;
@@ -42,6 +42,7 @@ class Common {
 	public static final Parser<Void> DQ = trailed(isChar('"'));
 	public static final Parser<Void> SQ = trailed(isChar('\''));
 
+	public static final Parser<Void> CONCAT = trailed(string("||"));
 	public static final Parser<Void> PLUS = trailed(isChar('+'));
 	public static final Parser<Void> MINUS = trailed(isChar('-'));
 	public static final Parser<Void> MUL = trailed(isChar('*'));
@@ -94,6 +95,7 @@ class Common {
 		Parser.Reference<FormulaElement> ref = Parser.newReference();
 		Parser<FormulaElement> unit = ref.lazy().between(OPENED, CLOSED).or(orig);
 		Parser<FormulaElement> parser = new OperatorTable<FormulaElement>()
+				.infixl(op(CONCAT, BinaryOp.CONCAT), 5)
 				.infixl(op(PLUS, BinaryOp.PLUS), 10)
 				.infixl(op(MINUS, BinaryOp.MINUS), 10)
 				.infixl(op(MUL, BinaryOp.MUL), 20)
@@ -129,6 +131,11 @@ class Common {
 			public FormulaElement map(FormulaElement a, FormulaElement b) {
 				return new BinaryOperator(a, b, "/");
 			}
+		},
+		CONCAT {
+			public FormulaElement map(FormulaElement a, FormulaElement b) {
+				return new BinaryOperator(a, b, "||");
+			}
 		}
 	}
 
@@ -159,7 +166,7 @@ class Common {
 		Parser<String> plain = or(EOF.cast(), isChar(new CharPredicate() {
 			@Override
 			public boolean isChar(char c) {
-				return c != '(' && c != ')' && c != ',' &&
+				return c != '(' && c != ')' && c != ',' && c != '|' &&
 						c != '*' && c != '/' && c != '+' && c != '-';
 			}
 		}, COLUMN_NAME_ID)).many1().source();
