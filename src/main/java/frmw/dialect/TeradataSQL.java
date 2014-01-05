@@ -113,6 +113,15 @@ public class TeradataSQL extends GenericSQL {
 	}
 
 	@Override
+	public void aTan2(StringBuilder sb, FormulaElement x, FormulaElement y) {
+		sb.append("aTan2(");
+		x.sql(this, sb);
+		sb.append(", ");
+		y.sql(this, sb);
+		sb.append(')');
+	}
+
+	@Override
 	public void aTanH(StringBuilder sb, FormulaElement arg) {
 		sb.append("aTanH(");
 		arg.sql(this, sb);
@@ -193,6 +202,24 @@ public class TeradataSQL extends GenericSQL {
 
 		sb.append("extract(").append(element).append(" from ");
 		arg.sql(this, sb);
+		sb.append(')');
+	}
+
+	@Override
+	public void addMonths(StringBuilder sb, FormulaElement date, FormulaElement number) {
+		sb.append("add_months(");
+		date.sql(this, sb);
+		sb.append(", ");
+		number.sql(this, sb);
+		sb.append(')');
+	}
+
+	@Override
+	public void random(StringBuilder sb, FormulaElement lower, FormulaElement upper) {
+		sb.append("random(");
+		lower.sql(this, sb);
+		sb.append(", ");
+		upper.sql(this, sb);
 		sb.append(')');
 	}
 }

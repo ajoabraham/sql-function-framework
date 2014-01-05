@@ -147,6 +147,11 @@ public class GenericSQL implements Dialect {
 	}
 
 	@Override
+	public void aTan2(StringBuilder sb, FormulaElement x, FormulaElement y) {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
 	public void aTanH(StringBuilder sb, FormulaElement arg) {
 		throw new UnsupportedOperationException();
 	}
@@ -201,5 +206,15 @@ public class GenericSQL implements Dialect {
 	@Override
 	public void currentTimestamp(StringBuilder sb) {
 		sb.append("CURRENT_TIMESTAMP");
+	}
+
+	@Override
+	public void addMonths(StringBuilder sb, FormulaElement date, FormulaElement number) {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public void random(StringBuilder sb, FormulaElement lower, FormulaElement upper) {
+		throw new UnsupportedOperationException();
 	}
 }

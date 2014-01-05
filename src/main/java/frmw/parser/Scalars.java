@@ -40,6 +40,7 @@ class Scalars {
 		f(Second.class, all);
 		f(CurrentDate.class);
 		f(CurrentTimestamp.class);
+		f(AddMonths.class, all, all);
 	}
 
 	private void string(Parser<FormulaElement> all) {
@@ -58,6 +59,7 @@ class Scalars {
 		f(ASin.class, all);
 		f(ACos.class, all);
 		f(ATan.class, all);
+		f(ATan2.class, all, all);
 
 		f(ASinH.class, all);
 		f(ACosH.class, all);
@@ -73,6 +75,7 @@ class Scalars {
 		f(Pow.class, all);
 		f(Round.class, all);
 		f(Sqrt.class, all);
+		f(Random.class, all, all);
 	}
 
 	private void f(Class<? extends FormulaElement> clazz, Parser<?> ...args) {

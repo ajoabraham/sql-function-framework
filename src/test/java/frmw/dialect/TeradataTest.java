@@ -146,6 +146,13 @@ public class TeradataTest {
 	}
 
 	@Test
+	public void aTan2() {
+		Formula f = new Formula("atan2(12, 13)", PARSER);
+		String sql = f.sql(TERADATA_SQL);
+		assertEquals("aTan2(12, 13)", sql);
+	}
+
+	@Test
 	public void aTanH() {
 		Formula f = new Formula("atanh(name)", PARSER);
 		String sql = f.sql(TERADATA_SQL);
@@ -241,5 +248,19 @@ public class TeradataTest {
 		Formula f = new Formula("second(col1)", PARSER);
 		String sql = f.sql(TERADATA_SQL);
 		assertEquals("extract(Second from col1)", sql);
+	}
+
+	@Test
+	public void addMonths() {
+		Formula f = new Formula("addMonths(col1, 5)", PARSER);
+		String sql = f.sql(TERADATA_SQL);
+		assertEquals("add_months(col1, 5)", sql);
+	}
+
+	@Test
+	public void random() {
+		Formula f = new Formula("random(1, 100)", PARSER);
+		String sql = f.sql(TERADATA_SQL);
+		assertEquals("random(1, 100)", sql);
 	}
 }

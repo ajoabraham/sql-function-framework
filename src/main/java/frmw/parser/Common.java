@@ -4,7 +4,7 @@ import frmw.model.Column;
 import frmw.model.FormulaElement;
 import frmw.model.constant.NumericConstant;
 import frmw.model.constant.StringConstant;
-import frmw.model.exception.SQLFrameworkException;
+import frmw.model.exception.SQLFrameworkInternalException;
 import frmw.model.operator.BinaryOperator;
 import frmw.model.operator.UnaryOperator;
 import org.codehaus.jparsec.OperatorTable;
@@ -19,8 +19,7 @@ import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.codehaus.jparsec.Parsers.EOF;
-import static org.codehaus.jparsec.Parsers.or;
+import static org.codehaus.jparsec.Parsers.*;
 import static org.codehaus.jparsec.Scanners.*;
 import static org.codehaus.jparsec.StringLiteralScanner.literal;
 import static org.codehaus.jparsec.pattern.Patterns.among;
@@ -69,20 +68,20 @@ class Common {
 		Pattern scientific = sequence(decimal, among("eE"), among("+-").optional(), integer);
 
 		return pattern(scientific.or(decimal), NUMERIC_ID).source().token()
-				.map(new RegisteredForPositionMap<FormulaElement>() {
+				.map(new RegisteredForPositionMap<FormulaElement, String>() {
 					@Override
-					protected FormulaElement build(Object value) {
-						return new NumericConstant(value.toString());
+					protected FormulaElement build(String value) {
+						return new NumericConstant(value);
 					}
 				});
 	}
 
 	private static Parser<FormulaElement> stringLiteral() {
 		return literal(STRING_LITERAL_ID).many1().source().between(SQ, SQ).token().map(
-				new RegisteredForPositionMap<FormulaElement>() {
+				new RegisteredForPositionMap<FormulaElement, String>() {
 					@Override
-					protected FormulaElement build(Object value) {
-						return new StringConstant(value.toString());
+					protected FormulaElement build(String value) {
+						return new StringConstant(value);
 					}
 				});
 	}
@@ -172,10 +171,10 @@ class Common {
 			}
 		}, COLUMN_NAME_ID)).many1().source();
 
-		return or(quoted, plain).token().map(new RegisteredForPositionMap<FormulaElement>() {
+		return or(quoted, plain).token().map(new RegisteredForPositionMap<FormulaElement, String>() {
 			@Override
-			protected FormulaElement build(Object value) {
-				return new Column((String) value);
+			protected FormulaElement build(String value) {
+				return new Column(value);
 			}
 		});
 	}
@@ -185,26 +184,62 @@ class Common {
 	}
 
 	public static <T extends FormulaElement> Parser<T> fun(final Class<? extends T> clazz, final Parser<?>... args) {
-		Parser<?> body = args.length == 0 ? NO_ARG : args[0].between(OPENED, CLOSED);
+		Parser<?> body = args.length == 0 ? NO_ARG : buildArgumentParser(args).between(OPENED, CLOSED);
 		Parser<Void> functionName = trailed(stringCaseInsensitive(funName(clazz)));
-		return functionName.next(body).token().map(new RegisteredForPositionMap<T>() {
+		return functionName.next(body).token().map(new RegisteredForPositionMap<T, List<Object>>() {
 			@Override
-			protected FormulaElement build(Object arg) {
-				try {
-					return args.length == 0 ? clazz.newInstance() : newInstance(clazz, arg);
-				} catch (Exception e) {
-					throw new SQLFrameworkException(e);
-				}
+			protected FormulaElement build(List<Object> result) throws Exception {
+				return args.length == 0 ? clazz.newInstance() : newInstance(clazz, result);
 			}
 		});
 	}
 
-	private static FormulaElement newInstance(Class<?> clazz, Object value) throws Exception {
-		Constructor<?> constructor = clazz.getConstructors()[0];
-		return (FormulaElement) constructor.newInstance(value);
+	private static Parser<?> buildArgumentParser(Parser<?>[] args) {
+		List<Parser<?>> result = new ArrayList<Parser<?>>(args.length * 2);
+		result.add(args[0]);
+		for (int i = 1; i < args.length; i++) {
+			result.add(COMMA);
+			result.add(args[i]);
+		}
+
+		return list(result);
 	}
 
-	public static <T extends FormulaElement> String funName(Class<T> clazz) {
+	private static FormulaElement newInstance(Class<?> clazz, List<Object> values) throws Exception {
+		List<Object> notNull = filterNotNull(values);
+		Constructor<?> constructor = appropriate(clazz, notNull.size());
+		if (constructor == null) {
+			throw new SQLFrameworkInternalException(funName(clazz),
+					"Constructor for arguments not found : " + notNull);
+		}
+
+		Object[] args = notNull.toArray(new Object[notNull.size()]);
+		return (FormulaElement) constructor.newInstance(args);
+	}
+
+	private static List<Object> filterNotNull(List<Object> values) {
+		List<Object> result = new ArrayList<Object>();
+
+		for (Object value : values) {
+			if (value != null) {
+				result.add(value);
+			}
+		}
+
+		return result;
+	}
+
+	private static Constructor<?> appropriate(Class<?> clazz, int argNumber) {
+		for (Constructor<?> c : clazz.getConstructors()) {
+			if (c.getParameterTypes().length == argNumber) {
+				return c;
+			}
+		}
+
+		return null;
+	}
+
+	public static String funName(Class<?> clazz) {
 		return clazz.getSimpleName();
 	}
 }

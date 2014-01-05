@@ -69,6 +69,8 @@ public interface Dialect {
 
 	void aTan(StringBuilder sb, FormulaElement arg);
 
+	void aTan2(StringBuilder sb, FormulaElement x, FormulaElement y);
+
 	void aTanH(StringBuilder sb, FormulaElement arg);
 
 	void cos(StringBuilder sb, FormulaElement arg);
@@ -90,4 +92,8 @@ public interface Dialect {
 	void currentDate(StringBuilder sb);
 
 	void currentTimestamp(StringBuilder sb);
+
+	void addMonths(StringBuilder sb, FormulaElement date, FormulaElement number);
+
+	void random(StringBuilder sb, FormulaElement lower, FormulaElement upper);
 }
