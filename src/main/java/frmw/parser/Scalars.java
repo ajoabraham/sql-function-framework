@@ -3,7 +3,7 @@ package frmw.parser;
 import frmw.model.FormulaElement;
 import frmw.model.fun.dateTime.*;
 import frmw.model.fun.math.*;
-import frmw.model.fun.string.Trim;
+import frmw.model.fun.string.*;
 import frmw.model.fun.trigonometric.*;
 import org.codehaus.jparsec.Parser;
 
@@ -45,6 +45,15 @@ class Scalars {
 
 	private void string(Parser<FormulaElement> all) {
 		f(Trim.class, all);
+		f(LeftTrim.class, all);
+		f(LeftTrim.class, all, all);
+		f(RightTrim.class, all);
+		f(RightTrim.class, all, all);
+		f(Upper.class, all);
+		f(Lower.class, all);
+		f(Index.class, all, all);
+		f(Substring.class, all, all, all);
+		f(Replace.class, all, all, all);
 	}
 
 	private void trigonometric(Parser<FormulaElement> all) {

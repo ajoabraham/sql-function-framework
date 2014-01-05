@@ -1,10 +1,10 @@
 package frmw.dialect;
 
 import frmw.model.Formula;
+import frmw.model.exception.UnsupportedFunctionException;
 import org.junit.Test;
 
-import static frmw.TestSupport.PARSER;
-import static frmw.TestSupport.TERADATA_SQL;
+import static frmw.TestSupport.*;
 import static org.junit.Assert.assertEquals;
 
 /**
@@ -262,5 +262,53 @@ public class TeradataTest {
 		Formula f = new Formula("random(1, 100)", PARSER);
 		String sql = f.sql(TERADATA_SQL);
 		assertEquals("random(1, 100)", sql);
+	}
+
+	@Test(expected = UnsupportedFunctionException.class)
+	public void teradataDoesntSupportReplace() {
+		Formula f = new Formula("replace(col1, 'old_data', 'new_data')", PARSER);
+		f.sql(TERADATA_SQL);
+	}
+
+	@Test
+	public void substring() {
+		Formula f = new Formula("substring(col1, 2, 10)", PARSER);
+		String sql = f.sql(TERADATA_SQL);
+		assertEquals("substring(col1 from 2 for 10)", sql);
+	}
+
+	@Test
+	public void index() {
+		Formula f = new Formula("index(col1, 'data')", PARSER);
+		String sql = f.sql(TERADATA_SQL);
+		assertEquals("index(col1, 'data')", sql);
+	}
+
+	@Test
+	public void leftTrim() {
+		Formula f = new Formula("leftTrim(col1)", PARSER);
+		String sql = f.sql(TERADATA_SQL);
+		assertEquals("trim(Leading ' ' From col1)", sql);
+	}
+
+	@Test
+	public void leftTrimWithTrimmedSymbol() {
+		Formula f = new Formula("leftTrim(col1, 'x')", PARSER);
+		String sql = f.sql(TERADATA_SQL);
+		assertEquals("trim(Leading 'x' From col1)", sql);
+	}
+
+	@Test
+	public void rightTrim() {
+		Formula f = new Formula("rightTrim(col1)", PARSER);
+		String sql = f.sql(TERADATA_SQL);
+		assertEquals("trim(Trailing ' ' From col1)", sql);
+	}
+
+	@Test
+	public void rightTrimWithTrimmedSymbol() {
+		Formula f = new Formula("rightTrim(col1, 'x')", PARSER);
+		String sql = f.sql(TERADATA_SQL);
+		assertEquals("trim(Trailing 'x' From col1)", sql);
 	}
 }

@@ -96,4 +96,18 @@ public interface Dialect {
 	void addMonths(StringBuilder sb, FormulaElement date, FormulaElement number);
 
 	void random(StringBuilder sb, FormulaElement lower, FormulaElement upper);
+
+	void lower(StringBuilder sb, FormulaElement arg);
+
+	void upper(StringBuilder sb, FormulaElement arg);
+
+	void leftTrim(StringBuilder sb, FormulaElement str, FormulaElement trimmed);
+
+	void rightTrim(StringBuilder sb, FormulaElement str, FormulaElement trimmed);
+
+	void index(StringBuilder sb, FormulaElement str, FormulaElement searched);
+
+	void substring(StringBuilder sb, FormulaElement str, FormulaElement start, FormulaElement length);
+
+	void replace(StringBuilder sb, FormulaElement str, FormulaElement search, FormulaElement replace);
 }

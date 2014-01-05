@@ -217,4 +217,49 @@ public class GenericSQL implements Dialect {
 	public void random(StringBuilder sb, FormulaElement lower, FormulaElement upper) {
 		throw new UnsupportedOperationException();
 	}
+
+	@Override
+	public void replace(StringBuilder sb, FormulaElement str, FormulaElement search, FormulaElement replace) {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public void substring(StringBuilder sb, FormulaElement str, FormulaElement start, FormulaElement length) {
+		sb.append("substring(");
+		str.sql(this, sb);
+		sb.append(" from ");
+		start.sql(this, sb);
+		sb.append(" for ");
+		length.sql(this, sb);
+		sb.append(')');
+	}
+
+	@Override
+	public void index(StringBuilder sb, FormulaElement str, FormulaElement searched) {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public void rightTrim(StringBuilder sb, FormulaElement str, FormulaElement trimmed) {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public void leftTrim(StringBuilder sb, FormulaElement str, FormulaElement trimmed) {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public void upper(StringBuilder sb, FormulaElement arg) {
+		sb.append("upper(");
+		arg.sql(this, sb);
+		sb.append(')');
+	}
+
+	@Override
+	public void lower(StringBuilder sb, FormulaElement arg) {
+		sb.append("lower(");
+		arg.sql(this, sb);
+		sb.append(')');
+	}
 }

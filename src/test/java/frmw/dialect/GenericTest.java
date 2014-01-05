@@ -76,7 +76,7 @@ public class GenericTest {
 	}
 
 	@Test
-	public void concatOperatorHasLowestPriorityWithArithmeticalOperators() {
+	public void concatOperatorHasLowestPriorityThanArithmeticalOperators() {
 		Formula f = new Formula("col1 + col2 - col3 || col4 - col5", PARSER);
 		String sql = f.sql(GENERIC_SQL);
 		assertEquals("(((col1 + col2) - col3) || (col4 - col5))", sql);
@@ -94,5 +94,19 @@ public class GenericTest {
 		Formula f = new Formula("currentTimestamp()", PARSER);
 		String sql = f.sql(GENERIC_SQL);
 		assertEquals("CURRENT_TIMESTAMP", sql);
+	}
+
+	@Test
+	public void upper() {
+		Formula f = new Formula("upper(col1)", PARSER);
+		String sql = f.sql(GENERIC_SQL);
+		assertEquals("upper(col1)", sql);
+	}
+
+	@Test
+	public void lower() {
+		Formula f = new Formula("lower(col1)", PARSER);
+		String sql = f.sql(GENERIC_SQL);
+		assertEquals("lower(col1)", sql);
 	}
 }
