@@ -86,4 +86,8 @@ public interface Dialect {
 	void trim(StringBuilder sb, FormulaElement arg);
 
 	void extractDateTime(StringBuilder sb, DateTimeElement e, FormulaElement arg);
+
+	void currentDate(StringBuilder sb);
+
+	void currentTimestamp(StringBuilder sb);
 }

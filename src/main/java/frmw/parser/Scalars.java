@@ -38,6 +38,8 @@ class Scalars {
 		f(Hour.class, all);
 		f(Minute.class, all);
 		f(Second.class, all);
+		f(CurrentDate.class);
+		f(CurrentTimestamp.class);
 	}
 
 	private void string(Parser<FormulaElement> all) {
@@ -73,8 +75,8 @@ class Scalars {
 		f(Sqrt.class, all);
 	}
 
-	private void f(Class<? extends FormulaElement> clazz, Parser<?> arg) {
-		Parser<FormulaElement> result = fun(clazz, arg);
+	private void f(Class<? extends FormulaElement> clazz, Parser<?> ...args) {
+		Parser<FormulaElement> result = fun(clazz, args);
 		parsers.add(result);
 		names.add(funName(clazz));
 	}

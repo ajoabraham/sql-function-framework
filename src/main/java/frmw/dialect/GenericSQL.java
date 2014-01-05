@@ -192,4 +192,14 @@ public class GenericSQL implements Dialect {
 	public void extractDateTime(StringBuilder sb, DateTimeElement e, FormulaElement arg) {
 		throw new UnsupportedOperationException();
 	}
+
+	@Override
+	public void currentDate(StringBuilder sb) {
+		sb.append("CURRENT_DATE");
+	}
+
+	@Override
+	public void currentTimestamp(StringBuilder sb) {
+		sb.append("CURRENT_TIMESTAMP");
+	}
 }

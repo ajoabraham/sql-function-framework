@@ -210,9 +210,9 @@ public class TeradataTest {
 
 	@Test
 	public void day() {
-		Formula f = new Formula("day(col1)", PARSER);
+		Formula f = new Formula("day(currentDate())", PARSER);
 		String sql = f.sql(TERADATA_SQL);
-		assertEquals("extract(Day from col1)", sql);
+		assertEquals("extract(Day from CURRENT_DATE)", sql);
 	}
 
 	@Test
@@ -224,9 +224,9 @@ public class TeradataTest {
 
 	@Test
 	public void hour() {
-		Formula f = new Formula("hour(col1)", PARSER);
+		Formula f = new Formula("hour(currentTimestamp())", PARSER);
 		String sql = f.sql(TERADATA_SQL);
-		assertEquals("extract(Hour from col1)", sql);
+		assertEquals("extract(Hour from CURRENT_TIMESTAMP)", sql);
 	}
 
 	@Test

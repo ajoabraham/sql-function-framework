@@ -81,4 +81,18 @@ public class GenericTest {
 		String sql = f.sql(GENERIC_SQL);
 		assertEquals("(((col1 + col2) - col3) || (col4 - col5))", sql);
 	}
+
+	@Test
+	public void currentDate() {
+		Formula f = new Formula("currentDate()", PARSER);
+		String sql = f.sql(GENERIC_SQL);
+		assertEquals("CURRENT_DATE", sql);
+	}
+
+	@Test
+	public void currentTimestamp() {
+		Formula f = new Formula("currentTimestamp()", PARSER);
+		String sql = f.sql(GENERIC_SQL);
+		assertEquals("CURRENT_TIMESTAMP", sql);
+	}
 }
