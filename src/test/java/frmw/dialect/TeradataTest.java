@@ -293,22 +293,43 @@ public class TeradataTest {
 
 	@Test
 	public void leftTrimWithTrimmedSymbol() {
-		Formula f = new Formula("leftTrim(col1, 'x')", PARSER);
+		Formula f = new Formula("leftTrim(\"col1\", 'x')", PARSER);
 		String sql = f.sql(TERADATA_SQL);
 		assertEquals("trim(Leading 'x' From col1)", sql);
 	}
 
 	@Test
 	public void rightTrim() {
-		Formula f = new Formula("rightTrim(col1)", PARSER);
+		Formula f = new Formula("rightTrim(\"col1\")", PARSER);
 		String sql = f.sql(TERADATA_SQL);
 		assertEquals("trim(Trailing ' ' From col1)", sql);
 	}
 
 	@Test
 	public void rightTrimWithTrimmedSymbol() {
-		Formula f = new Formula("rightTrim(col1, 'x')", PARSER);
+		Formula f = new Formula("rightTrim(\"col1\", 'x')", PARSER);
 		String sql = f.sql(TERADATA_SQL);
 		assertEquals("trim(Trailing 'x' From col1)", sql);
+	}
+
+	@Test
+	public void nullIf() {
+		Formula f = new Formula("nullIf(\"col1\", 0)", PARSER);
+		String sql = f.sql(TERADATA_SQL);
+		assertEquals("NullIf(col1, 0)", sql);
+	}
+
+	@Test
+	public void nullIfZero() {
+		Formula f = new Formula("nullIfZero(\"col1\")", PARSER);
+		String sql = f.sql(TERADATA_SQL);
+		assertEquals("NullIfZero(col1)", sql);
+	}
+
+	@Test
+	public void zeroIfNull() {
+		Formula f = new Formula("zeroIfNull(\"col1\")", PARSER);
+		String sql = f.sql(TERADATA_SQL);
+		assertEquals("ZeroIfNull(col1)", sql);
 	}
 }

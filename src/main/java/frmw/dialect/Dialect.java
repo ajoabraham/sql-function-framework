@@ -116,4 +116,10 @@ public interface Dialect {
 	void simpleCase(StringBuilder sb, SimpleCase inst);
 
 	void searchedCase(StringBuilder sb, Case inst);
+
+	void zeroIfNull(StringBuilder sb, FormulaElement arg);
+
+	void nullIfZero(StringBuilder sb, FormulaElement arg);
+
+	void nullIf(StringBuilder sb, FormulaElement arg, FormulaElement nullable);
 }

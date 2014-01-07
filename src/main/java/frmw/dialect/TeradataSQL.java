@@ -249,4 +249,27 @@ public class TeradataSQL extends GenericSQL {
 		searched.sql(this, sb);
 		sb.append(')');
 	}
+
+	@Override
+	public void zeroIfNull(StringBuilder sb, FormulaElement arg) {
+		sb.append("ZeroIfNull(");
+		arg.sql(this, sb);
+		sb.append(')');
+	}
+
+	@Override
+	public void nullIfZero(StringBuilder sb, FormulaElement arg) {
+		sb.append("NullIfZero(");
+		arg.sql(this, sb);
+		sb.append(')');
+	}
+
+	@Override
+	public void nullIf(StringBuilder sb, FormulaElement arg, FormulaElement nullable) {
+		sb.append("NullIf(");
+		arg.sql(this, sb);
+		sb.append(", ");
+		nullable.sql(this, sb);
+		sb.append(')');
+	}
 }

@@ -325,4 +325,19 @@ public class GenericSQL implements Dialect {
 		sb.append(" THEN ");
 		then.sql(this, sb);
 	}
+
+	@Override
+	public void nullIf(StringBuilder sb, FormulaElement arg, FormulaElement nullable) {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public void nullIfZero(StringBuilder sb, FormulaElement arg) {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public void zeroIfNull(StringBuilder sb, FormulaElement arg) {
+		throw new UnsupportedOperationException();
+	}
 }

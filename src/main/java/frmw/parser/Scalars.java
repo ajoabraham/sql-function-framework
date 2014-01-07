@@ -2,6 +2,9 @@ package frmw.parser;
 
 import frmw.model.FormulaElement;
 import frmw.model.fun.dateTime.*;
+import frmw.model.fun.logic.NullIf;
+import frmw.model.fun.logic.NullIfZero;
+import frmw.model.fun.logic.ZeroIfNull;
 import frmw.model.fun.math.*;
 import frmw.model.fun.string.*;
 import frmw.model.fun.trigonometric.*;
@@ -28,6 +31,13 @@ class Scalars {
 		trigonometric(all);
 		string(all);
 		dateTime(all);
+		logic(all);
+	}
+
+	private void logic(Parser<FormulaElement> all) {
+		f(NullIf.class, all, all);
+		f(NullIfZero.class, all);
+		f(ZeroIfNull.class, all);
 	}
 
 	private void dateTime(Parser<FormulaElement> all) {
