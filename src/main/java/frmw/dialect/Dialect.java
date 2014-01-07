@@ -2,6 +2,8 @@ package frmw.dialect;
 
 import frmw.model.FormulaElement;
 import frmw.model.exception.SQLFrameworkException;
+import frmw.model.ifelse.Case;
+import frmw.model.ifelse.SimpleCase;
 
 import java.lang.UnsupportedOperationException;
 
@@ -110,4 +112,8 @@ public interface Dialect {
 	void substring(StringBuilder sb, FormulaElement str, FormulaElement start, FormulaElement length);
 
 	void replace(StringBuilder sb, FormulaElement str, FormulaElement search, FormulaElement replace);
+
+	void simpleCase(StringBuilder sb, SimpleCase inst);
+
+	void searchedCase(StringBuilder sb, Case inst);
 }

@@ -56,13 +56,6 @@ public class ConstantParserTest {
 	}
 
 	@Test
-	public void bigNumberWithWhitespaces() {
-		Formula f = new Formula("100 000 000", PARSER);
-		String sql = f.sql(GENERIC_SQL);
-		assertEquals("100000000", sql);
-	}
-
-	@Test
 	public void decimal() {
 		Formula f = new Formula("253.", PARSER);
 		String sql = f.sql(GENERIC_SQL);
@@ -78,14 +71,14 @@ public class ConstantParserTest {
 
 	@Test
 	public void bigDecimal() {
-		Formula f = new Formula("334 343 273 585 840 594.141_598_905_437_584_738_957_439_899", PARSER);
+		Formula f = new Formula("334_343_273_585_840_594.141_598_905_437_584_738_957_439_899", PARSER);
 		String sql = f.sql(GENERIC_SQL);
 		assertEquals("334343273585840594.141598905437584738957439899", sql);
 	}
 
 	@Test
 	public void bigDecimalInFunction() {
-		Formula f = new Formula("ln(abs(334 343 273 585 840 594.141_598_905_437_584_738_957_439_899))", PARSER);
+		Formula f = new Formula("ln(abs(334_343_273_585_840_594.141_598_905_437_584_738_957_439_899))", PARSER);
 		String sql = f.sql(TERADATA_SQL);
 		assertEquals("ln(abs(334343273585840594.141598905437584738957439899))", sql);
 	}
@@ -141,14 +134,14 @@ public class ConstantParserTest {
 
 	@Test
 	public void exponentWithUnderscore() {
-		Formula f = new Formula("6.023 E 231_112", PARSER);
+		Formula f = new Formula("6.023E231_112", PARSER);
 		String sql = f.sql(GENERIC_SQL);
 		assertEquals("6.023E231112", sql);
 	}
 
 	@Test
 	public void exponentWithUnderscoreInFunction() {
-		Formula f = new Formula("ln(abs(6.023 E 231_112))", PARSER);
+		Formula f = new Formula("ln(abs(6.023E231_112))", PARSER);
 		String sql = f.sql(TERADATA_SQL);
 		assertEquals("ln(abs(6.023E231112))", sql);
 	}

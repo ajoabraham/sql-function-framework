@@ -8,9 +8,9 @@ import frmw.model.FormulaElement;
  */
 public class BinaryOperator implements FormulaElement {
 
-	private final FormulaElement left;
+	public final FormulaElement left;
 
-	private final FormulaElement right;
+	public final FormulaElement right;
 
 	private final String op;
 

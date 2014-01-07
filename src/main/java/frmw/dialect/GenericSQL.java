@@ -2,7 +2,15 @@ package frmw.dialect;
 
 import frmw.model.FormulaElement;
 import frmw.model.exception.SQLFrameworkException;
+import frmw.model.ifelse.Case;
+import frmw.model.ifelse.SimpleCase;
+import frmw.model.ifelse.WhenBlock;
+import frmw.model.operator.And;
+import frmw.model.operator.Or;
 
+import java.util.List;
+
+import static java.util.Arrays.asList;
 import static org.codehaus.jparsec.pattern.CharPredicates.IS_ALPHA_;
 import static org.codehaus.jparsec.pattern.CharPredicates.IS_ALPHA_NUMERIC_;
 
@@ -34,13 +42,13 @@ public class GenericSQL implements Dialect {
 		char firstChar = name.charAt(0);
 		boolean firstOk = IS_ALPHA_.isChar(firstChar);
 		if (!firstOk) {
-			throw new SQLFrameworkException(name, "The first symbol in column name should be or letter [a-zA-Z] or underscore [_], but found : " + firstChar);
+			throw new SQLFrameworkException(name, "The first symbol in column name should be or letter [a-zA-Z] or underscore [_], but found : '" + firstChar + "'");
 		}
 
-		for (int i = 1 ; i < name.length() ; i++) {
+		for (int i = 1; i < name.length(); i++) {
 			char ch = name.charAt(i);
 			if (!IS_ALPHA_NUMERIC_.isChar(ch)) {
-				throw new SQLFrameworkException(name, "Column name should contains numbers [0-9], letters [a-zA-Z] or underscores [_], but found : " + ch);
+				throw new SQLFrameworkException(name, "Column name should contains numbers [0-9], letters [a-zA-Z] or underscores [_], but found : '" + ch + "'");
 			}
 		}
 	}
@@ -261,5 +269,60 @@ public class GenericSQL implements Dialect {
 		sb.append("lower(");
 		arg.sql(this, sb);
 		sb.append(')');
+	}
+
+	@Override
+	public void searchedCase(StringBuilder sb, Case inst) {
+		sb.append("CASE");
+
+		for (WhenBlock when : inst.when) {
+			buildWhen(sb, when, inst.elseBlock);
+		}
+
+		buildElse(sb, inst);
+		sb.append(" END");
+	}
+
+	private void buildWhen(StringBuilder sb, WhenBlock block, FormulaElement elseBlock) {
+		if (block.when instanceof And) {
+			And and = (And) block.when;
+			List<WhenBlock> nestedWhen = asList(new WhenBlock(and.right, block.then));
+			Case nested = new Case(nestedWhen, elseBlock);
+
+			buildWhen(sb, new WhenBlock(and.left, nested), elseBlock);
+		} else if (block.when instanceof Or) {
+			Or or = (Or) block.when;
+			buildWhen(sb, new WhenBlock(or.left, block.then), elseBlock);
+			buildWhen(sb, new WhenBlock(or.right, block.then), elseBlock);
+		} else {
+			buildWhen(sb, block.when, block.then);
+		}
+	}
+
+	@Override
+	public void simpleCase(StringBuilder sb, SimpleCase inst) {
+		sb.append("CASE ");
+		inst.caseBlock.sql(this, sb);
+
+		for (WhenBlock when : inst.when) {
+			buildWhen(sb, when.when, when.then);
+		}
+
+		buildElse(sb, inst);
+		sb.append(" END");
+	}
+
+	private void buildElse(StringBuilder sb, Case inst) {
+		if (inst.elseBlock != null) {
+			sb.append(" ELSE ");
+			inst.elseBlock.sql(this, sb);
+		}
+	}
+
+	private void buildWhen(StringBuilder sb, FormulaElement when, FormulaElement then) {
+		sb.append(" WHEN ");
+		when.sql(this, sb);
+		sb.append(" THEN ");
+		then.sql(this, sb);
 	}
 }

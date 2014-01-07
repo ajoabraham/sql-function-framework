@@ -5,12 +5,16 @@ import frmw.model.FormulaElement;
 import frmw.model.constant.NumericConstant;
 import frmw.model.constant.StringConstant;
 import frmw.model.exception.SQLFrameworkInternalException;
-import frmw.model.operator.BinaryOperator;
-import frmw.model.operator.UnaryOperator;
+import frmw.model.ifelse.Case;
+import frmw.model.ifelse.SimpleCase;
+import frmw.model.ifelse.WhenBlock;
+import frmw.model.operator.*;
 import org.codehaus.jparsec.OperatorTable;
 import org.codehaus.jparsec.Parser;
 import org.codehaus.jparsec.functors.Binary;
+import org.codehaus.jparsec.functors.Map3;
 import org.codehaus.jparsec.functors.Unary;
+import org.codehaus.jparsec.misc.Mapper;
 import org.codehaus.jparsec.pattern.CharPredicate;
 import org.codehaus.jparsec.pattern.Pattern;
 import org.codehaus.jparsec.pattern.Patterns;
@@ -19,11 +23,12 @@ import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.List;
 
+import static java.lang.Character.isWhitespace;
 import static org.codehaus.jparsec.Parsers.*;
 import static org.codehaus.jparsec.Scanners.*;
 import static org.codehaus.jparsec.StringLiteralScanner.literal;
+import static org.codehaus.jparsec.misc.Mapper.curry;
 import static org.codehaus.jparsec.pattern.Patterns.among;
-import static org.codehaus.jparsec.pattern.Patterns.sequence;
 
 /**
  * @author Alexey Paramonov
@@ -48,24 +53,79 @@ class Common {
 	public static final Parser<Void> MUL = trailed(isChar('*'));
 	public static final Parser<Void> DIV = trailed(isChar('/'));
 
+	public static final Parser<Void> EQ = trailed(isChar('='));
+	public static final Parser<Void> GT = trailed(isChar('>'));
+	public static final Parser<Void> LT = trailed(isChar('<'));
+	public static final Parser<Void> GE = trailed(string(">="));
+	public static final Parser<Void> LE = trailed(string("<="));
+	public static final Parser<Void> NE = trailed(string("!="));
+	public static final Parser<Void> IS_NULL = trailed(sequence(
+			stringCaseInsensitive("is"), WHITESPACES.many1(),
+			stringCaseInsensitive("null")));
+
+	public static final Parser<Void> IS_NOT_NULL = trailed(sequence(
+			stringCaseInsensitive("is"), WHITESPACES.many1(),
+			stringCaseInsensitive("not"), WHITESPACES.many1(),
+			stringCaseInsensitive("null")));
+
+	public static final Parser<Void> AND = trailed(stringCaseInsensitive("and"));
+	public static final Parser<Void> OR = trailed(stringCaseInsensitive("or"));
+
+	public static final Parser<?> WHEN = trailed(stringCaseInsensitive("when"));
+	public static final Parser<?> THEN = trailed(stringCaseInsensitive("then"));
+	public static final Parser<?> ELSE = trailed(stringCaseInsensitive("else"));
+
 	public static final String COLUMN_NAME_ID = "COLUMN_NAME";
 	public static final String STRING_LITERAL_ID = "STRING_LITERAL";
 	public static final String NUMERIC_ID = "NUMERIC";
 
 	public Common(Parser<FormulaElement> scalar, Parser<FormulaElement> aggregation, Parser<FormulaElement> common) {
-		Parser<FormulaElement> all = or(scalar, aggregation, common);
+		Parser<FormulaElement> all = withOperators(trailed(or(scalar, aggregation, common)));
 
 		parsers.add(stringLiteral());
 		parsers.add(number());
+		parsers.add(caseStatement(all));
 		parsers.add(column());
 	}
 
+	private Parser<FormulaElement> caseStatement(Parser<FormulaElement> all) {
+		Parser<?> CASE = trailed(stringCaseInsensitive("case"));
+		Parser<?> END = trailed(stringCaseInsensitive("end"));
+
+		Parser<FormulaElement> searched = searchedCase(all);
+		Parser<FormulaElement> simple = simpleCase(all);
+
+		return searched.or(simple).between(CASE, END);
+	}
+
+	private Parser<FormulaElement> searchedCase(Parser<FormulaElement> all) {
+		Parser<FormulaElement> conditionals = withAndOr(or(
+				sequence(all, EQ, all, CompareOp.EQUAL),
+				sequence(all, NE, all, CompareOp.NOT_EQUAL),
+				sequence(all, LT, all, CompareOp.LESS),
+				sequence(all, GT, all, CompareOp.GREAT),
+				sequence(all, LE, all, CompareOp.EQUAL_LESS),
+				sequence(all, GE, all, CompareOp.EQUAL_GREAT),
+				all.postfix(IS_NULL.retn(UnaryOp.NULL)),
+				all.postfix(IS_NOT_NULL.retn(UnaryOp.NOT_NULL))));
+
+		Parser<WhenBlock> when = trailed(curry(WhenBlock.class).sequence(WHEN.next(conditionals), THEN.next(all)));
+		Parser<FormulaElement> elseBlock = ELSE.next(all).optional();
+		return Mapper.<FormulaElement>curry(Case.class).sequence(when.many1(), elseBlock);
+	}
+
+	private Parser<FormulaElement> simpleCase(Parser<FormulaElement> all) {
+		Parser<WhenBlock> when = trailed(curry(WhenBlock.class).sequence(WHEN.next(all), THEN.next(all)));
+		Parser<FormulaElement> elseBlock = ELSE.next(all).optional();
+		return Mapper.<FormulaElement>curry(SimpleCase.class).sequence(all, when.many1(), elseBlock);
+	}
+
 	private static Parser<FormulaElement> number() {
-		Pattern integer = Patterns.among("0123456789 \t_").many();
-		Pattern strict = sequence(Patterns.INTEGER, integer, Patterns.isChar('.').next(integer).optional());
+		Pattern integer = Patterns.among("0123456789_").many();
+		Pattern strict = Patterns.sequence(Patterns.INTEGER, integer, Patterns.isChar('.').next(integer).optional());
 		Pattern fraction = Patterns.isChar('.').next(integer);
 		Pattern decimal = strict.or(fraction);
-		Pattern scientific = sequence(decimal, among("eE"), among("+-").optional(), integer);
+		Pattern scientific = Patterns.sequence(decimal, among("eE"), among("+-").optional(), integer);
 
 		return pattern(scientific.or(decimal), NUMERIC_ID).source().token()
 				.map(new RegisteredForPositionMap<FormulaElement, String>() {
@@ -107,6 +167,17 @@ class Common {
 		return trailed(parser);
 	}
 
+	public static Parser<FormulaElement> withAndOr(Parser<FormulaElement> orig) {
+		Parser.Reference<FormulaElement> ref = Parser.newReference();
+		Parser<FormulaElement> unit = ref.lazy().between(OPENED, CLOSED).or(orig);
+		Parser<FormulaElement> parser = new OperatorTable<FormulaElement>()
+				.infixl(op(AND, BinaryOp.AND), 10)
+				.infixl(op(OR, BinaryOp.OR), 20)
+				.build(unit);
+		ref.set(parser);
+		return trailed(parser);
+	}
+
 	private static <T> Parser<T> op(Parser<Void> p, T value) {
 		return p.retn(value);
 	}
@@ -136,7 +207,50 @@ class Common {
 			public FormulaElement map(FormulaElement a, FormulaElement b) {
 				return new BinaryOperator(a, b, "||");
 			}
+		},
+		AND {
+			public FormulaElement map(FormulaElement a, FormulaElement b) {
+				return new And(a, b);
+			}
+		},
+		OR {
+			public FormulaElement map(FormulaElement a, FormulaElement b) {
+				return new Or(a, b);
+			}
 		}
+	}
+
+	enum CompareOp implements Map3<FormulaElement, Void, FormulaElement, FormulaElement> {
+		EQUAL {
+			public FormulaElement map(FormulaElement a, Void v, FormulaElement b) {
+				return new BinaryOperator(a, b, "=");
+			}
+		},
+		GREAT {
+			public FormulaElement map(FormulaElement a, Void v, FormulaElement b) {
+				return new BinaryOperator(a, b, ">");
+			}
+		},
+		LESS {
+			public FormulaElement map(FormulaElement a, Void v, FormulaElement b) {
+				return new BinaryOperator(a, b, "<");
+			}
+		},
+		EQUAL_GREAT {
+			public FormulaElement map(FormulaElement a, Void v, FormulaElement b) {
+				return new BinaryOperator(a, b, ">=");
+			}
+		},
+		EQUAL_LESS {
+			public FormulaElement map(FormulaElement a, Void v, FormulaElement b) {
+				return new BinaryOperator(a, b, "<=");
+			}
+		},
+		NOT_EQUAL {
+			public FormulaElement map(FormulaElement a, Void v, FormulaElement b) {
+				return new BinaryOperator(a, b, "!=");
+			}
+		},
 	}
 
 	enum UnaryOp implements Unary<FormulaElement> {
@@ -148,6 +262,16 @@ class Common {
 		PLUS {
 			public FormulaElement map(FormulaElement n) {
 				return new UnaryOperator(n, "");
+			}
+		},
+		NULL {
+			public FormulaElement map(FormulaElement n) {
+				return new Null(n, true);
+			}
+		},
+		NOT_NULL {
+			public FormulaElement map(FormulaElement n) {
+				return new Null(n, false);
 			}
 		}
 	}
@@ -167,11 +291,12 @@ class Common {
 			@Override
 			public boolean isChar(char c) {
 				return c != '(' && c != ')' && c != ',' && c != '|' &&
-						c != '*' && c != '/' && c != '+' && c != '-';
+						c != '=' && c != '<' && c != '>' && c != '!' &&
+						c != '*' && c != '/' && c != '+' && c != '-' && !isWhitespace(c);
 			}
 		}, COLUMN_NAME_ID)).many1().source();
 
-		return or(quoted, plain).token().map(new RegisteredForPositionMap<FormulaElement, String>() {
+		return trailed(or(quoted, plain)).token().map(new RegisteredForPositionMap<FormulaElement, String>() {
 			@Override
 			protected FormulaElement build(String value) {
 				return new Column(value);
