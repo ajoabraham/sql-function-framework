@@ -1,5 +1,9 @@
 package frmw.model;
 
+import frmw.model.fun.aggregation.AggregationParameters;
+import frmw.model.fun.olap.WindowParameters;
+
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -29,5 +33,17 @@ public abstract class Scalar2 implements FormulaElement {
 	public void collectEntities(Set<String> set) {
 		arg1.collectEntities(set);
 		arg2.collectEntities(set);
+	}
+
+	@Override
+	public void collectWindowParams(List<WindowParameters> list) {
+		arg1.collectWindowParams(list);
+		arg2.collectWindowParams(list);
+	}
+
+	@Override
+	public void collectAggregationParams(List<AggregationParameters> list) {
+		arg1.collectAggregationParams(list);
+		arg2.collectAggregationParams(list);
 	}
 }

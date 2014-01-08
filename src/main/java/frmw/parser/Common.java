@@ -5,6 +5,7 @@ import frmw.model.FormulaElement;
 import frmw.model.constant.NumericConstant;
 import frmw.model.constant.StringConstant;
 import frmw.model.exception.SQLFrameworkInternalException;
+import frmw.model.fun.olap.support.Rows;
 import frmw.model.ifelse.Case;
 import frmw.model.ifelse.SimpleCase;
 import frmw.model.ifelse.WhenBlock;
@@ -12,6 +13,7 @@ import frmw.model.operator.*;
 import org.codehaus.jparsec.OperatorTable;
 import org.codehaus.jparsec.Parser;
 import org.codehaus.jparsec.functors.Binary;
+import org.codehaus.jparsec.functors.Map;
 import org.codehaus.jparsec.functors.Map3;
 import org.codehaus.jparsec.functors.Unary;
 import org.codehaus.jparsec.misc.Mapper;
@@ -20,9 +22,11 @@ import org.codehaus.jparsec.pattern.Pattern;
 import org.codehaus.jparsec.pattern.Patterns;
 
 import java.lang.reflect.Constructor;
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 
+import static frmw.model.constant.NumericConstant.cleanUp;
 import static java.lang.Character.isWhitespace;
 import static org.codehaus.jparsec.Parsers.*;
 import static org.codehaus.jparsec.Scanners.*;
@@ -78,6 +82,16 @@ class Common {
 	public static final String COLUMN_NAME_ID = "COLUMN_NAME";
 	public static final String STRING_LITERAL_ID = "STRING_LITERAL";
 	public static final String NUMERIC_ID = "NUMERIC";
+	public static final String INTEGER_ID = "INTEGER";
+
+	public static final Pattern INT = Patterns.among("0123456789_").many();
+	public static final Parser<BigInteger> INTEGER_PARSER = pattern(INT, INTEGER_ID).source()
+			.map(new Map<String, BigInteger>() {
+				@Override
+				public BigInteger map(String str) {
+					return new BigInteger(cleanUp(str));
+				}
+			});
 
 	public Common(Parser<FormulaElement> scalar, Parser<FormulaElement> aggregation, Parser<FormulaElement> common) {
 		Parser<FormulaElement> all = withOperators(trailed(or(scalar, aggregation, common)));
@@ -86,6 +100,22 @@ class Common {
 		parsers.add(number());
 		parsers.add(caseStatement(all));
 		parsers.add(column());
+	}
+
+	public static Parser<Rows> rows() {
+		Parser<Rows> all = trailed(stringCaseInsensitive("all")).retn(Rows.ALL);
+		Parser<Rows> current = trailed(sequence(
+				stringCaseInsensitive("current"),
+				WHITESPACES.many1(),
+				stringCaseInsensitive("row"))).retn(Rows.CURRENT_ROW);
+		Parser<Rows> exact = INTEGER_PARSER.map(new Map<BigInteger, Rows>() {
+			@Override
+			public Rows map(BigInteger val) {
+				return new Rows(val);
+			}
+		});
+
+		return or(all, current, exact);
 	}
 
 	private Parser<FormulaElement> caseStatement(Parser<FormulaElement> all) {
@@ -121,11 +151,10 @@ class Common {
 	}
 
 	private static Parser<FormulaElement> number() {
-		Pattern integer = Patterns.among("0123456789_").many();
-		Pattern strict = Patterns.sequence(Patterns.INTEGER, integer, Patterns.isChar('.').next(integer).optional());
-		Pattern fraction = Patterns.isChar('.').next(integer);
+		Pattern strict = Patterns.sequence(Patterns.INTEGER, INT, Patterns.isChar('.').next(INT).optional());
+		Pattern fraction = Patterns.isChar('.').next(INT);
 		Pattern decimal = strict.or(fraction);
-		Pattern scientific = Patterns.sequence(decimal, among("eE"), among("+-").optional(), integer);
+		Pattern scientific = Patterns.sequence(decimal, among("eE"), among("+-").optional(), INT);
 
 		return pattern(scientific.or(decimal), NUMERIC_ID).source().token()
 				.map(new RegisteredForPositionMap<FormulaElement, String>() {

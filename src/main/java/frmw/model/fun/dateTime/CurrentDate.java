@@ -2,7 +2,10 @@ package frmw.model.fun.dateTime;
 
 import frmw.dialect.Dialect;
 import frmw.model.FormulaElement;
+import frmw.model.fun.aggregation.AggregationParameters;
+import frmw.model.fun.olap.WindowParameters;
 
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -22,6 +25,14 @@ public class CurrentDate implements FormulaElement {
 
 	@Override
 	public void collectEntities(Set<String> set) {
+	}
+
+	@Override
+	public void collectWindowParams(List<WindowParameters> list) {
+	}
+
+	@Override
+	public void collectAggregationParams(List<AggregationParameters> list) {
 	}
 
 	@Override

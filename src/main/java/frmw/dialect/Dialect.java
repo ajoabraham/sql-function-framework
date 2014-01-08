@@ -2,6 +2,9 @@ package frmw.dialect;
 
 import frmw.model.FormulaElement;
 import frmw.model.exception.SQLFrameworkException;
+import frmw.model.fun.aggregation.Aggregation;
+import frmw.model.fun.olap.WindowParameters;
+import frmw.model.fun.olap.support.Rows;
 import frmw.model.ifelse.Case;
 import frmw.model.ifelse.SimpleCase;
 
@@ -15,9 +18,9 @@ import java.lang.UnsupportedOperationException;
  */
 public interface Dialect {
 
-	void avg(StringBuilder sb, FormulaElement column);
+	void avg(StringBuilder sb, FormulaElement column, boolean distinct);
 
-	void sum(StringBuilder sb, FormulaElement column);
+	void sum(StringBuilder sb, FormulaElement column, boolean distinct);
 
 	/**
 	 * Validates column name for current database.
@@ -29,11 +32,11 @@ public interface Dialect {
 
 	void rank(StringBuilder sb);
 
-	void min(StringBuilder sb, FormulaElement column);
+	void min(StringBuilder sb, FormulaElement column, boolean distinct);
 
-	void max(StringBuilder sb, FormulaElement column);
+	void max(StringBuilder sb, FormulaElement column, boolean distinct);
 
-	void count(StringBuilder sb, FormulaElement column);
+	void count(StringBuilder sb, FormulaElement column, boolean distinct);
 
 	void abs(StringBuilder sb, FormulaElement column);
 
@@ -54,12 +57,12 @@ public interface Dialect {
 	/**
 	 * The population standard deviation
 	 */
-	void stdDevP(StringBuilder sb, FormulaElement column);
+	void stdDevP(StringBuilder sb, FormulaElement column, boolean distinct);
 
 	/**
 	 * The sample standard deviation
 	 */
-	void stdDevS(StringBuilder sb, FormulaElement column);
+	void stdDevS(StringBuilder sb, FormulaElement column, boolean distinct);
 
 	void aCos(StringBuilder sb, FormulaElement arg);
 
@@ -122,4 +125,6 @@ public interface Dialect {
 	void nullIfZero(StringBuilder sb, FormulaElement arg);
 
 	void nullIf(StringBuilder sb, FormulaElement arg, FormulaElement nullable);
+
+	void window(StringBuilder sb, Aggregation arg, Rows preceding, Rows following, WindowParameters params);
 }

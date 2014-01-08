@@ -1,4 +1,4 @@
-package frmw.dialect;
+package frmw.dialect.teradata;
 
 import frmw.model.Formula;
 import org.junit.Test;

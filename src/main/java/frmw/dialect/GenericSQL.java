@@ -1,13 +1,19 @@
 package frmw.dialect;
 
+import com.google.common.base.Joiner;
 import frmw.model.FormulaElement;
 import frmw.model.exception.SQLFrameworkException;
+import frmw.model.fun.aggregation.Aggregation;
+import frmw.model.fun.olap.WindowParameters;
+import frmw.model.fun.olap.support.GroupBy;
+import frmw.model.fun.olap.support.Rows;
 import frmw.model.ifelse.Case;
 import frmw.model.ifelse.SimpleCase;
 import frmw.model.ifelse.WhenBlock;
 import frmw.model.operator.And;
 import frmw.model.operator.Or;
 
+import java.util.Iterator;
 import java.util.List;
 
 import static java.util.Arrays.asList;
@@ -20,15 +26,23 @@ import static org.codehaus.jparsec.pattern.CharPredicates.IS_ALPHA_NUMERIC_;
 public class GenericSQL implements Dialect {
 
 	@Override
-	public void avg(StringBuilder sb, FormulaElement column) {
+	public void avg(StringBuilder sb, FormulaElement column, boolean distinct) {
 		sb.append("avg(");
+		if (distinct) {
+			sb.append("DISTINCT ");
+		}
+
 		column.sql(this, sb);
 		sb.append(')');
 	}
 
 	@Override
-	public void sum(StringBuilder sb, FormulaElement column) {
+	public void sum(StringBuilder sb, FormulaElement column, boolean distinct) {
 		sb.append("sum(");
+		if (distinct) {
+			sb.append("DISTINCT ");
+		}
+
 		column.sql(this, sb);
 		sb.append(')');
 	}
@@ -59,22 +73,34 @@ public class GenericSQL implements Dialect {
 	}
 
 	@Override
-	public void min(StringBuilder sb, FormulaElement column) {
+	public void min(StringBuilder sb, FormulaElement column, boolean distinct) {
 		sb.append("min(");
+		if (distinct) {
+			sb.append("DISTINCT ");
+		}
+
 		column.sql(this, sb);
 		sb.append(')');
 	}
 
 	@Override
-	public void max(StringBuilder sb, FormulaElement column) {
+	public void max(StringBuilder sb, FormulaElement column, boolean distinct) {
 		sb.append("max(");
+		if (distinct) {
+			sb.append("DISTINCT ");
+		}
+
 		column.sql(this, sb);
 		sb.append(')');
 	}
 
 	@Override
-	public void count(StringBuilder sb, FormulaElement column) {
+	public void count(StringBuilder sb, FormulaElement column, boolean distinct) {
 		sb.append("count(");
+		if (distinct) {
+			sb.append("DISTINCT ");
+		}
+
 		column.sql(this, sb);
 		sb.append(')');
 	}
@@ -120,12 +146,12 @@ public class GenericSQL implements Dialect {
 	}
 
 	@Override
-	public void stdDevP(StringBuilder sb, FormulaElement column) {
+	public void stdDevP(StringBuilder sb, FormulaElement column, boolean distinct) {
 		throw new UnsupportedOperationException();
 	}
 
 	@Override
-	public void stdDevS(StringBuilder sb, FormulaElement column) {
+	public void stdDevS(StringBuilder sb, FormulaElement column, boolean distinct) {
 		throw new UnsupportedOperationException();
 	}
 
@@ -339,5 +365,56 @@ public class GenericSQL implements Dialect {
 	@Override
 	public void zeroIfNull(StringBuilder sb, FormulaElement arg) {
 		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public void window(StringBuilder sb, Aggregation arg, Rows preceding, Rows following, WindowParameters params) {
+		arg.sql(this, sb);
+		sb.append(" OVER ").append('(');
+
+		List<String> partitions = params.partitions();
+		if (!partitions.isEmpty()) {
+			sb.append(" PARTITION BY ");
+			Joiner.on(", ").appendTo(sb, partitions);
+		}
+
+		List<GroupBy> groups = params.groups();
+		if (!groups.isEmpty()) {
+			sb.append(" GROUP BY ");
+
+			Iterator<GroupBy> it = groups.iterator();
+			while (it.hasNext()) {
+				GroupBy group = it.next();
+				sb.append(group.column).append(' ').append(group.order);
+
+				if (it.hasNext()) {
+					sb.append(", ");
+				}
+			}
+		}
+
+		if (preceding != null && following != null) {
+			sb.append(" ROWS BETWEEN ");
+			rows(sb, preceding, "PRECEDING");
+			sb.append(" AND ");
+			rows(sb, following, "FOLLOWING");
+		} else if (preceding != null) {
+			sb.append(" ROWS ");
+			rows(sb, preceding, "PRECEDING");
+		} else if (following != null) {
+			throw new IllegalArgumentException("Preceding rows value does not set, but following does");
+		}
+
+		sb.append(')');
+	}
+
+	private static void rows(StringBuilder sb, Rows row, String keyWord) {
+		if (row == Rows.ALL) {
+			sb.append("UNBOUNDED").append(' ').append(keyWord);
+		} else if (row == Rows.CURRENT_ROW) {
+			sb.append("CURRENT ROW");
+		} else {
+			sb.append(row.rowNum).append(' ').append(keyWord);
+		}
 	}
 }

@@ -1,4 +1,4 @@
-package frmw.parser;
+package frmw.dialect.generic;
 
 import frmw.model.Formula;
 import org.junit.Test;

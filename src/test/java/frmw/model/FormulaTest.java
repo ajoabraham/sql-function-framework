@@ -41,4 +41,18 @@ public class FormulaTest {
 		Formula f = new Formula("avg(abs(12) + zeroifnull('123'))", PARSER);
 		assertThat(f.entityNames(), empty());
 	}
+
+	@Test
+	public void customWindowParameters() {
+		Formula f = new Formula("customWindow(avg(col1), all, current  row)", PARSER);
+		assertEquals(0, f.aggregationParameters().size());
+		assertEquals(1, f.windowParameters().size());
+	}
+
+	@Test
+	public void aggregationParameters() {
+		Formula f = new Formula("avg(col1)", PARSER);
+		assertEquals(1, f.aggregationParameters().size());
+		assertEquals(0, f.windowParameters().size());
+	}
 }

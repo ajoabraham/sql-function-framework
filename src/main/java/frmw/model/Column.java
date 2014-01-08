@@ -1,7 +1,10 @@
 package frmw.model;
 
 import frmw.dialect.Dialect;
+import frmw.model.fun.aggregation.AggregationParameters;
+import frmw.model.fun.olap.WindowParameters;
 
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -29,6 +32,14 @@ public class Column implements FormulaElement {
 	@Override
 	public void collectEntities(Set<String> set) {
 		set.add(name);
+	}
+
+	@Override
+	public void collectWindowParams(List<WindowParameters> list) {
+	}
+
+	@Override
+	public void collectAggregationParams(List<AggregationParameters> list) {
 	}
 
 	@Override

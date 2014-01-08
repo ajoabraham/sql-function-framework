@@ -2,6 +2,8 @@ package frmw.model.ifelse;
 
 import frmw.dialect.Dialect;
 import frmw.model.FormulaElement;
+import frmw.model.fun.aggregation.AggregationParameters;
+import frmw.model.fun.olap.WindowParameters;
 
 import java.util.List;
 import java.util.Set;
@@ -42,6 +44,30 @@ public class Case implements FormulaElement {
 
 		if (elseBlock != null) {
 			elseBlock.collectEntities(set);
+		}
+	}
+
+	@Override
+	public void collectWindowParams(List<WindowParameters> list) {
+		for (WhenBlock block : when) {
+			block.when.collectWindowParams(list);
+			block.then.collectWindowParams(list);
+		}
+
+		if (elseBlock != null) {
+			elseBlock.collectWindowParams(list);
+		}
+	}
+
+	@Override
+	public void collectAggregationParams(List<AggregationParameters> list) {
+		for (WhenBlock block : when) {
+			block.when.collectAggregationParams(list);
+			block.then.collectAggregationParams(list);
+		}
+
+		if (elseBlock != null) {
+			elseBlock.collectAggregationParams(list);
 		}
 	}
 

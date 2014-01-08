@@ -1,7 +1,7 @@
 package frmw.model.fun.olap;
 
 import frmw.dialect.Dialect;
-import frmw.model.Aggregation;
+import frmw.model.fun.aggregation.Aggregation;
 import frmw.model.FormulaElement;
 
 /**

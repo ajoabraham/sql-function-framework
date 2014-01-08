@@ -2,7 +2,10 @@ package frmw.model.operator;
 
 import frmw.dialect.Dialect;
 import frmw.model.FormulaElement;
+import frmw.model.fun.aggregation.AggregationParameters;
+import frmw.model.fun.olap.WindowParameters;
 
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -40,6 +43,18 @@ public class BinaryOperator implements FormulaElement {
 	public void collectEntities(Set<String> set) {
 		left.collectEntities(set);
 		right.collectEntities(set);
+	}
+
+	@Override
+	public void collectWindowParams(List<WindowParameters> list) {
+		left.collectWindowParams(list);
+		right.collectWindowParams(list);
+	}
+
+	@Override
+	public void collectAggregationParams(List<AggregationParameters> list) {
+		left.collectAggregationParams(list);
+		right.collectAggregationParams(list);
 	}
 
 	@Override

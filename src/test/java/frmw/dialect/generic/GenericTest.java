@@ -1,4 +1,4 @@
-package frmw.dialect;
+package frmw.dialect.generic;
 
 import frmw.model.Formula;
 import org.junit.Test;
@@ -20,6 +20,14 @@ public class GenericTest {
 	}
 
 	@Test
+	public void avg_distinct() {
+		Formula f = new Formula("avg(\"name\")", PARSER);
+		f.aggregationParameters().get(0).distinct(true);
+		String sql = f.sql(GENERIC_SQL);
+		assertEquals("avg(DISTINCT name)", sql);
+	}
+
+	@Test
 	public void avg_caseInsensitivity() {
 		Formula f = new Formula("AvG(\"name\")", PARSER);
 		String sql = f.sql(GENERIC_SQL);
@@ -34,6 +42,14 @@ public class GenericTest {
 	}
 
 	@Test
+	public void min_distinct() {
+		Formula f = new Formula("min(\"name\")", PARSER);
+		f.aggregationParameters().get(0).distinct(true);
+		String sql = f.sql(GENERIC_SQL);
+		assertEquals("min(DISTINCT name)", sql);
+	}
+
+	@Test
 	public void max() {
 		Formula f = new Formula("max(\"name\")", PARSER);
 		String sql = f.sql(GENERIC_SQL);
@@ -41,10 +57,26 @@ public class GenericTest {
 	}
 
 	@Test
+	public void max_distinct() {
+		Formula f = new Formula("max(\"name\")", PARSER);
+		f.aggregationParameters().get(0).distinct(true);
+		String sql = f.sql(GENERIC_SQL);
+		assertEquals("max(DISTINCT name)", sql);
+	}
+
+	@Test
 	public void count() {
 		Formula f = new Formula("count(\"name\")", PARSER);
 		String sql = f.sql(GENERIC_SQL);
 		assertEquals("count(name)", sql);
+	}
+
+	@Test
+	public void count_distinct() {
+		Formula f = new Formula("count(\"name\")", PARSER);
+		f.aggregationParameters().get(0).distinct(true);
+		String sql = f.sql(GENERIC_SQL);
+		assertEquals("count(DISTINCT name)", sql);
 	}
 
 	@Test

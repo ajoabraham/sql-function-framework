@@ -1,7 +1,6 @@
 package frmw.model.fun.aggregation;
 
 import frmw.dialect.Dialect;
-import frmw.model.Aggregation;
 import frmw.model.FormulaElement;
 
 /**
@@ -15,6 +14,6 @@ public class Avg extends Aggregation {
 
 	@Override
 	public void sql(Dialect dialect, StringBuilder sb) {
-		dialect.avg(sb, column);
+		dialect.avg(sb, column, distinct);
 	}
 }

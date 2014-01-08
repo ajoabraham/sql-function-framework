@@ -2,11 +2,15 @@ package frmw.model;
 
 import frmw.dialect.Dialect;
 import frmw.model.exception.SQLFrameworkException;
+import frmw.model.fun.aggregation.AggregationParameters;
+import frmw.model.fun.olap.WindowParameters;
 import frmw.model.position.PositionMap;
 import frmw.parser.Parsing;
 import org.codehaus.jparsec.error.ParserException;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -64,6 +68,18 @@ public class Formula {
 	public Set<String> entityNames() {
 		Set<String> result = new HashSet<String>();
 		root.collectEntities(result);
+		return result;
+	}
+
+	public List<WindowParameters> windowParameters() {
+		List<WindowParameters> result = new ArrayList<WindowParameters>();
+		root.collectWindowParams(result);
+		return result;
+	}
+
+	public List<AggregationParameters> aggregationParameters() {
+		List<AggregationParameters> result = new ArrayList<AggregationParameters>();
+		root.collectAggregationParams(result);
 		return result;
 	}
 

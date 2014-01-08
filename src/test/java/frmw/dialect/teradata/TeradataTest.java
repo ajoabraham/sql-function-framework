@@ -1,4 +1,4 @@
-package frmw.dialect;
+package frmw.dialect.teradata;
 
 import frmw.model.Formula;
 import frmw.model.exception.UnsupportedFunctionException;
@@ -104,10 +104,26 @@ public class TeradataTest {
 	}
 
 	@Test
+	public void stdDevS_distinct() {
+		Formula f = new Formula("stdDevS(name)", PARSER);
+		f.aggregationParameters().get(0).distinct(true);
+		String sql = f.sql(TERADATA_SQL);
+		assertEquals("stddev_samp(DISTINCT name)", sql);
+	}
+
+	@Test
 	public void stdDevP() {
 		Formula f = new Formula("stdDevP(name)", PARSER);
 		String sql = f.sql(TERADATA_SQL);
 		assertEquals("stddev_pop(name)", sql);
+	}
+
+	@Test
+	public void stdDevP_distinct() {
+		Formula f = new Formula("stdDevP(name)", PARSER);
+		f.aggregationParameters().get(0).distinct(true);
+		String sql = f.sql(TERADATA_SQL);
+		assertEquals("stddev_pop(DISTINCT name)", sql);
 	}
 
 	@Test

@@ -1,6 +1,7 @@
 package frmw.parser;
 
 import frmw.model.FormulaElement;
+import frmw.model.PositionAware;
 import frmw.model.exception.SQLFrameworkException;
 import org.codehaus.jparsec.Token;
 import org.codehaus.jparsec.functors.Map;
@@ -19,6 +20,10 @@ abstract class RegisteredForPositionMap<R extends FormulaElement, A> implements 
 		try {
 			FormulaElement res = build((A) t.value());
 			currentFormula.get().register(res, t.index(), t.length());
+			if (res instanceof PositionAware) {
+				((PositionAware) res).position(t.index(), t.length());
+			}
+
 			return (R) res;
 		} catch (Exception e) {
 			SQLFrameworkException ex = wrap(e);
