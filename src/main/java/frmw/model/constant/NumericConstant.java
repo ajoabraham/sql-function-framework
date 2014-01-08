@@ -3,6 +3,8 @@ package frmw.model.constant;
 import frmw.dialect.Dialect;
 import frmw.model.FormulaElement;
 
+import java.util.Set;
+
 import static java.lang.Character.isWhitespace;
 
 /**
@@ -41,6 +43,10 @@ public class NumericConstant implements FormulaElement {
 	@Override
 	public boolean hasAggregation() {
 		return false;
+	}
+
+	@Override
+	public void collectEntities(Set<String> set) {
 	}
 
 	@Override

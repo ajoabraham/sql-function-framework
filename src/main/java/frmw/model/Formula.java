@@ -6,6 +6,9 @@ import frmw.model.position.PositionMap;
 import frmw.parser.Parsing;
 import org.codehaus.jparsec.error.ParserException;
 
+import java.util.HashSet;
+import java.util.Set;
+
 /**
  * This class is not thread safe.
  *
@@ -46,6 +49,22 @@ public class Formula {
 	 */
 	public void validate(Dialect dialect) throws SQLFrameworkException {
 		sql(dialect);
+	}
+
+	/**
+	 * @return is formula contains aggregate or OLAP function
+	 */
+	public boolean hasAggregation() {
+		return root.hasAggregation();
+	}
+
+	/**
+	 * @return set of columns that formula contains
+	 */
+	public Set<String> entityNames() {
+		Set<String> result = new HashSet<String>();
+		root.collectEntities(result);
+		return result;
 	}
 
 	public void register(FormulaElement res, int index, int length) {

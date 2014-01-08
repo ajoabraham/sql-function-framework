@@ -2,6 +2,8 @@ package frmw.model;
 
 import frmw.dialect.Dialect;
 
+import java.util.Set;
+
 /**
  * @author Alexey Paramonov
  */
@@ -22,6 +24,11 @@ public class Column implements FormulaElement {
 	@Override
 	public boolean hasAggregation() {
 		return false;
+	}
+
+	@Override
+	public void collectEntities(Set<String> set) {
+		set.add(name);
 	}
 
 	@Override

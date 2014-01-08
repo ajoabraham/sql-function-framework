@@ -3,6 +3,8 @@ package frmw.model.operator;
 import frmw.dialect.Dialect;
 import frmw.model.FormulaElement;
 
+import java.util.Set;
+
 /**
  * @author Alexey Paramonov
  */
@@ -32,6 +34,12 @@ public class BinaryOperator implements FormulaElement {
 	@Override
 	public boolean hasAggregation() {
 		return left.hasAggregation() || right.hasAggregation();
+	}
+
+	@Override
+	public void collectEntities(Set<String> set) {
+		left.collectEntities(set);
+		right.collectEntities(set);
 	}
 
 	@Override

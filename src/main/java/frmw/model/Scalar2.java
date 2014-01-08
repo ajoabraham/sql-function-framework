@@ -1,5 +1,7 @@
 package frmw.model;
 
+import java.util.Set;
+
 /**
  * @author Alexey Paramonov
  */
@@ -21,5 +23,11 @@ public abstract class Scalar2 implements FormulaElement {
 	@Override
 	public String toString() {
 		return getClass().getSimpleName() + '(' + arg1 + ", " + arg2 + ')';
+	}
+
+	@Override
+	public void collectEntities(Set<String> set) {
+		arg1.collectEntities(set);
+		arg2.collectEntities(set);
 	}
 }

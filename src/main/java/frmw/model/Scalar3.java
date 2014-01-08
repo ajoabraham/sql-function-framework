@@ -1,5 +1,7 @@
 package frmw.model;
 
+import java.util.Set;
+
 /**
  * @author Alexey Paramonov
  */
@@ -18,6 +20,13 @@ public abstract class Scalar3 implements FormulaElement {
 	@Override
 	public boolean hasAggregation() {
 		return arg1.hasAggregation() || arg2.hasAggregation() || arg3.hasAggregation();
+	}
+
+	@Override
+	public void collectEntities(Set<String> set) {
+		arg1.collectEntities(set);
+		arg2.collectEntities(set);
+		arg3.collectEntities(set);
 	}
 
 	@Override
