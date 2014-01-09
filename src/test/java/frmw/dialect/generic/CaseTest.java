@@ -5,6 +5,7 @@ import org.junit.Test;
 
 import static frmw.TestSupport.*;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 /**
  * @author Alexey Paramonov
@@ -157,4 +158,13 @@ public class CaseTest {
 		String sql = f.sql(GENERIC_SQL);
 		assertEquals("CASE WHEN (col1 = 1) THEN CASE WHEN (col1 = 2) THEN 2 WHEN (col1 = 4) THEN 2 ELSE 5 END WHEN (col1 = 3) THEN CASE WHEN (col1 = 2) THEN 2 WHEN (col1 = 4) THEN 2 ELSE 5 END ELSE 5 END", sql);
 	}
+        
+        @Test
+        public void searchedCaseColumnList(){
+            Formula f = new Formula("case when col1=1 or (col1/col_longer_name3)=2 then col2 else col5 end", PARSER);
+            String[] s = {"col1","col_longer_name3","col2","col5"};
+            for (String c : s ){
+               assertTrue("Column " +c +" should be in the entity list.",f.entityNames().contains(c)); 
+            }
+        }
 }
