@@ -14,14 +14,20 @@ public class Column implements FormulaElement {
 
 	private final String name;
 
-	public Column(String name) {
+	private final boolean quoted;
+
+	public Column(String name, boolean quoted) {
 		this.name = name.trim();
+		this.quoted = quoted;
 	}
 
 	@Override
 	public void sql(Dialect dialect, StringBuilder sb) {
-		dialect.validateColumnName(name);
-		sb.append(name);
+		if (quoted) {
+			sb.append('"').append(name).append('"');
+		} else {
+			sb.append(name);
+		}
 	}
 
 	@Override

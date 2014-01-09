@@ -16,7 +16,7 @@ public class GenericTest {
 	public void avg() {
 		Formula f = new Formula("avg(\"name\")", PARSER);
 		String sql = f.sql(GENERIC_SQL);
-		assertEquals("avg(name)", sql);
+		assertEquals("avg(\"name\")", sql);
 	}
 
 	@Test
@@ -24,21 +24,21 @@ public class GenericTest {
 		Formula f = new Formula("avg(\"name\")", PARSER);
 		f.aggregationParameters().get(0).distinct(true);
 		String sql = f.sql(GENERIC_SQL);
-		assertEquals("avg(DISTINCT name)", sql);
+		assertEquals("avg(DISTINCT \"name\")", sql);
 	}
 
 	@Test
 	public void avg_caseInsensitivity() {
 		Formula f = new Formula("AvG(\"name\")", PARSER);
 		String sql = f.sql(GENERIC_SQL);
-		assertEquals("avg(name)", sql);
+		assertEquals("avg(\"name\")", sql);
 	}
 
 	@Test
 	public void min() {
 		Formula f = new Formula("min(\"name\")", PARSER);
 		String sql = f.sql(GENERIC_SQL);
-		assertEquals("min(name)", sql);
+		assertEquals("min(\"name\")", sql);
 	}
 
 	@Test
@@ -46,14 +46,14 @@ public class GenericTest {
 		Formula f = new Formula("min(\"name\")", PARSER);
 		f.aggregationParameters().get(0).distinct(true);
 		String sql = f.sql(GENERIC_SQL);
-		assertEquals("min(DISTINCT name)", sql);
+		assertEquals("min(DISTINCT \"name\")", sql);
 	}
 
 	@Test
 	public void max() {
 		Formula f = new Formula("max(\"name\")", PARSER);
 		String sql = f.sql(GENERIC_SQL);
-		assertEquals("max(name)", sql);
+		assertEquals("max(\"name\")", sql);
 	}
 
 	@Test
@@ -61,14 +61,14 @@ public class GenericTest {
 		Formula f = new Formula("max(\"name\")", PARSER);
 		f.aggregationParameters().get(0).distinct(true);
 		String sql = f.sql(GENERIC_SQL);
-		assertEquals("max(DISTINCT name)", sql);
+		assertEquals("max(DISTINCT \"name\")", sql);
 	}
 
 	@Test
 	public void count() {
 		Formula f = new Formula("count(\"name\")", PARSER);
 		String sql = f.sql(GENERIC_SQL);
-		assertEquals("count(name)", sql);
+		assertEquals("count(\"name\")", sql);
 	}
 
 	@Test
@@ -76,35 +76,35 @@ public class GenericTest {
 		Formula f = new Formula("count(\"name\")", PARSER);
 		f.aggregationParameters().get(0).distinct(true);
 		String sql = f.sql(GENERIC_SQL);
-		assertEquals("count(DISTINCT name)", sql);
+		assertEquals("count(DISTINCT \"name\")", sql);
 	}
 
 	@Test
 	public void avgWithWhitespaces() {
 		Formula f = new Formula(" \t avg ( \" name \n\" ) \n\r", PARSER);
 		String sql = f.sql(GENERIC_SQL);
-		assertEquals("avg(name)", sql);
+		assertEquals("avg(\"name\")", sql);
 	}
         
 	@Test
 	public void trim() {
 		Formula f = new Formula("trim(\"name\")", PARSER);
 		String sql = f.sql(GENERIC_SQL);
-		assertEquals("trim(name)", sql);
+		assertEquals("trim(\"name\")", sql);
 	}
 
 	@Test
 	public void concat() {
 		Formula f = new Formula("\"col1\" || \"col2\"", PARSER);
 		String sql = f.sql(GENERIC_SQL);
-		assertEquals("(col1 || col2)", sql);
+		assertEquals("(\"col1\" || \"col2\")", sql);
 	}
 
 	@Test
 	public void concatInFunction() {
 		Formula f = new Formula("count(trim(\"col1\" || \"col2\"))", PARSER);
 		String sql = f.sql(GENERIC_SQL);
-		assertEquals("count(trim((col1 || col2)))", sql);
+		assertEquals("count(trim((\"col1\" || \"col2\")))", sql);
 	}
 
 	@Test
@@ -141,17 +141,17 @@ public class GenericTest {
 		String sql = f.sql(GENERIC_SQL);
 		assertEquals("lower(col1)", sql);
 	}
-        
-        @Test
-        public void avgWithSpaceInColumnName(){
-            	Formula f = new Formula("avg(\"column name\")", PARSER);
+
+	@Test
+	public void avgWithSpaceInColumnName() {
+		Formula f = new Formula("avg(\"column name\")", PARSER);
 		String sql = f.sql(GENERIC_SQL);
 		assertEquals("avg(\"column name\")", sql);
-        }
-        
-        @Test
-        public void sumWithArthimetic(){
-            Formula f = new Formula("sum(\"column name\"+2-4*col1/3)", PARSER);
-            assertEquals("sum((\"column name\" + 2) - (4 * (col / 3)))", f.sql(GENERIC_SQL));
-        }
+	}
+
+	@Test
+	public void sumWithArithmetic() {
+		Formula f = new Formula("sum(\"column name\"+2-4*col1/3)", PARSER);
+		assertEquals("sum(((\"column name\" + 2) - ((4 * col1) / 3)))", f.sql(GENERIC_SQL));
+	}
 }

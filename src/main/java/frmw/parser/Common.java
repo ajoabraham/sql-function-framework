@@ -36,6 +36,33 @@ import static org.codehaus.jparsec.pattern.Patterns.among;
  */
 class Common {
 
+	private static final RegisteredForPositionMap<FormulaElement, String> QUOTED_COLUMN = new RegisteredForPositionMap<FormulaElement, String>() {
+		@Override
+		protected FormulaElement build(String value) {
+			return new Column(value, true);
+		}
+	};
+	private static final RegisteredForPositionMap<FormulaElement, String> COLUMN = new RegisteredForPositionMap<FormulaElement, String>() {
+		@Override
+		protected FormulaElement build(String value) {
+			return new Column(value, false);
+		}
+	};
+	private static final CharPredicate COLUMN_CHARS = new CharPredicate() {
+		@Override
+		public boolean isChar(char c) {
+			return c != '(' && c != ')' && c != ',' && c != '|' &&
+					c != '=' && c != '<' && c != '>' && c != '!' &&
+					c != '*' && c != '/' && c != '+' && c != '-' && !isWhitespace(c);
+		}
+	};
+	private static final CharPredicate QUOTED_COLUMN_CHARS = new CharPredicate() {
+		@Override
+		public boolean isChar(char c) {
+			return c != '"';
+		}
+	};
+
 	public final List<Parser<FormulaElement>> parsers = new ArrayList<Parser<FormulaElement>>();
 
 	public static final Parser<Void> TRAILED = WHITESPACES.skipAtLeast(0);
@@ -310,28 +337,12 @@ class Common {
 	 * This parser should be last parser in any sequence of parsers.
 	 */
 	public static Parser<FormulaElement> column() {
-		Parser<String> quoted = isChar(new CharPredicate() {
-			@Override
-			public boolean isChar(char c) {
-				return c != '"';
-			}
-		}, COLUMN_NAME_ID).many1().source().between(DQ, DQ);
+		Parser<FormulaElement> quoted = isChar(QUOTED_COLUMN_CHARS, COLUMN_NAME_ID).
+				many1().source().between(DQ, DQ).token().map(QUOTED_COLUMN);
+		Parser<FormulaElement> plain = or(EOF.cast(), isChar(COLUMN_CHARS, COLUMN_NAME_ID)).
+				many1().source().token().map(COLUMN);
 
-		Parser<String> plain = or(EOF.cast(), isChar(new CharPredicate() {
-			@Override
-			public boolean isChar(char c) {
-				return c != '(' && c != ')' && c != ',' && c != '|' &&
-						c != '=' && c != '<' && c != '>' && c != '!' &&
-						c != '*' && c != '/' && c != '+' && c != '-' && !isWhitespace(c);
-			}
-		}, COLUMN_NAME_ID)).many1().source();
-
-		return trailed(or(quoted, plain)).token().map(new RegisteredForPositionMap<FormulaElement, String>() {
-			@Override
-			protected FormulaElement build(String value) {
-				return new Column(value);
-			}
-		});
+		return trailed(or(quoted, plain));
 	}
 
 	public static <T> Parser<T> trailed(Parser<T> parser) {

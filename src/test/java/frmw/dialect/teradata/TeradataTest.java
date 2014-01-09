@@ -16,7 +16,7 @@ public class TeradataTest {
 	public void abs() {
 		Formula f = new Formula("abs(\"name\")", PARSER);
 		String sql = f.sql(TERADATA_SQL);
-		assertEquals("abs(name)", sql);
+		assertEquals("abs(\"name\")", sql);
 	}
 
 	@Test
@@ -30,14 +30,14 @@ public class TeradataTest {
 	public void mixScalarWithAggregation() {
 		Formula f = new Formula("abs(sum(\"name\"))", PARSER);
 		String sql = f.sql(TERADATA_SQL);
-		assertEquals("abs(sum(name))", sql);
+		assertEquals("abs(sum(\"name\"))", sql);
 	}
 
 	@Test
 	public void mixScalarWithScalar() {
 		Formula f = new Formula("abs(abs(\"name\"))", PARSER);
 		String sql = f.sql(TERADATA_SQL);
-		assertEquals("abs(abs(name))", sql);
+		assertEquals("abs(abs(\"name\"))", sql);
 	}
 
 	@Test
@@ -51,7 +51,7 @@ public class TeradataTest {
 	public void exp() {
 		Formula f = new Formula("exp(\"name\")", PARSER);
 		String sql = f.sql(TERADATA_SQL);
-		assertEquals("exp(name)", sql);
+		assertEquals("exp(\"name\")", sql);
 	}
 
 	@Test
@@ -311,41 +311,41 @@ public class TeradataTest {
 	public void leftTrimWithTrimmedSymbol() {
 		Formula f = new Formula("leftTrim(\"col1\", 'x')", PARSER);
 		String sql = f.sql(TERADATA_SQL);
-		assertEquals("trim(Leading 'x' From col1)", sql);
+		assertEquals("trim(Leading 'x' From \"col1\")", sql);
 	}
 
 	@Test
 	public void rightTrim() {
 		Formula f = new Formula("rightTrim(\"col1\")", PARSER);
 		String sql = f.sql(TERADATA_SQL);
-		assertEquals("trim(Trailing ' ' From col1)", sql);
+		assertEquals("trim(Trailing ' ' From \"col1\")", sql);
 	}
 
 	@Test
 	public void rightTrimWithTrimmedSymbol() {
 		Formula f = new Formula("rightTrim(\"col1\", 'x')", PARSER);
 		String sql = f.sql(TERADATA_SQL);
-		assertEquals("trim(Trailing 'x' From col1)", sql);
+		assertEquals("trim(Trailing 'x' From \"col1\")", sql);
 	}
 
 	@Test
 	public void nullIf() {
 		Formula f = new Formula("nullIf(\"col1\", 0)", PARSER);
 		String sql = f.sql(TERADATA_SQL);
-		assertEquals("NullIf(col1, 0)", sql);
+		assertEquals("NullIf(\"col1\", 0)", sql);
 	}
 
 	@Test
 	public void nullIfZero() {
 		Formula f = new Formula("nullIfZero(\"col1\")", PARSER);
 		String sql = f.sql(TERADATA_SQL);
-		assertEquals("NullIfZero(col1)", sql);
+		assertEquals("NullIfZero(\"col1\")", sql);
 	}
 
 	@Test
 	public void zeroIfNull() {
 		Formula f = new Formula("zeroIfNull(\"col1\")", PARSER);
 		String sql = f.sql(TERADATA_SQL);
-		assertEquals("ZeroIfNull(col1)", sql);
+		assertEquals("ZeroIfNull(\"col1\")", sql);
 	}
 }

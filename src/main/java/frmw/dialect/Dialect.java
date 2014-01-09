@@ -22,14 +22,6 @@ public interface Dialect {
 
 	void sum(StringBuilder sb, FormulaElement column, boolean distinct);
 
-	/**
-	 * Validates column name for current database.
-	 *
-	 * @param name column name
-	 * @throws SQLFrameworkException if validation isn't passed successfully
-	 */
-	void validateColumnName(String name) throws SQLFrameworkException;
-
 	void rank(StringBuilder sb);
 
 	void min(StringBuilder sb, FormulaElement column, boolean distinct);

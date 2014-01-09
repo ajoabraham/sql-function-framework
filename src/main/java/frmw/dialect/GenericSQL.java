@@ -2,7 +2,6 @@ package frmw.dialect;
 
 import com.google.common.base.Joiner;
 import frmw.model.FormulaElement;
-import frmw.model.exception.SQLFrameworkException;
 import frmw.model.fun.aggregation.Aggregation;
 import frmw.model.fun.olap.WindowParameters;
 import frmw.model.fun.olap.support.GroupBy;
@@ -17,8 +16,6 @@ import java.util.Iterator;
 import java.util.List;
 
 import static java.util.Arrays.asList;
-import static org.codehaus.jparsec.pattern.CharPredicates.IS_ALPHA_;
-import static org.codehaus.jparsec.pattern.CharPredicates.IS_ALPHA_NUMERIC_;
 
 /**
  * @author Alexey Paramonov
@@ -45,26 +42,6 @@ public class GenericSQL implements Dialect {
 
 		column.sql(this, sb);
 		sb.append(')');
-	}
-
-	@Override
-	public void validateColumnName(String name) {
-		if (name == null || name.isEmpty()) {
-			throw new SQLFrameworkException(name, "Column name should contain at least one character");
-		}
-
-		char firstChar = name.charAt(0);
-		boolean firstOk = IS_ALPHA_.isChar(firstChar);
-		if (!firstOk) {
-			throw new SQLFrameworkException(name, "The first symbol in column name should be or letter [a-zA-Z] or underscore [_], but found : '" + firstChar + "'");
-		}
-
-		for (int i = 1; i < name.length(); i++) {
-			char ch = name.charAt(i);
-			if (!IS_ALPHA_NUMERIC_.isChar(ch)) {
-				throw new SQLFrameworkException(name, "Column name should contains numbers [0-9], letters [a-zA-Z] or underscores [_], but found : '" + ch + "'");
-			}
-		}
 	}
 
 	@Override

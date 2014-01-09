@@ -73,7 +73,7 @@ public class ArithmeticalOperatorsTest {
 	public void minusMorePriorityThanMultiply_quoted() {
 		Formula f = new Formula("(\"name_0\" - \"name_1\") * \"name_2\"", PARSER);
 		String sql = f.sql(GENERIC_SQL);
-		assertEquals("((name_0 - name_1) * name_2)", sql);
+		assertEquals("((\"name_0\" - \"name_1\") * \"name_2\")", sql);
 	}
 
 	@Test
