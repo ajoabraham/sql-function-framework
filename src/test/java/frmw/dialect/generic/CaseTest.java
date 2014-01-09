@@ -160,11 +160,13 @@ public class CaseTest {
 	}
         
         @Test
-        public void searchedCaseColumnList(){
-            Formula f = new Formula("case when col1=1 or (col1/col_longer_name3)=2 then col2 else col5 end", PARSER);
-            String[] s = {"col1","col_longer_name3","col2","col5"};
+        public void searchedCaseComplexColumnList(){
+            Formula f = new Formula("case when (col1/(col_longer_name3+col_9/col10))=2 then col2 else col5 end", PARSER);
+            String[] s = {"col1","col_longer_name3","col2","col5","col_9","col10"};
             for (String c : s ){
                assertTrue("Column " +c +" should be in the entity list.",f.entityNames().contains(c)); 
             }
+            System.out.println(f.sql(GENERIC_SQL));
+            assertEquals("CASE WHEN (col1 / (col_longer_name3 + col_9 / col10)) = 2 THEN col2 ELSE col5 END",f.sql(GENERIC_SQL));
         }
 }
