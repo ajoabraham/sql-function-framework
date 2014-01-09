@@ -12,10 +12,7 @@ import frmw.model.ifelse.WhenBlock;
 import frmw.model.operator.*;
 import org.codehaus.jparsec.OperatorTable;
 import org.codehaus.jparsec.Parser;
-import org.codehaus.jparsec.functors.Binary;
-import org.codehaus.jparsec.functors.Map;
-import org.codehaus.jparsec.functors.Map3;
-import org.codehaus.jparsec.functors.Unary;
+import org.codehaus.jparsec.functors.*;
 import org.codehaus.jparsec.misc.Mapper;
 import org.codehaus.jparsec.pattern.CharPredicate;
 import org.codehaus.jparsec.pattern.Pattern;
@@ -136,8 +133,8 @@ class Common {
 				sequence(all, GT, all, CompareOp.GREAT),
 				sequence(all, LE, all, CompareOp.EQUAL_LESS),
 				sequence(all, GE, all, CompareOp.EQUAL_GREAT),
-				all.postfix(IS_NULL.retn(UnaryOp.NULL)),
-				all.postfix(IS_NOT_NULL.retn(UnaryOp.NOT_NULL))));
+				sequence(all, IS_NULL, NullOp.NULL),
+				sequence(all, IS_NOT_NULL, NullOp.NOT_NULL)));
 
 		Parser<WhenBlock> when = trailed(curry(WhenBlock.class).sequence(WHEN.next(conditionals), THEN.next(all)));
 		Parser<FormulaElement> elseBlock = ELSE.next(all).optional();
@@ -279,7 +276,21 @@ class Common {
 			public FormulaElement map(FormulaElement a, Void v, FormulaElement b) {
 				return new BinaryOperator(a, b, "!=");
 			}
+		}
+	}
+
+	enum NullOp implements Map2<FormulaElement, Void, FormulaElement> {
+
+		NULL {
+			public FormulaElement map(FormulaElement n, Void v) {
+				return new Null(n, true);
+			}
 		},
+		NOT_NULL {
+			public FormulaElement map(FormulaElement n, Void v) {
+				return new Null(n, false);
+			}
+		}
 	}
 
 	enum UnaryOp implements Unary<FormulaElement> {
@@ -291,16 +302,6 @@ class Common {
 		PLUS {
 			public FormulaElement map(FormulaElement n) {
 				return new UnaryOperator(n, "");
-			}
-		},
-		NULL {
-			public FormulaElement map(FormulaElement n) {
-				return new Null(n, true);
-			}
-		},
-		NOT_NULL {
-			public FormulaElement map(FormulaElement n) {
-				return new Null(n, false);
 			}
 		}
 	}
