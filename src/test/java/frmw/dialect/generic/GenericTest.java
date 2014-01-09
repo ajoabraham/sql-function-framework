@@ -85,7 +85,7 @@ public class GenericTest {
 		String sql = f.sql(GENERIC_SQL);
 		assertEquals("avg(name)", sql);
 	}
-
+        
 	@Test
 	public void trim() {
 		Formula f = new Formula("trim(\"name\")", PARSER);
@@ -141,4 +141,17 @@ public class GenericTest {
 		String sql = f.sql(GENERIC_SQL);
 		assertEquals("lower(col1)", sql);
 	}
+        
+        @Test
+        public void avgWithSpaceInColumnName(){
+            	Formula f = new Formula("avg(\"column name\")", PARSER);
+		String sql = f.sql(GENERIC_SQL);
+		assertEquals("avg(\"column name\")", sql);
+        }
+        
+        @Test
+        public void sumWithArthimetic(){
+            Formula f = new Formula("sum(\"column name\"+2-4*col1/3)", PARSER);
+            assertEquals("sum((\"column name\" + 2) - (4 * (col / 3)))", f.sql(GENERIC_SQL));
+        }
 }
