@@ -143,21 +143,21 @@ public class CaseTest {
 	public void searchedCaseOr() {
 		Formula f = new Formula("case when col1=1 or col1=2 then 2 else 5 end", PARSER);
 		String sql = f.sql(GENERIC_SQL);
-		assertEquals("CASE WHEN (col1 = 1) THEN 2 WHEN (col1 = 2) THEN 2 ELSE 5 END", sql);
+		assertEquals("CASE WHEN ((col1 = 1) OR (col1 = 2)) THEN 2 ELSE 5 END", sql);
 	}
 
 	@Test
 	public void searchedCaseAnd() {
 		Formula f = new Formula("case when col1=1 and col1=2 then 2 else 5 end", PARSER);
 		String sql = f.sql(GENERIC_SQL);
-		assertEquals("CASE WHEN (col1 = 1) THEN CASE WHEN (col1 = 2) THEN 2 ELSE 5 END ELSE 5 END", sql);
+		assertEquals("CASE WHEN ((col1 = 1) AND (col1 = 2)) THEN 2 ELSE 5 END", sql);
 	}
 
 	@Test
 	public void searchedCaseAndHasMorePriority() {
 		Formula f = new Formula("case when col1=1 or col1=3 and col1=2 or col1=4 then 2 else 5 end", PARSER);
 		String sql = f.sql(GENERIC_SQL);
-		assertEquals("CASE WHEN (col1 = 1) THEN CASE WHEN (col1 = 2) THEN 2 WHEN (col1 = 4) THEN 2 ELSE 5 END WHEN (col1 = 3) THEN CASE WHEN (col1 = 2) THEN 2 WHEN (col1 = 4) THEN 2 ELSE 5 END ELSE 5 END", sql);
+		assertEquals("CASE WHEN ((col1 = 1) OR (((col1 = 3) AND (col1 = 2)) OR (col1 = 4))) THEN 2 ELSE 5 END", sql);
 	}
 
 	@Test

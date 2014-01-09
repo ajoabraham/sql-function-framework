@@ -224,8 +224,8 @@ class Common {
 		Parser.Reference<FormulaElement> ref = Parser.newReference();
 		Parser<FormulaElement> unit = ref.lazy().between(OPENED, CLOSED).or(orig);
 		Parser<FormulaElement> parser = new OperatorTable<FormulaElement>()
-				.infixl(op(AND, BinaryOp.AND), 10)
-				.infixl(op(OR, BinaryOp.OR), 20)
+				.infixr(op(AND, BinaryOp.AND), 20)
+				.infixr(op(OR, BinaryOp.OR), 10)
 				.build(unit);
 		ref.set(parser);
 		return trailed(parser);

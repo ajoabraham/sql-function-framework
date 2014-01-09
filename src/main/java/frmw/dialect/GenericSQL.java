@@ -9,13 +9,9 @@ import frmw.model.fun.olap.support.Rows;
 import frmw.model.ifelse.Case;
 import frmw.model.ifelse.SimpleCase;
 import frmw.model.ifelse.WhenBlock;
-import frmw.model.operator.And;
-import frmw.model.operator.Or;
 
 import java.util.Iterator;
 import java.util.List;
-
-import static java.util.Arrays.asList;
 
 /**
  * @author Alexey Paramonov
@@ -277,29 +273,8 @@ public class GenericSQL implements Dialect {
 	@Override
 	public void searchedCase(StringBuilder sb, Case inst) {
 		sb.append("CASE");
-
-		for (WhenBlock when : inst.when) {
-			buildWhen(sb, when, inst.elseBlock);
-		}
-
-		buildElse(sb, inst);
+		appendWhenThenElse(sb, inst);
 		sb.append(" END");
-	}
-
-	private void buildWhen(StringBuilder sb, WhenBlock block, FormulaElement elseBlock) {
-		if (block.when instanceof And) {
-			And and = (And) block.when;
-			List<WhenBlock> nestedWhen = asList(new WhenBlock(and.right, block.then));
-			Case nested = new Case(nestedWhen, elseBlock);
-
-			buildWhen(sb, new WhenBlock(and.left, nested), elseBlock);
-		} else if (block.when instanceof Or) {
-			Or or = (Or) block.when;
-			buildWhen(sb, new WhenBlock(or.left, block.then), elseBlock);
-			buildWhen(sb, new WhenBlock(or.right, block.then), elseBlock);
-		} else {
-			buildWhen(sb, block.when, block.then);
-		}
 	}
 
 	@Override
@@ -307,26 +282,22 @@ public class GenericSQL implements Dialect {
 		sb.append("CASE ");
 		inst.caseBlock.sql(this, sb);
 
-		for (WhenBlock when : inst.when) {
-			buildWhen(sb, when.when, when.then);
-		}
-
-		buildElse(sb, inst);
+		appendWhenThenElse(sb, inst);
 		sb.append(" END");
 	}
 
-	private void buildElse(StringBuilder sb, Case inst) {
+	private void appendWhenThenElse(StringBuilder sb, Case inst) {
+		for (WhenBlock block : inst.when) {
+			sb.append(" WHEN ");
+			block.when.sql(this, sb);
+			sb.append(" THEN ");
+			block.then.sql(this, sb);
+		}
+
 		if (inst.elseBlock != null) {
 			sb.append(" ELSE ");
 			inst.elseBlock.sql(this, sb);
 		}
-	}
-
-	private void buildWhen(StringBuilder sb, FormulaElement when, FormulaElement then) {
-		sb.append(" WHEN ");
-		when.sql(this, sb);
-		sb.append(" THEN ");
-		then.sql(this, sb);
 	}
 
 	@Override
