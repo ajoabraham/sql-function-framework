@@ -8,6 +8,8 @@ import org.codehaus.jparsec.error.ParserException;
 import java.util.List;
 
 import static frmw.parser.Common.withOperators;
+import static frmw.parser.FunctionType.AGGREGATION;
+import static frmw.parser.FunctionType.SCALAR;
 import static org.codehaus.jparsec.Parsers.or;
 
 /**
@@ -32,11 +34,11 @@ public class Parsing {
 	public Parsing() {
 		Aggregations aggr = new Aggregations(scalar.lazy(), commons.lazy());
 		aggregationNames = ImmutableList.copyOf(aggr.names);
-		aggregation.set(or(aggr.parsers));
+		aggregation.set(or(aggr.parsers).label(AGGREGATION.name()));
 
 		Scalars s = new Scalars(scalar.lazy(), aggregation.lazy(), commons.lazy());
 		scalarNames = ImmutableList.copyOf(s.names);
-		scalar.set(or(s.parsers));
+		scalar.set(or(s.parsers).label(SCALAR.name()));
 
 		Common c = new Common(scalar.lazy(), aggregation.lazy(), commons.lazy());
 		commons.set(or(c.parsers));

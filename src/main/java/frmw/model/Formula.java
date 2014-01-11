@@ -1,17 +1,23 @@
 package frmw.model;
 
 import frmw.dialect.Dialect;
+import frmw.model.exception.ParsingException;
 import frmw.model.exception.SQLFrameworkException;
+import frmw.model.exception.WrongFunctionNameException;
 import frmw.model.fun.aggregation.AggregationParameters;
 import frmw.model.fun.olap.WindowParameters;
+import frmw.model.position.Position;
 import frmw.model.position.PositionMap;
+import frmw.parser.FunctionType;
 import frmw.parser.Parsing;
+import org.codehaus.jparsec.error.ParseErrorDetails;
 import org.codehaus.jparsec.error.ParserException;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
+
+import static frmw.parser.FunctionType.AGGREGATION;
+import static frmw.parser.FunctionType.SCALAR;
+import static java.lang.Character.isWhitespace;
 
 /**
  * This class is not thread safe.
@@ -25,15 +31,46 @@ public class Formula {
 	private final PositionMap positions = new PositionMap();
 
 	/**
-	 * @throws SQLFrameworkException on any error during parsing
+	 * @throws WrongFunctionNameException if framework decides that user misspelled a function name
+	 * @throws ParsingException on any other error during parsing
 	 */
-	public Formula(String formula, Parsing parser) throws SQLFrameworkException {
+	public Formula(String formula, Parsing parser) throws ParsingException, WrongFunctionNameException {
 		try {
 			this.root = parser.parse(formula);
 		} catch (ParserException e) {
-			throw e;
-//			throw new ParsingException();
+			ParseErrorDetails details = e.getErrorDetails();
+			List<String> expected = details.getExpected();
+
+			Set<FunctionType> types = EnumSet.noneOf(FunctionType.class);
+			if (expected.contains(AGGREGATION.name())) {
+				types.add(AGGREGATION);
+			}
+
+			if (expected.contains(SCALAR.name())) {
+				types.add(SCALAR);
+			}
+
+			int errorAt = details.getIndex();
+			if (types.isEmpty()) {
+				throw new ParsingException(errorAt, expected);
+			} else {
+				String wrongName = findFunctionName(formula, errorAt);
+				throw new WrongFunctionNameException(errorAt, wrongName, types, parser);
+			}
 		}
+	}
+
+	private static String findFunctionName(String formula, int errorAt) {
+		int last = errorAt;
+		while (last < formula.length()) {
+			char c = formula.charAt(last);
+			if (isWhitespace(c) || c == '(') {
+				break;
+			}
+			last++;
+		}
+
+		return formula.substring(errorAt, last);
 	}
 
 	/**
@@ -87,7 +124,7 @@ public class Formula {
 		positions.add(res, index, length);
 	}
 
-	public PositionMap.Position position(FormulaElement e) {
+	public Position position(FormulaElement e) {
 		return positions.find(e);
 	}
 }

@@ -5,8 +5,8 @@ package frmw.model.exception;
  */
 public class SQLFrameworkInternalException extends SQLFrameworkException {
 
-	public SQLFrameworkInternalException(String source, String message) {
-		super(source, message);
+	public SQLFrameworkInternalException(String message) {
+		super(message);
 	}
 
 	public static SQLFrameworkException wrap(Throwable t) {

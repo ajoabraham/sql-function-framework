@@ -1,6 +1,6 @@
 package frmw.model.fun.aggregation;
 
-import frmw.model.fun.olap.support.Position;
+import frmw.model.position.Position;
 
 /**
  * @author Alexey Paramonov

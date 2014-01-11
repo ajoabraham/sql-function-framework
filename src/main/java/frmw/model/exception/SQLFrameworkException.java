@@ -5,20 +5,19 @@ package frmw.model.exception;
  */
 public class SQLFrameworkException extends RuntimeException {
 
-	public final String source;
-
 	private int index = -1;
 
 	private int length = -1;
 
-	public SQLFrameworkException(String source, String message) {
-		super(message + ", source : " + source);
-		this.source = source;
+	public SQLFrameworkException() {
+	}
+
+	public SQLFrameworkException(String message) {
+		super(message);
 	}
 
 	public SQLFrameworkException(Throwable t) {
 		super(t);
-		this.source = null;
 	}
 
 	public void position(int index, int length) {

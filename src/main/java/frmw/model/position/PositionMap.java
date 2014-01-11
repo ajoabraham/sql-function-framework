@@ -10,16 +10,6 @@ import java.util.Map;
  */
 public class PositionMap {
 
-	public static class Position {
-		public final int index;
-		public final int length;
-
-		public Position(int index, int length) {
-			this.index = index;
-			this.length = length;
-		}
-	}
-
 	private final Map<FormulaElement, Position> positions = new HashMap<FormulaElement, Position>();
 
 	public void add(FormulaElement source, int index, int length) {

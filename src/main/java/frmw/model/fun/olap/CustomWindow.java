@@ -5,7 +5,7 @@ import frmw.model.fun.aggregation.Aggregation;
 import frmw.model.FormulaElement;
 import frmw.model.PositionAware;
 import frmw.model.fun.aggregation.AggregationParameters;
-import frmw.model.fun.olap.support.Position;
+import frmw.model.position.Position;
 import frmw.model.fun.olap.support.Rows;
 
 import java.util.List;

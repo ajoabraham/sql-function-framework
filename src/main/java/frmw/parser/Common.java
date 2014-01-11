@@ -25,7 +25,9 @@ import java.util.List;
 
 import static frmw.model.constant.NumericConstant.cleanUp;
 import static java.lang.Character.isWhitespace;
+import static java.text.MessageFormat.format;
 import static org.codehaus.jparsec.Parsers.*;
+import static org.codehaus.jparsec.ProcessIllegalFunctionNameHandling.suppress;
 import static org.codehaus.jparsec.Scanners.*;
 import static org.codehaus.jparsec.StringLiteralScanner.literal;
 import static org.codehaus.jparsec.misc.Mapper.curry;
@@ -118,7 +120,7 @@ class Common {
 			});
 
 	public Common(Parser<FormulaElement> scalar, Parser<FormulaElement> aggregation, Parser<FormulaElement> common) {
-		Parser<FormulaElement> all = withOperators(trailed(or(scalar, aggregation, common)));
+		Parser<FormulaElement> all = withOperators(or(scalar, aggregation, common));
 
 		parsers.add(stringLiteral());
 		parsers.add(number());
@@ -180,7 +182,7 @@ class Common {
 		Pattern decimal = strict.or(fraction);
 		Pattern scientific = Patterns.sequence(decimal, among("eE"), among("+-").optional(), INT);
 
-		return pattern(scientific.or(decimal), NUMERIC_ID).source().token()
+		return trailed(pattern(scientific.or(decimal), NUMERIC_ID)).source().token()
 				.map(new RegisteredForPositionMap<FormulaElement, String>() {
 					@Override
 					protected FormulaElement build(String value) {
@@ -339,8 +341,9 @@ class Common {
 	public static Parser<FormulaElement> column() {
 		Parser<FormulaElement> quoted = isChar(QUOTED_COLUMN_CHARS, COLUMN_NAME_ID).
 				many1().source().between(DQ, DQ).token().map(QUOTED_COLUMN);
-		Parser<FormulaElement> plain = or(EOF.cast(), isChar(COLUMN_CHARS, COLUMN_NAME_ID)).
-				many1().source().token().map(COLUMN);
+		Parser<FormulaElement> plain = suppress(isChar(COLUMN_CHARS, COLUMN_NAME_ID).many1()
+				.source().token().map(COLUMN)
+				.followedBy(WHITESPACES.many().<FormulaElement>cast()));
 
 		return trailed(or(quoted, plain));
 	}
@@ -375,8 +378,9 @@ class Common {
 		List<Object> notNull = filterNotNull(values);
 		Constructor<?> constructor = appropriate(clazz, notNull.size());
 		if (constructor == null) {
-			throw new SQLFrameworkInternalException(funName(clazz),
-					"Constructor for arguments not found : " + notNull);
+			throw new SQLFrameworkInternalException(format(
+					"Function {0} - constructor not found for arguments {1}",
+					funName(clazz), notNull));
 		}
 
 		Object[] args = notNull.toArray(new Object[notNull.size()]);

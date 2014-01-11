@@ -18,4 +18,11 @@ public class CommonRulesTest {
 		String sql = f.sql(GENERIC_SQL);
 		assertEquals("currentDate", sql);
 	}
+
+	@Test
+	public void lotsOfWhitespacesInFunction() {
+		Formula f = new Formula("  \n \t min \n\r \t ( \n\t col1 \t  \r\n ) \t \t \n \r", PARSER);
+		String sql = f.sql(GENERIC_SQL);
+		assertEquals("min(col1)", sql);
+	}
 }

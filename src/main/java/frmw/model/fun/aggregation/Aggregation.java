@@ -3,7 +3,7 @@ package frmw.model.fun.aggregation;
 import frmw.model.FormulaElement;
 import frmw.model.PositionAware;
 import frmw.model.fun.olap.WindowParameters;
-import frmw.model.fun.olap.support.Position;
+import frmw.model.position.Position;
 
 import java.util.List;
 import java.util.Set;

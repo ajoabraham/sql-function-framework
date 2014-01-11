@@ -7,10 +7,13 @@ import static java.text.MessageFormat.format;
  */
 public class UnsupportedFunctionException extends SQLFrameworkException {
 
+	public final String function;
+
 	public final String dialect;
 
 	public UnsupportedFunctionException(String function, String dialect) {
-		super(function, format("Function {0} is not supported for dialect {1}", function, dialect));
+		super(format("Function {0} is not supported by the {1} dialect", function, dialect));
+		this.function = function;
 		this.dialect = dialect;
 	}
 }

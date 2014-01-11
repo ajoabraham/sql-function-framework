@@ -1,4 +1,4 @@
-package frmw.model.fun.olap.support;
+package frmw.model.position;
 
 /**
  * @author Alexey Paramonov

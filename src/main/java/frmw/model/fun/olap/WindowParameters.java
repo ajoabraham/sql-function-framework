@@ -6,7 +6,7 @@ import frmw.model.fun.aggregation.Aggregation;
 import frmw.model.fun.aggregation.AggregationParameters;
 import frmw.model.fun.olap.support.GroupBy;
 import frmw.model.fun.olap.support.Order;
-import frmw.model.fun.olap.support.Position;
+import frmw.model.position.Position;
 
 import java.util.ArrayList;
 import java.util.List;
