@@ -10,23 +10,17 @@ import frmw.model.fun.string.*;
 import frmw.model.fun.trigonometric.*;
 import org.codehaus.jparsec.Parser;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import static frmw.parser.Common.*;
+import static frmw.parser.Common.withOperators;
 import static org.codehaus.jparsec.Parsers.or;
 
 /**
  * @author Alexey Paramonov
  */
-class Scalars {
+class Scalars extends FunctionBuilder {
 
-	public final List<String> names = new ArrayList<String>();
+	Scalars(Parser<FormulaElement> scalar, Parser<FormulaElement> aggregation, Parser<FormulaElement> olap, Parser<FormulaElement> common) {
+		Parser<FormulaElement> all = withOperators(or(aggregation, scalar, common, olap));
 
-	public final List<Parser<FormulaElement>> parsers = new ArrayList<Parser<FormulaElement>>();
-
-	Scalars(Parser<FormulaElement> scalar, Parser<FormulaElement> aggregation, Parser<FormulaElement> common) {
-		Parser<FormulaElement> all = withOperators(or(aggregation, scalar, common));
 		math(all);
 		trigonometric(all);
 		string(all);
@@ -95,11 +89,5 @@ class Scalars {
 		f(Round.class, all);
 		f(Sqrt.class, all);
 		f(Random.class, all, all);
-	}
-
-	private void f(Class<? extends FormulaElement> clazz, Parser<?> ...args) {
-		Parser<FormulaElement> result = fun(clazz, args);
-		parsers.add(result);
-		names.add(funName(clazz));
 	}
 }

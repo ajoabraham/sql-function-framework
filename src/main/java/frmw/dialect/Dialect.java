@@ -3,6 +3,7 @@ package frmw.dialect;
 import frmw.model.FormulaElement;
 import frmw.model.exception.SQLFrameworkException;
 import frmw.model.fun.aggregation.Aggregation;
+import frmw.model.fun.olap.RankParameters;
 import frmw.model.fun.olap.WindowParameters;
 import frmw.model.fun.olap.support.Rows;
 import frmw.model.ifelse.Case;
@@ -22,7 +23,7 @@ public interface Dialect {
 
 	void sum(StringBuilder sb, FormulaElement column, boolean distinct);
 
-	void rank(StringBuilder sb);
+	void rank(StringBuilder sb, RankParameters params, FormulaElement orderBy);
 
 	void min(StringBuilder sb, FormulaElement column, boolean distinct);
 

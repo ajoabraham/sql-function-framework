@@ -2,6 +2,7 @@ package frmw.model.fun.aggregation;
 
 import frmw.model.FormulaElement;
 import frmw.model.PositionAware;
+import frmw.model.fun.olap.RankParameters;
 import frmw.model.fun.olap.WindowParameters;
 import frmw.model.position.Position;
 
@@ -46,10 +47,17 @@ public abstract class Aggregation implements FormulaElement, PositionAware {
 
 	@Override
 	public void collectWindowParams(List<WindowParameters> list) {
+		column.collectWindowParams(list);
 	}
 
 	@Override
 	public void collectAggregationParams(List<AggregationParameters> list) {
+		column.collectAggregationParams(list);
 		list.add(params);
+	}
+
+	@Override
+	public void collectRankParams(List<RankParameters> list) {
+		column.collectRankParams(list);
 	}
 }

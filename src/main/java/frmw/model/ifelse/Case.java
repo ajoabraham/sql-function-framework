@@ -3,6 +3,7 @@ package frmw.model.ifelse;
 import frmw.dialect.Dialect;
 import frmw.model.FormulaElement;
 import frmw.model.fun.aggregation.AggregationParameters;
+import frmw.model.fun.olap.RankParameters;
 import frmw.model.fun.olap.WindowParameters;
 
 import java.util.List;
@@ -68,6 +69,18 @@ public class Case implements FormulaElement {
 
 		if (elseBlock != null) {
 			elseBlock.collectAggregationParams(list);
+		}
+	}
+
+	@Override
+	public void collectRankParams(List<RankParameters> list) {
+		for (WhenBlock block : when) {
+			block.when.collectRankParams(list);
+			block.then.collectRankParams(list);
+		}
+
+		if (elseBlock != null) {
+			elseBlock.collectRankParams(list);
 		}
 	}
 

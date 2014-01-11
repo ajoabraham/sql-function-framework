@@ -3,6 +3,7 @@ package frmw.model.ifelse;
 import frmw.dialect.Dialect;
 import frmw.model.FormulaElement;
 import frmw.model.fun.aggregation.AggregationParameters;
+import frmw.model.fun.olap.RankParameters;
 import frmw.model.fun.olap.WindowParameters;
 
 import java.util.List;
@@ -36,6 +37,12 @@ public class SimpleCase extends Case {
 	public void collectAggregationParams(List<AggregationParameters> list) {
 		super.collectAggregationParams(list);
 		caseBlock.collectAggregationParams(list);
+	}
+
+	@Override
+	public void collectRankParams(List<RankParameters> list) {
+		super.collectRankParams(list);
+		caseBlock.collectRankParams(list);
 	}
 
 	@Override

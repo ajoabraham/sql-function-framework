@@ -2,6 +2,7 @@ package frmw.model;
 
 import frmw.dialect.Dialect;
 import frmw.model.fun.aggregation.AggregationParameters;
+import frmw.model.fun.olap.RankParameters;
 import frmw.model.fun.olap.WindowParameters;
 
 import java.util.List;
@@ -46,6 +47,10 @@ public class Column implements FormulaElement {
 
 	@Override
 	public void collectAggregationParams(List<AggregationParameters> list) {
+	}
+
+	@Override
+	public void collectRankParams(List<RankParameters> list) {
 	}
 
 	@Override

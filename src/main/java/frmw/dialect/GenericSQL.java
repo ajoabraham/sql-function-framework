@@ -3,6 +3,7 @@ package frmw.dialect;
 import com.google.common.base.Joiner;
 import frmw.model.FormulaElement;
 import frmw.model.fun.aggregation.Aggregation;
+import frmw.model.fun.olap.RankParameters;
 import frmw.model.fun.olap.WindowParameters;
 import frmw.model.fun.olap.support.GroupBy;
 import frmw.model.fun.olap.support.Rows;
@@ -41,8 +42,19 @@ public class GenericSQL implements Dialect {
 	}
 
 	@Override
-	public void rank(StringBuilder sb) {
-		throw new UnsupportedOperationException();
+	public void rank(StringBuilder sb, RankParameters params, FormulaElement orderBy) {
+		sb.append("RANK() OVER (");
+
+		List<String> partitions = params.partitions();
+		if (!partitions.isEmpty()) {
+			sb.append("PARTITION BY ");
+			Joiner.on(", ").appendTo(sb, partitions);
+			sb.append(' ');
+		}
+
+		sb.append("ORDER BY ");
+		orderBy.sql(this, sb);
+		sb.append(' ').append(params.order()).append(')');
 	}
 
 	@Override

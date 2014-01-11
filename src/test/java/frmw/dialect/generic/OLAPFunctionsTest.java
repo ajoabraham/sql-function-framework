@@ -147,4 +147,41 @@ public class OLAPFunctionsTest {
 		String sql = f.sql(GENERIC_SQL);
 		assertEquals("avg(col1) OVER ( PARTITION BY col3, col2 ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW)", sql);
 	}
+
+	@Test
+	public void rank() {
+		Formula f = new Formula("rank(col1)", PARSER);
+		String sql = f.sql(GENERIC_SQL);
+		assertEquals(1, f.rankParameters().size());
+		assertEquals(0, f.aggregationParameters().size());
+		assertEquals(0, f.windowParameters().size());
+		assertEquals("RANK() OVER (ORDER BY col1 ASC)", sql);
+	}
+
+	@Test
+	public void rankWithAggregation() {
+		Formula f = new Formula("rank(min(col1))", PARSER);
+		String sql = f.sql(GENERIC_SQL);
+		assertEquals(1, f.rankParameters().size());
+		assertEquals(1, f.aggregationParameters().size());
+		assertEquals(0, f.windowParameters().size());
+		assertEquals("RANK() OVER (ORDER BY min(col1) ASC)", sql);
+	}
+
+	@Test
+	public void rankWithParams() {
+		Formula f = new Formula("rank(min(col1))", PARSER);
+		f.aggregationParameters().get(0).distinct(true);
+		f.rankParameters().get(0).order(DESC).partition("col2");
+		String sql = f.sql(GENERIC_SQL);
+		assertEquals("RANK() OVER (PARTITION BY col2 ORDER BY min(DISTINCT col1) DESC)", sql);
+	}
+
+	@Test
+	public void rankWithParamsSeveralPartitionBy() {
+		Formula f = new Formula("rank(col1)", PARSER);
+		f.rankParameters().get(0).order(DESC).partition("col2").partition("col3").partition("col4");
+		String sql = f.sql(GENERIC_SQL);
+		assertEquals("RANK() OVER (PARTITION BY col2, col3, col4 ORDER BY col1 DESC)", sql);
+	}
 }

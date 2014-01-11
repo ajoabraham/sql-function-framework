@@ -1,14 +1,12 @@
 package frmw.model.exception;
 
 import frmw.parser.FunctionType;
-import frmw.parser.Parsing;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-import static frmw.parser.FunctionType.AGGREGATION;
-import static frmw.parser.FunctionType.SCALAR;
+import static java.text.MessageFormat.format;
 import static org.apache.commons.lang3.StringUtils.getLevenshteinDistance;
 
 /**
@@ -32,24 +30,14 @@ public class WrongFunctionNameException extends SQLFrameworkException {
 	public final List<String> expectedFunctions;
 
 	/**
-	 * Most closest function names in the {@link #index} location.
+	 * The most closest function names to the user input at {@link #index}.
 	 */
 	public final List<String> closestFunctions;
 
-	public WrongFunctionNameException(int errorAt, String function, Set<FunctionType> types, Parsing p) {
-		super();
+	public WrongFunctionNameException(int errorAt, String function, Set<FunctionType> types, List<String> expected) {
+		super(format("Function name \"{0}\", but expected one of the {1}", function, expected));
 		this.function = function;
 		this.expectedTypes = types;
-
-		List<String> expected = new ArrayList<String>();
-		if (types.contains(AGGREGATION)) {
-			expected.addAll(p.aggregationFunctions());
-		}
-
-		if (types.contains(SCALAR)) {
-			expected.addAll(p.scalarFunctions());
-		}
-
 		this.expectedFunctions = expected;
 		this.closestFunctions = findClosest(function, expected);
 		position(errorAt, function.length());

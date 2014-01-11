@@ -1,6 +1,7 @@
 package frmw.model;
 
 import frmw.model.fun.aggregation.AggregationParameters;
+import frmw.model.fun.olap.RankParameters;
 import frmw.model.fun.olap.WindowParameters;
 
 import java.util.List;
@@ -35,6 +36,11 @@ public abstract class Scalar implements FormulaElement {
 	@Override
 	public void collectAggregationParams(List<AggregationParameters> list) {
 		arg.collectAggregationParams(list);
+	}
+
+	@Override
+	public void collectRankParams(List<RankParameters> list) {
+		arg.collectRankParams(list);
 	}
 
 	@Override

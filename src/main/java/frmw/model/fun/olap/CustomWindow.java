@@ -59,6 +59,10 @@ public class CustomWindow implements FormulaElement, PositionAware {
 	}
 
 	@Override
+	public void collectRankParams(List<RankParameters> list) {
+	}
+
+	@Override
 	public void position(int index, int length) {
 		params.position(new Position(index, length));
 	}

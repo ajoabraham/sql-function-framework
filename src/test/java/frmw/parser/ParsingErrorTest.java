@@ -8,6 +8,9 @@ import org.junit.Test;
 
 import static frmw.TestSupport.GENERIC_SQL;
 import static frmw.TestSupport.PARSER;
+import static frmw.parser.FunctionType.AGGREGATION;
+import static frmw.parser.FunctionType.OLAP;
+import static frmw.parser.FunctionType.SCALAR;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.*;
 
@@ -25,7 +28,8 @@ public class ParsingErrorTest {
 			assertEquals("ranl", e.function);
 			assertEquals(2, e.index());
 			assertEquals(4, e.length());
-			assertThat(e.expectedFunctions, hasItems("Min", "Ln"));
+			assertThat(e.expectedTypes, containsInAnyOrder(SCALAR, AGGREGATION, OLAP));
+			assertThat(e.expectedFunctions, hasItems("Min", "Ln", "RunningAvg"));
 			assertThat(e.closestFunctions, containsInAnyOrder("Rank"));
 		}
 	}
@@ -39,9 +43,25 @@ public class ParsingErrorTest {
 			assertEquals("min", e.function);
 			assertEquals(5, e.index());
 			assertEquals(3, e.length());
+			assertThat(e.expectedTypes, contains(SCALAR));
 			assertThat(e.expectedFunctions, hasItem("Ln"));
-			assertThat(e.expectedFunctions, not(hasItem("Count")));
+			assertThat(e.expectedFunctions, not(hasItems("Count", "RunningAvg")));
 			assertThat(e.closestFunctions, containsInAnyOrder("Sin"));
+		}
+	}
+
+	@Test
+	public void customWindowWithNotAggregationFunction() {
+		try {
+			Formula f = new Formula("customWindow(ln(col1), all, current  row)", PARSER);
+			fail(f.sql(GENERIC_SQL));
+		} catch (WrongFunctionNameException e) {
+			assertEquals("ln", e.function);
+			assertEquals(13, e.index());
+			assertEquals(2, e.length());
+			assertThat(e.expectedTypes, contains(AGGREGATION));
+			assertThat(e.expectedFunctions, hasItems("Count", "Min"));
+			assertThat(e.expectedFunctions, not(hasItems("Abs", "Ln", "RunningAvg")));
 		}
 	}
 
@@ -60,13 +80,13 @@ public class ParsingErrorTest {
 	@Test
 	public void unsupportedOperation() {
 		try {
-			Formula f = new Formula("rank(\"name\")", PARSER);
+			Formula f = new Formula("abs(\"name\")", PARSER);
 			fail(f.sql(GENERIC_SQL));
 		} catch (UnsupportedFunctionException e) {
-			assertEquals("Rank", e.function);
+			assertEquals("Abs", e.function);
 			assertEquals("GenericSQL", e.dialect);
 			assertEquals(0, e.index());
-			assertEquals(12, e.length());
+			assertEquals(11, e.length());
 		}
 	}
 

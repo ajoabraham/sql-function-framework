@@ -5,6 +5,7 @@ import frmw.model.exception.ParsingException;
 import frmw.model.exception.SQLFrameworkException;
 import frmw.model.exception.WrongFunctionNameException;
 import frmw.model.fun.aggregation.AggregationParameters;
+import frmw.model.fun.olap.RankParameters;
 import frmw.model.fun.olap.WindowParameters;
 import frmw.model.position.Position;
 import frmw.model.position.PositionMap;
@@ -15,8 +16,6 @@ import org.codehaus.jparsec.error.ParserException;
 
 import java.util.*;
 
-import static frmw.parser.FunctionType.AGGREGATION;
-import static frmw.parser.FunctionType.SCALAR;
 import static java.lang.Character.isWhitespace;
 
 /**
@@ -42,12 +41,12 @@ public class Formula {
 			List<String> expected = details.getExpected();
 
 			Set<FunctionType> types = EnumSet.noneOf(FunctionType.class);
-			if (expected.contains(AGGREGATION.name())) {
-				types.add(AGGREGATION);
-			}
-
-			if (expected.contains(SCALAR.name())) {
-				types.add(SCALAR);
+			List<String> expectedFuncs = new ArrayList<String>();
+			for (FunctionType type : EnumSet.allOf(FunctionType.class)) {
+				if (expected.contains(type.name())) {
+					types.add(type);
+					expectedFuncs.addAll(type.functions(parser));
+				}
 			}
 
 			int errorAt = details.getIndex();
@@ -55,7 +54,7 @@ public class Formula {
 				throw new ParsingException(errorAt, expected);
 			} else {
 				String wrongName = findFunctionName(formula, errorAt);
-				throw new WrongFunctionNameException(errorAt, wrongName, types, parser);
+				throw new WrongFunctionNameException(errorAt, wrongName, types, expectedFuncs);
 			}
 		}
 	}
@@ -117,6 +116,12 @@ public class Formula {
 	public List<AggregationParameters> aggregationParameters() {
 		List<AggregationParameters> result = new ArrayList<AggregationParameters>();
 		root.collectAggregationParams(result);
+		return result;
+	}
+
+	public List<RankParameters> rankParameters() {
+		List<RankParameters> result = new ArrayList<RankParameters>();
+		root.collectRankParams(result);
 		return result;
 	}
 
