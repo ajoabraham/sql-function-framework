@@ -1,5 +1,6 @@
 package frmw.model;
 
+import frmw.parser.Hints;
 import org.junit.Test;
 
 import static frmw.TestSupport.PARSER;

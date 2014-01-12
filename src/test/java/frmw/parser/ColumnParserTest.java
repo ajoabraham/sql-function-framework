@@ -14,28 +14,28 @@ public class ColumnParserTest {
 
 	@Test
 	public void columnNameStartedFromDigit() {
-		Formula f = new Formula("\"1name\"", PARSER);
+		Formula f = PARSER.parse("\"1name\"");
 		String sql = f.sql(GENERIC_SQL);
 		assertEquals("\"1name\"", sql);
 	}
 
 	@Test
 	public void quotedColumnName() {
-		Formula f = new Formula("\"name\"", PARSER);
+		Formula f = PARSER.parse("\"name\"");
 		String sql = f.sql(GENERIC_SQL);
 		assertEquals("\"name\"", sql);
 	}
 
 	@Test
 	public void columnName() {
-		Formula f = new Formula("name", PARSER);
+		Formula f = PARSER.parse("name");
 		String sql = f.sql(GENERIC_SQL);
 		assertEquals("name", sql);
 	}
 
 	@Test
 	public void columnNameWithBlanks() {
-		Formula f = new Formula(" \t name  \n", PARSER);
+		Formula f = PARSER.parse(" \t name  \n");
 		String sql = f.sql(GENERIC_SQL);
 		assertEquals("name", sql);
 	}

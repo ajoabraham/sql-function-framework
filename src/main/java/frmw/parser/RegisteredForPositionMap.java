@@ -7,7 +7,7 @@ import org.codehaus.jparsec.Token;
 import org.codehaus.jparsec.functors.Map;
 
 import static frmw.model.exception.SQLFrameworkInternalException.wrap;
-import static frmw.model.position.ProvidingPositionsOnExceptionAspect.currentFormula;
+import static frmw.model.position.ProvidingPositionsOnExceptionAspect.currentFormulaPositions;
 
 /**
  * @author Alexey Paramonov
@@ -19,7 +19,7 @@ abstract class RegisteredForPositionMap<R extends FormulaElement, A> implements 
 	public R map(Token t) {
 		try {
 			FormulaElement res = build((A) t.value());
-			currentFormula.get().register(res, t.index(), t.length());
+			currentFormulaPositions.get().add(res, t.index(), t.length());
 			if (res instanceof PositionAware) {
 				((PositionAware) res).position(t.index(), t.length());
 			}

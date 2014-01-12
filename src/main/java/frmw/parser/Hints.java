@@ -1,6 +1,4 @@
-package frmw.model;
-
-import frmw.parser.Parsing;
+package frmw.parser;
 
 import java.util.ArrayList;
 import java.util.Collections;

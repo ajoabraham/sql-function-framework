@@ -22,7 +22,7 @@ public class ParsingErrorTest {
 	@Test
 	public void notExistedFunction() {
 		try {
-			Formula f = new Formula("  ranl(\"name\")", PARSER);
+			Formula f = PARSER.parse("  ranl(\"name\")");
 			fail(f.sql(GENERIC_SQL));
 		} catch (WrongFunctionNameException e) {
 			assertEquals("ranl", e.function);
@@ -37,7 +37,7 @@ public class ParsingErrorTest {
 	@Test
 	public void scalarFunctionsOnlyAppliedForAggregation() {
 		try {
-			Formula f = new Formula("avg (min (\"name\"))", PARSER);
+			Formula f = PARSER.parse("avg (min (\"name\"))");
 			fail(f.sql(GENERIC_SQL));
 		} catch (WrongFunctionNameException e) {
 			assertEquals("min", e.function);
@@ -53,7 +53,7 @@ public class ParsingErrorTest {
 	@Test
 	public void customWindowWithNotAggregationFunction() {
 		try {
-			Formula f = new Formula("customWindow(ln(col1), all, current  row)", PARSER);
+			Formula f = PARSER.parse("customWindow(ln(col1), all, current  row)");
 			fail(f.sql(GENERIC_SQL));
 		} catch (WrongFunctionNameException e) {
 			assertEquals("ln", e.function);
@@ -68,7 +68,7 @@ public class ParsingErrorTest {
 	@Test
 	public void plainColumnNameWithBlank() {
 		try {
-			Formula f = new Formula("  column name  ", PARSER);
+			Formula f = PARSER.parse("  column name  ");
 			fail(f.sql(GENERIC_SQL));
 		} catch (ParsingException e) {
 			assertEquals(9, e.index());
@@ -80,7 +80,7 @@ public class ParsingErrorTest {
 	@Test
 	public void unsupportedOperation() {
 		try {
-			Formula f = new Formula("abs(\"name\")", PARSER);
+			Formula f = PARSER.parse("abs(\"name\")");
 			fail(f.sql(GENERIC_SQL));
 		} catch (UnsupportedFunctionException e) {
 			assertEquals("Abs", e.function);
@@ -93,7 +93,7 @@ public class ParsingErrorTest {
 	@Test
 	public void unsupportedOperationEnhanced() {
 		try {
-			Formula f = new Formula("avg(ln(\"name\") + abs(col1))", PARSER);
+			Formula f = PARSER.parse("avg(ln(\"name\") + abs(col1))");
 			fail(f.sql(GENERIC_SQL));
 		} catch (UnsupportedFunctionException e) {
 			assertEquals("Ln", e.function);

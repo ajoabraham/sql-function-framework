@@ -14,14 +14,14 @@ public class GenericTest {
 
 	@Test
 	public void avg() {
-		Formula f = new Formula("avg(\"name\")", PARSER);
+		Formula f = PARSER.parse("avg(\"name\")");
 		String sql = f.sql(GENERIC_SQL);
 		assertEquals("avg(\"name\")", sql);
 	}
 
 	@Test
 	public void avg_distinct() {
-		Formula f = new Formula("avg(\"name\")", PARSER);
+		Formula f = PARSER.parse("avg(\"name\")");
 		f.aggregationParameters().get(0).distinct(true);
 		String sql = f.sql(GENERIC_SQL);
 		assertEquals("avg(DISTINCT \"name\")", sql);
@@ -29,21 +29,21 @@ public class GenericTest {
 
 	@Test
 	public void avg_caseInsensitivity() {
-		Formula f = new Formula("AvG(\"name\")", PARSER);
+		Formula f = PARSER.parse("AvG(\"name\")");
 		String sql = f.sql(GENERIC_SQL);
 		assertEquals("avg(\"name\")", sql);
 	}
 
 	@Test
 	public void min() {
-		Formula f = new Formula("min(\"name\")", PARSER);
+		Formula f = PARSER.parse("min(\"name\")");
 		String sql = f.sql(GENERIC_SQL);
 		assertEquals("min(\"name\")", sql);
 	}
 
 	@Test
 	public void min_distinct() {
-		Formula f = new Formula("min(\"name\")", PARSER);
+		Formula f = PARSER.parse("min(\"name\")");
 		f.aggregationParameters().get(0).distinct(true);
 		String sql = f.sql(GENERIC_SQL);
 		assertEquals("min(DISTINCT \"name\")", sql);
@@ -51,14 +51,14 @@ public class GenericTest {
 
 	@Test
 	public void max() {
-		Formula f = new Formula("max(\"name\")", PARSER);
+		Formula f = PARSER.parse("max(\"name\")");
 		String sql = f.sql(GENERIC_SQL);
 		assertEquals("max(\"name\")", sql);
 	}
 
 	@Test
 	public void max_distinct() {
-		Formula f = new Formula("max(\"name\")", PARSER);
+		Formula f = PARSER.parse("max(\"name\")");
 		f.aggregationParameters().get(0).distinct(true);
 		String sql = f.sql(GENERIC_SQL);
 		assertEquals("max(DISTINCT \"name\")", sql);
@@ -66,14 +66,14 @@ public class GenericTest {
 
 	@Test
 	public void count() {
-		Formula f = new Formula("count(\"name\")", PARSER);
+		Formula f = PARSER.parse("count(\"name\")");
 		String sql = f.sql(GENERIC_SQL);
 		assertEquals("count(\"name\")", sql);
 	}
 
 	@Test
 	public void count_distinct() {
-		Formula f = new Formula("count(\"name\")", PARSER);
+		Formula f = PARSER.parse("count(\"name\")");
 		f.aggregationParameters().get(0).distinct(true);
 		String sql = f.sql(GENERIC_SQL);
 		assertEquals("count(DISTINCT \"name\")", sql);
@@ -81,77 +81,77 @@ public class GenericTest {
 
 	@Test
 	public void avgWithWhitespaces() {
-		Formula f = new Formula(" \t avg ( \" name \n\" ) \n\r", PARSER);
+		Formula f = PARSER.parse(" \t avg ( \" name \n\" ) \n\r");
 		String sql = f.sql(GENERIC_SQL);
 		assertEquals("avg(\"name\")", sql);
 	}
         
 	@Test
 	public void trim() {
-		Formula f = new Formula("trim(\"name\")", PARSER);
+		Formula f = PARSER.parse("trim(\"name\")");
 		String sql = f.sql(GENERIC_SQL);
 		assertEquals("trim(\"name\")", sql);
 	}
 
 	@Test
 	public void concat() {
-		Formula f = new Formula("\"col1\" || \"col2\"", PARSER);
+		Formula f = PARSER.parse("\"col1\" || \"col2\"");
 		String sql = f.sql(GENERIC_SQL);
 		assertEquals("(\"col1\" || \"col2\")", sql);
 	}
 
 	@Test
 	public void concatInFunction() {
-		Formula f = new Formula("count(trim(\"col1\" || \"col2\"))", PARSER);
+		Formula f = PARSER.parse("count(trim(\"col1\" || \"col2\"))");
 		String sql = f.sql(GENERIC_SQL);
 		assertEquals("count(trim((\"col1\" || \"col2\")))", sql);
 	}
 
 	@Test
 	public void concatOperatorHasLowestPriorityThanArithmeticalOperators() {
-		Formula f = new Formula("col1 + col2 - col3 || col4 - col5", PARSER);
+		Formula f = PARSER.parse("col1 + col2 - col3 || col4 - col5");
 		String sql = f.sql(GENERIC_SQL);
 		assertEquals("(((col1 + col2) - col3) || (col4 - col5))", sql);
 	}
 
 	@Test
 	public void currentDate() {
-		Formula f = new Formula("currentDate()", PARSER);
+		Formula f = PARSER.parse("currentDate()");
 		String sql = f.sql(GENERIC_SQL);
 		assertEquals("CURRENT_DATE", sql);
 	}
 
 	@Test
 	public void currentTimestamp() {
-		Formula f = new Formula("currentTimestamp()", PARSER);
+		Formula f = PARSER.parse("currentTimestamp()");
 		String sql = f.sql(GENERIC_SQL);
 		assertEquals("CURRENT_TIMESTAMP", sql);
 	}
 
 	@Test
 	public void upper() {
-		Formula f = new Formula("upper(col1)", PARSER);
+		Formula f = PARSER.parse("upper(col1)");
 		String sql = f.sql(GENERIC_SQL);
 		assertEquals("upper(col1)", sql);
 	}
 
 	@Test
 	public void lower() {
-		Formula f = new Formula("lower(col1)", PARSER);
+		Formula f = PARSER.parse("lower(col1)");
 		String sql = f.sql(GENERIC_SQL);
 		assertEquals("lower(col1)", sql);
 	}
 
 	@Test
 	public void avgWithSpaceInColumnName() {
-		Formula f = new Formula("avg(\"column name\")", PARSER);
+		Formula f = PARSER.parse("avg(\"column name\")");
 		String sql = f.sql(GENERIC_SQL);
 		assertEquals("avg(\"column name\")", sql);
 	}
 
 	@Test
 	public void sumWithArithmetic() {
-		Formula f = new Formula("sum(\"column name\"+2-4*col1/3)", PARSER);
+		Formula f = PARSER.parse("sum(\"column name\"+2-4*col1/3)");
 		assertEquals("sum(((\"column name\" + 2) - ((4 * col1) / 3)))", f.sql(GENERIC_SQL));
 	}
 }

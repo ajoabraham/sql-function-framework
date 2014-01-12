@@ -14,14 +14,14 @@ public class CommonRulesTest {
 
 	@Test
 	public void functionsWithoutParenthesisShouldMapToColumnName() {
-		Formula f = new Formula("currentDate", PARSER);
+		Formula f = PARSER.parse("currentDate");
 		String sql = f.sql(GENERIC_SQL);
 		assertEquals("currentDate", sql);
 	}
 
 	@Test
 	public void lotsOfWhitespacesInFunction() {
-		Formula f = new Formula("  \n \t min \n\r \t ( \n\t col1 \t  \r\n ) \t \t \n \r", PARSER);
+		Formula f = PARSER.parse("  \n \t min \n\r \t ( \n\t col1 \t  \r\n ) \t \t \n \r");
 		String sql = f.sql(GENERIC_SQL);
 		assertEquals("min(col1)", sql);
 	}
