@@ -1,6 +1,7 @@
 package frmw.parser;
 
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Iterables;
 import frmw.model.FormulaElement;
 import org.codehaus.jparsec.Parser;
 import org.codehaus.jparsec.error.ParserException;
@@ -8,9 +9,7 @@ import org.codehaus.jparsec.error.ParserException;
 import java.util.List;
 
 import static frmw.parser.Common.withOperators;
-import static frmw.parser.FunctionType.AGGREGATION;
-import static frmw.parser.FunctionType.OLAP;
-import static frmw.parser.FunctionType.SCALAR;
+import static frmw.parser.FunctionType.*;
 import static org.codehaus.jparsec.Parsers.or;
 
 /**
@@ -33,6 +32,7 @@ public class Parsing {
 	private final List<String> scalarNames;
 	private final List<String> aggregationNames;
 	private final List<String> olapNames;
+	private final Iterable<String> all;
 
 	public Parsing() {
 		Aggregations aggr = new Aggregations(scalar.lazy(), commons.lazy());
@@ -51,6 +51,7 @@ public class Parsing {
 		commons.set(or(c.parsers));
 
 		parser = withOperators(or(aggregation.lazy(), this.olap.lazy(), scalar.lazy(), commons.lazy()));
+		all = Iterables.concat(scalarNames, aggregationNames, olapNames);
 	}
 
 	public FormulaElement parse(String formula) {
@@ -72,5 +73,9 @@ public class Parsing {
 
 	public List<String> olapFunctions() {
 		return olapNames;
+	}
+
+	public Iterable<String> functions() {
+		return all;
 	}
 }

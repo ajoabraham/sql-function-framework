@@ -36,7 +36,7 @@ import static org.codehaus.jparsec.pattern.Patterns.among;
 /**
  * @author Alexey Paramonov
  */
-class Common {
+public class Common {
 
 	private static final RegisteredForPositionMap<FormulaElement, String> QUOTED_COLUMN = new RegisteredForPositionMap<FormulaElement, String>() {
 		@Override
@@ -50,12 +50,13 @@ class Common {
 			return new Column(value, false);
 		}
 	};
-	private static final CharPredicate COLUMN_CHARS = new CharPredicate() {
+	public static final CharPredicate COLUMN_CHARS = new CharPredicate() {
 		@Override
 		public boolean isChar(char c) {
 			return c != '(' && c != ')' && c != ',' && c != '|' &&
 					c != '=' && c != '<' && c != '>' && c != '!' &&
-					c != '*' && c != '/' && c != '+' && c != '-' && !isWhitespace(c);
+					c != '*' && c != '/' && c != '+' && c != '-' &&
+					!isWhitespace(c);
 		}
 	};
 	private static final CharPredicate QUOTED_COLUMN_CHARS = new CharPredicate() {
