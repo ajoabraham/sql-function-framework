@@ -9,7 +9,10 @@ import frmw.model.fun.olap.support.Rows;
 import frmw.model.ifelse.Case;
 import frmw.model.ifelse.SimpleCase;
 import frmw.model.ifelse.WhenBlock;
-import frmw.model.operator.*;
+import frmw.parser.op.BinaryOp;
+import frmw.parser.op.CompareOp;
+import frmw.parser.op.NullOp;
+import frmw.parser.op.UnaryOp;
 import org.codehaus.jparsec.OperatorTable;
 import org.codehaus.jparsec.Parser;
 import org.codehaus.jparsec.functors.*;
@@ -239,106 +242,8 @@ public class Common {
 		return p.retn(value);
 	}
 
-	enum BinaryOp implements Binary<FormulaElement> {
-		PLUS {
-			public FormulaElement map(FormulaElement a, FormulaElement b) {
-				return new BinaryOperator(a, b, "+");
-			}
-		},
-		MINUS {
-			public FormulaElement map(FormulaElement a, FormulaElement b) {
-				return new BinaryOperator(a, b, "-");
-			}
-		},
-		MUL {
-			public FormulaElement map(FormulaElement a, FormulaElement b) {
-				return new BinaryOperator(a, b, "*");
-			}
-		},
-		DIV {
-			public FormulaElement map(FormulaElement a, FormulaElement b) {
-				return new BinaryOperator(a, b, "/");
-			}
-		},
-		CONCAT {
-			public FormulaElement map(FormulaElement a, FormulaElement b) {
-				return new BinaryOperator(a, b, "||");
-			}
-		},
-		AND {
-			public FormulaElement map(FormulaElement a, FormulaElement b) {
-				return new And(a, b);
-			}
-		},
-		OR {
-			public FormulaElement map(FormulaElement a, FormulaElement b) {
-				return new Or(a, b);
-			}
-		}
-	}
-
-	enum CompareOp implements Map3<FormulaElement, Void, FormulaElement, FormulaElement> {
-		EQUAL {
-			public FormulaElement map(FormulaElement a, Void v, FormulaElement b) {
-				return new BinaryOperator(a, b, "=");
-			}
-		},
-		GREAT {
-			public FormulaElement map(FormulaElement a, Void v, FormulaElement b) {
-				return new BinaryOperator(a, b, ">");
-			}
-		},
-		LESS {
-			public FormulaElement map(FormulaElement a, Void v, FormulaElement b) {
-				return new BinaryOperator(a, b, "<");
-			}
-		},
-		EQUAL_GREAT {
-			public FormulaElement map(FormulaElement a, Void v, FormulaElement b) {
-				return new BinaryOperator(a, b, ">=");
-			}
-		},
-		EQUAL_LESS {
-			public FormulaElement map(FormulaElement a, Void v, FormulaElement b) {
-				return new BinaryOperator(a, b, "<=");
-			}
-		},
-		NOT_EQUAL {
-			public FormulaElement map(FormulaElement a, Void v, FormulaElement b) {
-				return new BinaryOperator(a, b, "!=");
-			}
-		}
-	}
-
-	enum NullOp implements Map2<FormulaElement, Void, FormulaElement> {
-
-		NULL {
-			public FormulaElement map(FormulaElement n, Void v) {
-				return new Null(n, true);
-			}
-		},
-		NOT_NULL {
-			public FormulaElement map(FormulaElement n, Void v) {
-				return new Null(n, false);
-			}
-		}
-	}
-
-	enum UnaryOp implements Unary<FormulaElement> {
-		NEG {
-			public FormulaElement map(FormulaElement n) {
-				return new UnaryOperator(n, "-");
-			}
-		},
-		PLUS {
-			public FormulaElement map(FormulaElement n) {
-				return new UnaryOperator(n, "");
-			}
-		}
-	}
-
 	/**
-	 * This parser should be last parser in any sequence of parsers.
+	 * This parser should be the last parser in any sequence of parsers.
 	 */
 	public static Parser<FormulaElement> column() {
 		Parser<FormulaElement> quoted = isChar(QUOTED_COLUMN_CHARS, COLUMN_NAME_ID).

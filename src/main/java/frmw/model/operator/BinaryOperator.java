@@ -12,15 +12,15 @@ import java.util.Set;
 /**
  * @author Alexey Paramonov
  */
-public class BinaryOperator implements FormulaElement {
+class BinaryOperator implements FormulaElement {
 
 	public final FormulaElement left;
 
 	public final FormulaElement right;
 
-	private final String op;
+	public final String op;
 
-	public BinaryOperator(FormulaElement left, FormulaElement right, String op) {
+	BinaryOperator(FormulaElement left, FormulaElement right, String op) {
 		this.left = left;
 		this.right = right;
 		this.op = op;

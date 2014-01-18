@@ -11,9 +11,17 @@ public class UnaryOperator extends Scalar {
 
 	private final String op;
 
-	public UnaryOperator(FormulaElement arg, String op) {
+	private UnaryOperator(FormulaElement arg, String op) {
 		super(arg);
 		this.op = op;
+	}
+
+	public static UnaryOperator plus(FormulaElement arg) {
+		return new UnaryOperator(arg, "");
+	}
+
+	public static UnaryOperator minus(FormulaElement arg) {
+		return new UnaryOperator(arg, "-");
 	}
 
 	@Override
