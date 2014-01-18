@@ -57,7 +57,7 @@ public class Parsing {
 		scalarNames = ImmutableList.copyOf(s.names);
 		scalar.set(or(s.parsers).label(SCALAR.name()));
 
-		Common c = new Common(scalar.lazy(), aggregation.lazy(), commons.lazy());
+		Common c = new Common(scalar.lazy(), aggregation.lazy(), commons.lazy(), this.olap.lazy());
 		commons.set(or(c.parsers));
 
 		parser = withOperators(or(aggregation.lazy(), this.olap.lazy(), scalar.lazy(), commons.lazy()));

@@ -124,8 +124,8 @@ public class Common {
 				}
 			});
 
-	public Common(Parser<FormulaElement> scalar, Parser<FormulaElement> aggregation, Parser<FormulaElement> common) {
-		Parser<FormulaElement> all = withOperators(or(scalar, aggregation, common));
+	public Common(Parser<FormulaElement> scalar, Parser<FormulaElement> aggregation, Parser<FormulaElement> common, Parser<FormulaElement> olap) {
+		Parser<FormulaElement> all = withOperators(or(scalar, aggregation, olap, common));
 
 		parsers.add(stringLiteral());
 		parsers.add(number());
