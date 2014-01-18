@@ -99,7 +99,7 @@ public class ParsingErrorTest {
 			assertEquals("Ln", e.function);
 			assertEquals("GenericSQL", e.dialect);
 			assertEquals(4, e.index());
-			assertEquals(11, e.length());
+			assertEquals(10, e.length());
 		}
 	}
 }

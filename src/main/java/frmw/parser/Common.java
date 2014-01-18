@@ -72,7 +72,8 @@ public class Common {
 
 	public static final Parser<?> COMMA = trailed(isChar(','));
 	public static final Parser<Void> OPENED = trailed(isChar('('));
-	public static final Parser<Void> CLOSED = trailed(isChar(')'));
+	public static final Parser<Void> CLOSED_TRIM_LEFT = TRAILED.next(isChar(')'));
+	public static final Parser<Void> CLOSED = CLOSED_TRIM_LEFT.next(TRAILED);
 	public static final Parser<Void> NO_ARG = OPENED.next(CLOSED);
 
 	public static final Parser<Void> DQ = trailed(isChar('"'));
@@ -354,14 +355,14 @@ public class Common {
 	}
 
 	public static <T extends FormulaElement> Parser<T> fun(final Class<? extends T> clazz, final Parser<?>... args) {
-		Parser<?> body = args.length == 0 ? NO_ARG : buildArgumentParser(args).between(OPENED, CLOSED);
+		Parser<?> body = args.length == 0 ? NO_ARG : buildArgumentParser(args).between(OPENED, CLOSED_TRIM_LEFT);
 		Parser<Void> functionName = trailed(stringCaseInsensitive(funName(clazz)));
 		return functionName.next(body).token().map(new RegisteredForPositionMap<T, List<Object>>() {
 			@Override
 			protected FormulaElement build(List<Object> result) throws Exception {
 				return args.length == 0 ? clazz.newInstance() : newInstance(clazz, result);
 			}
-		});
+		}).followedBy(TRAILED);
 	}
 
 	private static Parser<?> buildArgumentParser(Parser<?>[] args) {
