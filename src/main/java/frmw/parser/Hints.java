@@ -1,5 +1,7 @@
 package frmw.parser;
 
+import frmw.model.exception.WrongFunctionNameException;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -22,6 +24,7 @@ public class Hints {
 	private final boolean parameter;
 
 	private final List<String> functions;
+	private final List<String> parameters;
 
 	/**
 	 * Hints will be decided as if user place cursor to the end of the input.
@@ -45,6 +48,7 @@ public class Hints {
 			function = false;
 			parameter = false;
 			functions = emptyList();
+			parameters = emptyList();
 			return;
 		}
 
@@ -60,15 +64,36 @@ public class Hints {
 		parameter = false;
 
 		functions = function ? decideSuitableFunctions(formula, cursor, parser) : Collections.<String>emptyList();
+		parameters = emptyList();
 	}
 
 	private List<String> decideSuitableFunctions(String formula, int cursor, Parsing parser) {
-		List<String> result = new ArrayList<String>();
-		String functionName = extractFunction(formula, cursor);
+		String taped = extractFunction(formula, cursor);
+		String fakeFormula = formula.substring(0, cursor) + "(";
 
-		for (String name : parser.functions()) {
-			if (startsWithIgnoreCase(name, functionName)) {
-				result.add(name);
+		try {
+			parser.parse(fakeFormula);
+		} catch (WrongFunctionNameException ex) {
+			if (ex.index() + ex.length() != cursor) {
+				// formula has errors that are not related to taped function name
+				return matchedFunctions(taped, parser.functions());
+			} else {
+				return matchedFunctions(taped, ex.expectedFunctions);
+			}
+		} catch (Exception e) {
+			// formula has errors that are not related to function names
+			return matchedFunctions(taped, parser.functions());
+		}
+
+		return matchedFunctions(taped, parser.functions());
+	}
+
+	private List<String> matchedFunctions(String taped, Iterable<String> functions) {
+		List<String> result = new ArrayList<String>();
+
+		for (String functionName : functions) {
+			if (startsWithIgnoreCase(functionName, taped)) {
+				result.add(functionName);
 			}
 		}
 
@@ -133,7 +158,7 @@ public class Hints {
 	}
 
 	/**
-	 * @return function hint
+	 * @return list of suitable function names in cursor positions that user may want to tape
 	 */
 	public List<String> functions() {
 		return functions;
@@ -144,6 +169,6 @@ public class Hints {
 	}
 
 	public List<String> parameters() {
-		return emptyList();
+		return parameters;
 	}
 }

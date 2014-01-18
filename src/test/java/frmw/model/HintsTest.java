@@ -4,6 +4,7 @@ import frmw.parser.Hints;
 import org.junit.Test;
 
 import static frmw.TestSupport.PARSER;
+import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.junit.Assert.*;
 
@@ -151,7 +152,7 @@ public class HintsTest {
 	@Test
 	public void whitespaceBeforeName() {
 		Hints hints = new Hints("sum( ran", PARSER);
-		assertThat(hints.functions(), containsInAnyOrder("Rank", "Random"));
+		assertThat(hints.functions(), containsInAnyOrder("Random"));
 	}
 
 	@Test
@@ -159,5 +160,26 @@ public class HintsTest {
 		Hints hints = new Hints("col1+col2", 5, PARSER);
 		assertFalse(hints.functionHint());
 		assertTrue(hints.anyFunction());
+	}
+
+	@Test
+	public void userCannotInsertAggregationAndOLAPInAggregation() {
+		Hints hints = new Hints("min(c", PARSER);
+		assertTrue(hints.functionHint());
+		assertThat(hints.functions(), containsInAnyOrder("Cos", "CosH", "CurrentDate", "CurrentTimestamp"));
+	}
+
+	@Test
+	public void userCanInsertOnlyAggregationInOLAP() {
+		Hints hints = new Hints("customWindow(co", PARSER);
+		assertTrue(hints.functionHint());
+		assertThat(hints.functions(), contains("Count"));
+	}
+
+	@Test
+	public void mistakeInFunctionNameBeforeCursorPosition() {
+		Hints hints = new Hints("customWindow(customWind(co", PARSER);
+		assertTrue(hints.functionHint());
+		assertThat(hints.functions(), containsInAnyOrder("Cos", "CosH", "Count"));
 	}
 }
