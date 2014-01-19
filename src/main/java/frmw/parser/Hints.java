@@ -62,7 +62,12 @@ public class Hints {
 		}
 
 		anyFunction = lastCharIsSpecialCharacter(formula, cursor);
-		function = !anyFunction && allQuotesAreClosed(formula, cursor);
+		if (!anyFunction) {
+			boolean res[] = quotesStatistic(formula, cursor);
+			function = !res[0] && !res[1];
+		} else {
+			function = false;
+		}
 
 		functions = function ? decideSuitableFunctions(formula, cursor, parser) : EMPTY_SPEC;
 		arguments = decideParameters(formula, cursor, parser);
@@ -72,12 +77,26 @@ public class Hints {
 		LinkedList<ArgumentHint> functionStack = new LinkedList<ArgumentHint>();
 		StringBuilder currentFunction = new StringBuilder();
 
+		boolean quotes[] = quotesStatistic(formula, cursor);
+		boolean single = quotes[0];
+		boolean doubleQ = quotes[1];
+
 		int openedAndClosed = 0;
 		int argIndex = 0;
 		boolean followingIsFunctionName = false;
 
 		for (int i = cursor - 1; i >= 0; i--) {
 			char ch = formula.charAt(i);
+
+			if (ch == '"' && !single) {
+				doubleQ = !doubleQ;
+			} else if (ch == '\'' && !doubleQ) {
+				single = !single;
+			}
+
+			if (single || doubleQ) {
+				continue;
+			}
 
 			if (COLUMN_CHARS.isChar(ch) && followingIsFunctionName) {
 				currentFunction.append(ch);
@@ -178,7 +197,7 @@ public class Hints {
 		return !COLUMN_CHARS.isChar(last);
 	}
 
-	private boolean allQuotesAreClosed(String formula, int cursorPosition) {
+	private boolean[] quotesStatistic(String formula, int cursorPosition) {
 		boolean single = false;
 		boolean doubleQ = false;
 
@@ -187,14 +206,12 @@ public class Hints {
 
 			if (c == '"' && !single) {
 				doubleQ = !doubleQ;
-			}
-
-			if (c == '\'' && !doubleQ) {
+			}else if (c == '\'' && !doubleQ) {
 				single = !single;
 			}
 		}
 
-		return !single && !doubleQ;
+		return new boolean[] {single, doubleQ};
 	}
 
 	/**

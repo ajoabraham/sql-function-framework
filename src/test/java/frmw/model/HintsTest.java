@@ -267,4 +267,32 @@ public class HintsTest {
 		assertTrue(hints.argumentHint());
 		assertThat(hints.arguments(), contains(arg("customWindow", 2), arg("random", 1)));
 	}
+
+	@Test
+	public void oneOfTheArgsIsDoubleQuotedColumnWithComma() {
+		Hints hints = new Hints("random(12, col1, \"col1,col,col\", 12, 12", PARSER);
+		assertTrue(hints.argumentHint());
+		assertThat(hints.arguments(), contains(arg("random", 4)));
+	}
+
+	@Test
+	public void oneOfTheArgsIsDoubleQuotedColumnWithComma_opened() {
+		Hints hints = new Hints("random(12, col1, 12, 12, \"12,13", PARSER);
+		assertTrue(hints.argumentHint());
+		assertThat(hints.arguments(), contains(arg("random", 4)));
+	}
+
+	@Test
+	public void oneOfTheArgsIsSingleQuotedColumnWithComma() {
+		Hints hints = new Hints("random(12, col1, \'col1,''col\",col\', 12, 12", PARSER);
+		assertTrue(hints.argumentHint());
+		assertThat(hints.arguments(), contains(arg("random", 4)));
+	}
+
+	@Test
+	public void oneOfTheArgsIsSingleQuotedColumnWithComma_opened() {
+		Hints hints = new Hints("random(12, col1, 12, 12, \'12,13", PARSER);
+		assertTrue(hints.argumentHint());
+		assertThat(hints.arguments(), contains(arg("random", 4)));
+	}
 }
