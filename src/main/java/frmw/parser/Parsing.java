@@ -6,6 +6,7 @@ import frmw.model.Formula;
 import frmw.model.FormulaElement;
 import frmw.model.exception.ParsingException;
 import frmw.model.exception.WrongFunctionNameException;
+import frmw.model.hint.FunctionSpec;
 import frmw.model.position.PositionMap;
 import org.codehaus.jparsec.Parser;
 import org.codehaus.jparsec.error.ParseErrorDetails;
@@ -20,6 +21,7 @@ import static frmw.model.position.ProvidingPositionsOnExceptionAspect.currentFor
 import static frmw.parser.Common.withOperators;
 import static frmw.parser.FunctionType.*;
 import static java.lang.Character.isWhitespace;
+import static org.apache.commons.lang3.StringUtils.equalsIgnoreCase;
 import static org.codehaus.jparsec.Parsers.or;
 
 /**
@@ -39,29 +41,29 @@ public class Parsing {
 
 	private final Parser<FormulaElement> parser;
 
-	private final List<String> scalarNames;
-	private final List<String> aggregationNames;
-	private final List<String> olapNames;
-	private final Iterable<String> all;
+	private final List<FunctionSpec> scalarSpecs;
+	private final List<FunctionSpec> aggregationSpecs;
+	private final List<FunctionSpec> olapSpecs;
+	private final Iterable<FunctionSpec> all;
 
 	public Parsing() {
 		Aggregations aggr = new Aggregations(scalar.lazy(), commons.lazy());
-		aggregationNames = ImmutableList.copyOf(aggr.names);
+		aggregationSpecs = ImmutableList.copyOf(aggr.specs);
 		aggregation.set(or(aggr.parsers).label(AGGREGATION.name()));
 
 		Olap olap = new Olap(aggregation.lazy(), scalar.lazy(), commons.lazy());
-		olapNames = ImmutableList.copyOf(olap.names);
+		olapSpecs = ImmutableList.copyOf(olap.specs);
 		this.olap.set(or(olap.parsers).label(OLAP.name()));
 
 		Scalars s = new Scalars(scalar.lazy(), aggregation.lazy(), this.olap.lazy(), commons.lazy());
-		scalarNames = ImmutableList.copyOf(s.names);
+		scalarSpecs = ImmutableList.copyOf(s.specs);
 		scalar.set(or(s.parsers).label(SCALAR.name()));
 
 		Common c = new Common(scalar.lazy(), aggregation.lazy(), commons.lazy(), this.olap.lazy());
 		commons.set(or(c.parsers));
 
 		parser = withOperators(or(aggregation.lazy(), this.olap.lazy(), scalar.lazy(), commons.lazy()));
-		all = Iterables.concat(scalarNames, aggregationNames, olapNames);
+		all = Iterables.concat(scalarSpecs, aggregationSpecs, olapSpecs);
 	}
 
 	/**
@@ -80,7 +82,7 @@ public class Parsing {
 			List<String> expected = details.getExpected();
 
 			Set<FunctionType> types = EnumSet.noneOf(FunctionType.class);
-			List<String> expectedFuncs = new ArrayList<String>();
+			List<FunctionSpec> expectedFuncs = new ArrayList<FunctionSpec>();
 			for (FunctionType type : EnumSet.allOf(FunctionType.class)) {
 				if (expected.contains(type.name())) {
 					types.add(type);
@@ -111,19 +113,29 @@ public class Parsing {
 		return formula.substring(errorAt, last);
 	}
 
-	public List<String> scalarFunctions() {
-		return scalarNames;
+	public List<FunctionSpec> scalarFunctions() {
+		return scalarSpecs;
 	}
 
-	public List<String> aggregationFunctions() {
-		return aggregationNames;
+	public List<FunctionSpec> aggregationFunctions() {
+		return aggregationSpecs;
 	}
 
-	public List<String> olapFunctions() {
-		return olapNames;
+	public List<FunctionSpec> olapFunctions() {
+		return olapSpecs;
 	}
 
-	public Iterable<String> functions() {
+	public Iterable<FunctionSpec> functions() {
 		return all;
+	}
+
+	public FunctionSpec byName(String function) {
+		for (FunctionSpec spec : all) {
+			if (equalsIgnoreCase(spec.name, function)) {
+				return spec;
+			}
+		}
+
+		return null;
 	}
 }

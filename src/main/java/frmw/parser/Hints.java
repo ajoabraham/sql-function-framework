@@ -1,9 +1,11 @@
 package frmw.parser;
 
 import frmw.model.exception.WrongFunctionNameException;
+import frmw.model.hint.ArgumentHint;
+import frmw.model.hint.FunctionSpec;
 
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
 
 import static frmw.parser.Common.COLUMN_CHARS;
@@ -13,18 +15,19 @@ import static org.apache.commons.lang3.StringUtils.reverse;
 import static org.apache.commons.lang3.StringUtils.startsWithIgnoreCase;
 
 /**
- * Providing hints to user input.
+ * Providing hints for user input.
  *
  * @author Alexey Paramonov
  */
 public class Hints {
 
+	private static final List<FunctionSpec> EMPTY_SPEC = emptyList();
+
 	private final boolean anyFunction;
 	private final boolean function;
-	private final boolean parameter;
 
-	private final List<String> functions;
-	private final List<String> parameters;
+	private final List<FunctionSpec> functions;
+	private final List<ArgumentHint> arguments;
 
 	/**
 	 * Hints will be decided as if user place cursor to the end of the input.
@@ -46,9 +49,8 @@ public class Hints {
 		if (cursor == 0) {
 			anyFunction = true;
 			function = false;
-			parameter = false;
-			functions = emptyList();
-			parameters = emptyList();
+			functions = EMPTY_SPEC;
+			arguments = emptyList();
 			return;
 		}
 
@@ -61,13 +63,69 @@ public class Hints {
 
 		anyFunction = lastCharIsSpecialCharacter(formula, cursor);
 		function = !anyFunction && allQuotesAreClosed(formula, cursor);
-		parameter = false;
 
-		functions = function ? decideSuitableFunctions(formula, cursor, parser) : Collections.<String>emptyList();
-		parameters = emptyList();
+		functions = function ? decideSuitableFunctions(formula, cursor, parser) : EMPTY_SPEC;
+		arguments = decideParameters(formula, cursor, parser);
 	}
 
-	private List<String> decideSuitableFunctions(String formula, int cursor, Parsing parser) {
+	private List<ArgumentHint> decideParameters(String formula, int cursor, Parsing parser) {
+		LinkedList<ArgumentHint> functionStack = new LinkedList<ArgumentHint>();
+		StringBuilder currentFunction = new StringBuilder();
+
+		int openedAndClosed = 0;
+		int argIndex = 0;
+		boolean followingIsFunctionName = false;
+
+		for (int i = cursor - 1; i >= 0; i--) {
+			char ch = formula.charAt(i);
+
+			if (COLUMN_CHARS.isChar(ch) && followingIsFunctionName) {
+				currentFunction.append(ch);
+				continue;
+			} else if (ch == '(') {
+				followingIsFunctionName = false;
+				if (tryToCollectFunction(functionStack, currentFunction, parser, argIndex)) {
+					argIndex = 0;
+				}
+
+				if (openedAndClosed > 0) {
+					openedAndClosed--;
+				} else {
+					followingIsFunctionName = true;
+				}
+
+				continue;
+			} else if (ch == ')') {
+				openedAndClosed++;
+			} else if (ch == ',' && openedAndClosed == 0) {
+				argIndex++;
+			}
+
+			followingIsFunctionName = false;
+			if (tryToCollectFunction(functionStack, currentFunction, parser, argIndex)) {
+				argIndex = 0;
+			}
+		}
+
+		tryToCollectFunction(functionStack, currentFunction, parser, argIndex);
+		return functionStack;
+	}
+
+	private boolean tryToCollectFunction(LinkedList<ArgumentHint> functionStack, StringBuilder currentFunction, Parsing parser, int index) {
+		if (currentFunction.length() == 0) {
+			return false;
+		}
+
+		String reversed = reverse(currentFunction.toString());
+		FunctionSpec spec = parser.byName(reversed);
+		if (spec != null) {
+			functionStack.addFirst(new ArgumentHint(spec, index));
+		}
+		currentFunction.delete(0, currentFunction.length());
+		return true;
+	}
+
+	private List<FunctionSpec> decideSuitableFunctions(String formula, int cursor, Parsing parser) {
 		String taped = extractFunction(formula, cursor);
 		String fakeFormula = formula.substring(0, cursor) + "(";
 
@@ -88,12 +146,12 @@ public class Hints {
 		return matchedFunctions(taped, parser.functions());
 	}
 
-	private List<String> matchedFunctions(String taped, Iterable<String> functions) {
-		List<String> result = new ArrayList<String>();
+	private List<FunctionSpec> matchedFunctions(String taped, Iterable<FunctionSpec> functions) {
+		List<FunctionSpec> result = new ArrayList<FunctionSpec>();
 
-		for (String functionName : functions) {
-			if (startsWithIgnoreCase(functionName, taped)) {
-				result.add(functionName);
+		for (FunctionSpec spec : functions) {
+			if (startsWithIgnoreCase(spec.name, taped)) {
+				result.add(spec);
 			}
 		}
 
@@ -160,15 +218,18 @@ public class Hints {
 	/**
 	 * @return list of suitable function names in cursor positions that user may want to tape
 	 */
-	public List<String> functions() {
+	public List<FunctionSpec> functions() {
 		return functions;
 	}
 
-	public boolean parameter() {
-		return parameter;
+	public boolean argumentHint() {
+		return !arguments.isEmpty();
 	}
 
-	public List<String> parameters() {
-		return parameters;
+	/**
+	 * @return argument hint stack
+	 */
+	public List<ArgumentHint> arguments() {
+		return arguments;
 	}
 }

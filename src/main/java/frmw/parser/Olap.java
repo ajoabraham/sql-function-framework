@@ -18,10 +18,12 @@ class Olap extends FunctionBuilder {
 		Parser<FormulaElement> withScalars = withOperators(or(scalar, common));
 		Parser<FormulaElement> all = withOperators(or(aggregations, scalar, common));
 
+		Arg rowNumber = arg(INTEGER_PARSER, "preceding_row_number");
+
 		f(Rank.class, all);
-		f(MovingAvg.class, withScalars, INTEGER_PARSER);
-		f(MovingCount.class, withScalars, INTEGER_PARSER);
-		f(MovingSum.class, withScalars, INTEGER_PARSER);
+		f(MovingAvg.class, withScalars, rowNumber);
+		f(MovingCount.class, withScalars, rowNumber);
+		f(MovingSum.class, withScalars, rowNumber);
 		f(RunningAvg.class, withScalars);
 		f(RunningCount.class, withScalars);
 		f(RunningSum.class, withScalars);
@@ -30,6 +32,9 @@ class Olap extends FunctionBuilder {
 
 	private void customWindow(Parser<FormulaElement> aggregations) {
 		Parser<Rows> rows = Common.rows();
-		f(CustomWindow.class, aggregations, rows, rows);
+		f(CustomWindow.class,
+				arg(aggregations, "aggregation_function"),
+				arg(rows, "preceding_row"),
+				arg(rows, "following_row"));
 	}
 }

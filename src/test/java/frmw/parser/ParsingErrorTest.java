@@ -8,6 +8,7 @@ import org.junit.Test;
 
 import static frmw.TestSupport.GENERIC_SQL;
 import static frmw.TestSupport.PARSER;
+import static frmw.TestSupport.names;
 import static frmw.parser.FunctionType.AGGREGATION;
 import static frmw.parser.FunctionType.OLAP;
 import static frmw.parser.FunctionType.SCALAR;
@@ -29,8 +30,8 @@ public class ParsingErrorTest {
 			assertEquals(2, e.index());
 			assertEquals(4, e.length());
 			assertThat(e.expectedTypes, containsInAnyOrder(SCALAR, AGGREGATION, OLAP));
-			assertThat(e.expectedFunctions, hasItems("Min", "Ln", "RunningAvg"));
-			assertThat(e.closestFunctions, containsInAnyOrder("Rank"));
+			assertThat(names(e.expectedFunctions), hasItems("Min", "Ln", "RunningAvg"));
+			assertThat(names(e.closestFunctions), containsInAnyOrder("Rank"));
 		}
 	}
 
@@ -44,9 +45,9 @@ public class ParsingErrorTest {
 			assertEquals(5, e.index());
 			assertEquals(3, e.length());
 			assertThat(e.expectedTypes, contains(SCALAR));
-			assertThat(e.expectedFunctions, hasItem("Ln"));
-			assertThat(e.expectedFunctions, not(hasItems("Count", "RunningAvg")));
-			assertThat(e.closestFunctions, containsInAnyOrder("Sin"));
+			assertThat(names(e.expectedFunctions), hasItem("Ln"));
+			assertThat(names(e.expectedFunctions), not(hasItems("Count", "RunningAvg")));
+			assertThat(names(e.closestFunctions), containsInAnyOrder("Sin"));
 		}
 	}
 
@@ -60,8 +61,8 @@ public class ParsingErrorTest {
 			assertEquals(13, e.index());
 			assertEquals(2, e.length());
 			assertThat(e.expectedTypes, contains(AGGREGATION));
-			assertThat(e.expectedFunctions, hasItems("Count", "Min"));
-			assertThat(e.expectedFunctions, not(hasItems("Abs", "Ln", "RunningAvg")));
+			assertThat(names(e.expectedFunctions), hasItems("Count", "Min"));
+			assertThat(names(e.expectedFunctions), not(hasItems("Abs", "Ln", "RunningAvg")));
 		}
 	}
 

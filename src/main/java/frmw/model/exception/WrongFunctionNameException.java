@@ -1,5 +1,6 @@
 package frmw.model.exception;
 
+import frmw.model.hint.FunctionSpec;
 import frmw.parser.FunctionType;
 
 import java.util.ArrayList;
@@ -27,14 +28,14 @@ public class WrongFunctionNameException extends SQLFrameworkException {
 	/**
 	 * Expected function names in the {@link #index} location.
 	 */
-	public final List<String> expectedFunctions;
+	public final List<FunctionSpec> expectedFunctions;
 
 	/**
 	 * The most closest function names to the user input at {@link #index}.
 	 */
-	public final List<String> closestFunctions;
+	public final List<FunctionSpec> closestFunctions;
 
-	public WrongFunctionNameException(int errorAt, String function, Set<FunctionType> types, List<String> expected) {
+	public WrongFunctionNameException(int errorAt, String function, Set<FunctionType> types, List<FunctionSpec> expected) {
 		super(format("Function name \"{0}\", but expected one of the {1}", function, expected));
 		this.function = function;
 		this.expectedTypes = types;
@@ -43,17 +44,17 @@ public class WrongFunctionNameException extends SQLFrameworkException {
 		position(errorAt, function.length());
 	}
 
-	private static List<String> findClosest(String wrongName, List<String> expected) {
+	private static List<FunctionSpec> findClosest(String wrongName, List<FunctionSpec> expected) {
 		wrongName = wrongName.toLowerCase();
-		List<String> result = new ArrayList<String>();
+		List<FunctionSpec> result = new ArrayList<FunctionSpec>();
 
 		int maxDistance = wrongName.length() / 3;
 		if (maxDistance == 0) {
 			maxDistance = 1;
 		}
 
-		for (String s : expected) {
-			int distance = getLevenshteinDistance(wrongName, s.toLowerCase(), maxDistance);
+		for (FunctionSpec s : expected) {
+			int distance = getLevenshteinDistance(wrongName, s.name.toLowerCase(), maxDistance);
 			if (distance >= 0) {
 				result.add(s);
 			}
