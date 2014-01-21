@@ -118,21 +118,21 @@ public class OLAPFunctionsTest {
 	@Test
 	public void customWindowOrderBy() {
 		Formula f = PARSER.parse("customWindow(avg(col1), all, current  row)");
-		f.windowParameters().get(0).group("col2", DESC);
+		f.windowParameters().get(0).order("col2", DESC);
 		String sql = f.sql(GENERIC_SQL);
 
 		assertEquals(new Position(0, 42), f.windowParameters().get(0).position());
-		assertEquals("avg(col1) OVER ( GROUP BY col2 DESC ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW)", sql);
+		assertEquals("avg(col1) OVER ( ORDER BY col2 DESC ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW)", sql);
 	}
 
 	@Test
 	public void customWindowOrderBySeveral() {
 		Formula f = PARSER.parse("customWindow(avg(col1), all, current  row)");
-		f.windowParameters().get(0).group("col2", DESC).group("col3", ASC).group("col4", DESC);
+		f.windowParameters().get(0).order("col2", DESC).order("col3", ASC).order("col4", DESC);
 		String sql = f.sql(GENERIC_SQL);
 
 		assertEquals(new Position(0, 42), f.windowParameters().get(0).position());
-		assertEquals("avg(col1) OVER ( GROUP BY col2 DESC, col3 ASC, col4 DESC ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW)", sql);
+		assertEquals("avg(col1) OVER ( ORDER BY col2 DESC, col3 ASC, col4 DESC ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW)", sql);
 	}
 
 	@Test
@@ -158,21 +158,21 @@ public class OLAPFunctionsTest {
 	@Test
 	public void customWindowOrderByWithPartitionBy() {
 		Formula f = PARSER.parse("customWindow(avg(col1), all, current  row)");
-		f.windowParameters().get(0).group("col2", DESC).partition("col3");
+		f.windowParameters().get(0).order("col2", DESC).partition("col3");
 		String sql = f.sql(GENERIC_SQL);
 
 		assertEquals(new Position(0, 42), f.windowParameters().get(0).position());
-		assertEquals("avg(col1) OVER ( PARTITION BY col3 GROUP BY col2 DESC ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW)", sql);
+		assertEquals("avg(col1) OVER ( PARTITION BY col3 ORDER BY col2 DESC ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW)", sql);
 	}
 
 	@Test
 	public void customWindowOrderByReset() {
 		Formula f = PARSER.parse("customWindow(avg(col1), all, current  row)");
-		f.windowParameters().get(0).group("col2", DESC).group("col3", ASC).group("col2", ASC);
+		f.windowParameters().get(0).order("col2", DESC).order("col3", ASC).order("col2", ASC);
 		String sql = f.sql(GENERIC_SQL);
 
 		assertEquals(new Position(0, 42), f.windowParameters().get(0).position());
-		assertEquals("avg(col1) OVER ( GROUP BY col3 ASC, col2 ASC ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW)", sql);
+		assertEquals("avg(col1) OVER ( ORDER BY col3 ASC, col2 ASC ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW)", sql);
 	}
 
 	@Test

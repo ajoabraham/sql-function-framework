@@ -5,7 +5,7 @@ import frmw.model.FormulaElement;
 import frmw.model.fun.aggregation.Aggregation;
 import frmw.model.fun.olap.RankParameters;
 import frmw.model.fun.olap.WindowParameters;
-import frmw.model.fun.olap.support.GroupBy;
+import frmw.model.fun.olap.support.OrderBy;
 import frmw.model.fun.olap.support.Rows;
 import frmw.model.ifelse.Case;
 import frmw.model.ifelse.SimpleCase;
@@ -338,13 +338,13 @@ public class GenericSQL implements Dialect {
 			Joiner.on(", ").appendTo(sb, partitions);
 		}
 
-		List<GroupBy> groups = params.groups();
+		List<OrderBy> groups = params.groups();
 		if (!groups.isEmpty()) {
-			sb.append(" GROUP BY ");
+			sb.append(" ORDER BY ");
 
-			Iterator<GroupBy> it = groups.iterator();
+			Iterator<OrderBy> it = groups.iterator();
 			while (it.hasNext()) {
-				GroupBy group = it.next();
+				OrderBy group = it.next();
 				sb.append(group.column).append(' ').append(group.order);
 
 				if (it.hasNext()) {

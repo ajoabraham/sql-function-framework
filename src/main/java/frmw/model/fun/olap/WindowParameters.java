@@ -4,7 +4,7 @@ import com.google.common.base.Predicate;
 import com.google.common.collect.Iterables;
 import frmw.model.fun.aggregation.Aggregation;
 import frmw.model.fun.aggregation.AggregationParameters;
-import frmw.model.fun.olap.support.GroupBy;
+import frmw.model.fun.olap.support.OrderBy;
 import frmw.model.fun.olap.support.Order;
 import frmw.model.position.Position;
 
@@ -23,7 +23,7 @@ import static java.util.Collections.unmodifiableList;
  */
 public class WindowParameters extends AggregationParameters {
 
-	private final List<GroupBy> groups = new ArrayList<GroupBy>();
+	private final List<OrderBy> orders = new ArrayList<OrderBy>();
 
 	private final List<String> partitions = new ArrayList<String>();
 
@@ -35,24 +35,24 @@ public class WindowParameters extends AggregationParameters {
 	 * If column already present, it will be removed and added to the tail.
 	 *
 	 * @param column column name, not empty
-	 * @param order  order of grouping, {@link frmw.model.fun.olap.support.Order#ASC} will be used if null
+	 * @param order  order type, {@link frmw.model.fun.olap.support.Order#ASC} will be used if null
 	 * @throws IllegalArgumentException on illegal arguments
 	 */
-	public WindowParameters group(final String column, Order order) throws IllegalArgumentException {
+	public WindowParameters order(final String column, Order order) throws IllegalArgumentException {
 		checkColumn(column);
 
 		if (order == null) {
 			order = Order.ASC;
 		}
 
-		Iterables.removeIf(groups, new Predicate<GroupBy>() {
+		Iterables.removeIf(orders, new Predicate<OrderBy>() {
 			@Override
-			public boolean apply(GroupBy input) {
+			public boolean apply(OrderBy input) {
 				return input.column.equalsIgnoreCase(column);
 			}
 		});
 
-		groups.add(new GroupBy(column, order));
+		orders.add(new OrderBy(column, order));
 		return this;
 	}
 
@@ -82,8 +82,8 @@ public class WindowParameters extends AggregationParameters {
 		}
 	}
 
-	public List<GroupBy> groups() {
-		return unmodifiableList(groups);
+	public List<OrderBy> groups() {
+		return unmodifiableList(orders);
 	}
 
 	public List<String> partitions() {

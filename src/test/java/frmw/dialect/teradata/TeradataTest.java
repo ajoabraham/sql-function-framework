@@ -1,12 +1,12 @@
 package frmw.dialect.teradata;
 
-import static frmw.TestSupport.PARSER;
 import frmw.model.Formula;
 import frmw.model.exception.UnsupportedFunctionException;
+import frmw.model.fun.olap.support.Order;
 import org.junit.Test;
 
+import static frmw.TestSupport.PARSER;
 import static frmw.TestSupport.TERADATA_SQL;
-import frmw.model.fun.olap.support.Order;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
@@ -367,24 +367,23 @@ public class TeradataTest {
 		assertThat(f.entityNames(), containsInAnyOrder("col1", "col2", "col3", "col4", "col5", "col6", "col7", "col8", "col9"));
 		assertEquals("CASE WHEN (((avg((ln(col1) + 12)) OVER ( ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) + count(sin(col3))) > min((abs(col2) + 12)) OVER ( ROWS BETWEEN 12 PRECEDING AND 14 FOLLOWING)) OR ((avg(ln(col8)) OVER ( ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW) + count(col9)) != col4)) THEN (avg(col5) || max(14) OVER ( ROWS BETWEEN 100 PRECEDING AND 800 FOLLOWING)) ELSE (count(col6) + count(col7) OVER ( ROWS BETWEEN 1000 PRECEDING AND 15000 FOLLOWING)) END", f.sql(TERADATA_SQL));
 	}
-        
-        
-        /**
-         * Z-Score is common algorithm used to identify 
-         * outliers in a data set.  This is commonly referred to as 
-         * how many standard of deviations does a data point vary from the average.
-         * 
-         * z = ( Score - Avg )/ Std. Deviation
-         * 
-         */
-        @Test
-        public void zScoreComplexFormulaTest(){
-            Formula f = PARSER.parse("(col1 - movingavg(col1,13)) / customwindow(stddevp(col1),13,current row)");
-            Formula f2 = PARSER.parse("week(col_date)");
-            f.windowParameters().get(0).partition(f2.sql(TERADATA_SQL)).group("col_date", Order.DESC);
-            f.windowParameters().get(1).partition(f2.sql(TERADATA_SQL)).group("col_date", Order.DESC);
-            String expected = "(col1 - avg(col1) OVER ( PARTITION BY (extract(week from col_date)) ORDER BY col_date DESC ROWS 13 PRECEDING)) / stddev_pop(col1) OVER ( PARTITION BY (extract(week from col_date)) ORDER BY col_date DESC ROWS BETWEEN 13 PRECEDING AND CURRENT ROW)";
-            //System.out.println(f.sql(TERADATA_SQL));
-            assertEquals(expected, f.sql(TERADATA_SQL));
-        }
+
+
+	/**
+	 * Z-Score is common algorithm used to identify
+	 * outliers in a data set.  This is commonly referred to as
+	 * how many standard of deviations does a data point vary from the average.
+	 * <p/>
+	 * z = ( Score - Avg )/ Std. Deviation
+	 */
+	@Test
+	public void zScoreComplexFormulaTest() {
+		Formula f = PARSER.parse("(col1 - movingavg(col1,13)) / customwindow(stddevp(col1),13,current row)");
+		Formula f2 = PARSER.parse("week(col_date)");
+		f.windowParameters().get(0).partition(f2.sql(TERADATA_SQL)).order("col_date", Order.DESC);
+		f.windowParameters().get(1).partition(f2.sql(TERADATA_SQL)).order("col_date", Order.DESC);
+		String expected = "((col1 - avg(col1) OVER ( PARTITION BY extract(Week from col_date) ORDER BY col_date DESC ROWS 13 PRECEDING)) / stddev_pop(col1) OVER ( PARTITION BY extract(Week from col_date) ORDER BY col_date DESC ROWS BETWEEN 13 PRECEDING AND CURRENT ROW))";
+		//System.out.println(f.sql(TERADATA_SQL));
+		assertEquals(expected, f.sql(TERADATA_SQL));
+	}
 }
