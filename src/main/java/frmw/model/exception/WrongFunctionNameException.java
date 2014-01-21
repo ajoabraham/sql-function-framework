@@ -9,6 +9,7 @@ import java.util.Set;
 
 import static java.text.MessageFormat.format;
 import static org.apache.commons.lang3.StringUtils.getLevenshteinDistance;
+import static org.apache.commons.lang3.StringUtils.leftPad;
 
 /**
  * @author Alexey Paramonov
@@ -35,8 +36,10 @@ public class WrongFunctionNameException extends SQLFrameworkException {
 	 */
 	public final List<FunctionSpec> closestFunctions;
 
-	public WrongFunctionNameException(int errorAt, String function, Set<FunctionType> types, List<FunctionSpec> expected) {
-		super(format("Function name \"{0}\", but expected one of the {1}", function, expected));
+	public WrongFunctionNameException(String formula, int errorAt, String function, Set<FunctionType> types, List<FunctionSpec> expected) {
+		super(format("Function name \"{0}\", but expected one of the function types {1} {2}\n" +
+				"{3}\n{4}",
+				function, types, expected, formula, leftPad("^", errorAt + 1)));
 		this.function = function;
 		this.expectedTypes = types;
 		this.expectedFunctions = expected;

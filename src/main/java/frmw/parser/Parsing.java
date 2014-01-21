@@ -95,7 +95,7 @@ public class Parsing {
 				throw new ParsingException(errorAt, expected);
 			} else {
 				String wrongName = findFunctionName(formula, errorAt);
-				throw new WrongFunctionNameException(errorAt, wrongName, types, expectedFuncs);
+				throw new WrongFunctionNameException(formula, errorAt, wrongName, types, expectedFuncs);
 			}
 		}
 	}
