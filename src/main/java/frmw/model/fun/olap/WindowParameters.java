@@ -17,7 +17,7 @@ import static java.util.Collections.unmodifiableList;
  * Class manages additional parameters that applied to window functions with predefined aggregation.
  * See subclasses of the {@link CustomWindow}.
  * <p/>
- * Groups and partitions
+ * Orders and partitions
  *
  * @author Alexey Paramonov
  */
@@ -82,7 +82,7 @@ public class WindowParameters extends AggregationParameters {
 		}
 	}
 
-	public List<OrderBy> groups() {
+	public List<OrderBy> orders() {
 		return unmodifiableList(orders);
 	}
 

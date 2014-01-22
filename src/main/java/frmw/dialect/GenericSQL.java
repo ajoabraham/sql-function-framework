@@ -338,14 +338,14 @@ public class GenericSQL implements Dialect {
 			Joiner.on(", ").appendTo(sb, partitions);
 		}
 
-		List<OrderBy> groups = params.groups();
-		if (!groups.isEmpty()) {
+		List<OrderBy> orders = params.orders();
+		if (!orders.isEmpty()) {
 			sb.append(" ORDER BY ");
 
-			Iterator<OrderBy> it = groups.iterator();
+			Iterator<OrderBy> it = orders.iterator();
 			while (it.hasNext()) {
-				OrderBy group = it.next();
-				sb.append(group.column).append(' ').append(group.order);
+				OrderBy orderBy = it.next();
+				sb.append(orderBy.column).append(' ').append(orderBy.order);
 
 				if (it.hasNext()) {
 					sb.append(", ");
