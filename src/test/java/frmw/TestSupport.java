@@ -28,7 +28,7 @@ public class TestSupport {
 		return Lists.transform(specs, new Function<FunctionSpec, String>() {
 			@Override
 			public String apply(FunctionSpec input) {
-				return input.name;
+				return input.name();
 			}
 		});
 	}

@@ -8,7 +8,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static frmw.parser.Common.fun;
-import static frmw.parser.Common.funName;
 
 /**
  * @author Alexey Paramonov
@@ -38,10 +37,10 @@ class FunctionBuilder {
 			}
 		}
 
-		Parser<?>[] array = parserArg.toArray(new Parser<?>[parserArg.size()]);
-		Parser<FormulaElement> result = fun(clazz, array);
+		FunctionSpec spec = spec(clazz, arg1, args);
+		Parser<FormulaElement> result = fun(spec, parserArg);
 		parsers.add(result);
-		specs.add(spec(clazz, arg1, args));
+		specs.add(spec);
 		return result;
 	}
 
@@ -54,8 +53,7 @@ class FunctionBuilder {
 			}
 		}
 
-		String funName = funName(clazz);
-		return new FunctionSpec(funName, hints);
+		return new FunctionSpec(clazz, hints);
 	}
 
 	static Arg arg(Parser<?> arg, String hint) {

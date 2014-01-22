@@ -131,7 +131,7 @@ public class Parsing {
 
 	public FunctionSpec byName(String function) {
 		for (FunctionSpec spec : all) {
-			if (equalsIgnoreCase(spec.name, function)) {
+			if (equalsIgnoreCase(spec.name(), function)) {
 				return spec;
 			}
 		}

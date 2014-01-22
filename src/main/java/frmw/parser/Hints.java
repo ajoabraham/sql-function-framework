@@ -169,7 +169,7 @@ public class Hints {
 		List<FunctionSpec> result = new ArrayList<FunctionSpec>();
 
 		for (FunctionSpec spec : functions) {
-			if (startsWithIgnoreCase(spec.name, taped)) {
+			if (startsWithIgnoreCase(spec.name(), taped)) {
 				result.add(spec);
 			}
 		}

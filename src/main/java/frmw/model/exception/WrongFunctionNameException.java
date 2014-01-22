@@ -57,7 +57,7 @@ public class WrongFunctionNameException extends SQLFrameworkException {
 		}
 
 		for (FunctionSpec s : expected) {
-			int distance = getLevenshteinDistance(wrongName, s.name.toLowerCase(), maxDistance);
+			int distance = getLevenshteinDistance(wrongName, s.name().toLowerCase(), maxDistance);
 			if (distance >= 0) {
 				result.add(s);
 			}

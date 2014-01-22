@@ -25,7 +25,7 @@ public class HintsTest {
 			@Override
 			public boolean matches(Object item) {
 				ArgumentHint hint = (ArgumentHint) item;
-				return hint.function.name.equalsIgnoreCase(name) && hint.argumentIndex == index;
+				return hint.function.name().equalsIgnoreCase(name) && hint.argumentIndex == index;
 			}
 
 			@Override
@@ -241,7 +241,7 @@ public class HintsTest {
 		assertThat(hints.arguments(), contains(arg("random", 1)));
 
 		ArgumentHint hint = hints.arguments().get(0);
-		assertEquals("upper_bound", hint.function.arguments.get(hint.argumentIndex));
+		assertEquals("upper_bound", hint.function.arguments().get(hint.argumentIndex));
 	}
 
 	@Test
@@ -258,7 +258,7 @@ public class HintsTest {
 		assertThat(hints.arguments(), contains(arg("customWindow", 2)));
 
 		ArgumentHint hint = hints.arguments().get(0);
-		assertEquals("following_row", hint.function.arguments.get(hint.argumentIndex));
+		assertEquals("following_row", hint.function.arguments().get(hint.argumentIndex));
 	}
 
 	@Test
