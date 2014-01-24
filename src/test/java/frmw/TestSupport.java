@@ -1,15 +1,13 @@
 package frmw;
 
 import com.google.common.base.Function;
-import com.google.common.collect.Lists;
+import com.google.common.collect.Iterables;
 import frmw.dialect.Dialect;
 import frmw.dialect.GenericSQL;
 import frmw.dialect.Teradata14SQL;
 import frmw.dialect.TeradataSQL;
-import frmw.model.hint.FunctionSpec;
+import frmw.model.fun.FunctionSpec;
 import frmw.parser.Parsing;
-
-import java.util.List;
 
 /**
  * @author Alexey Paramonov
@@ -24,8 +22,8 @@ public class TestSupport {
 
 	public final static Parsing PARSER = new Parsing();
 
-	public static List<String> names(List<FunctionSpec> specs) {
-		return Lists.transform(specs, new Function<FunctionSpec, String>() {
+	public static Iterable<String> names(Iterable<FunctionSpec> specs) {
+		return Iterables.transform(specs, new Function<FunctionSpec, String>() {
 			@Override
 			public String apply(FunctionSpec input) {
 				return input.name();

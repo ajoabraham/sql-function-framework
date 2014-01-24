@@ -108,7 +108,7 @@ public class ParsingErrorTest {
 			Formula f = PARSER.parse("(sum(col1) - movingavg(sum(col1),13)) / customwindow(stddevp(col1),13,current row)");
 			fail(f.sql(TERADATA_SQL));
 		} catch (WrongFunctionNameException e) {
-			assertEquals("Function name \"sum\", but expected one of the function types [SCALAR] [Abs, Exp, Ln, Log, Mod, Pow, Round, Sqrt, Random, Sin, Cos, Tan, SinH, CosH, TanH, ASin, ACos, ATan, ATan2, ASinH, ACosH, ATanH, Trim, LeftTrim, LeftTrim, RightTrim, RightTrim, Upper, Lower, Index, Substring, Replace, Year, Month, Day, Week, Hour, Minute, Second, CurrentDate, CurrentTimestamp, AddMonths, NullIf, NullIfZero, ZeroIfNull]\n" +
+			assertEquals("Function name \"sum\", but expected one of the function types [SCALAR] [Abs, Exp, Ln, Log, Mod, Pow, Round, Sqrt, Random, Sin, Cos, Tan, SinH, CosH, TanH, ASin, ACos, ATan, ATan2, ASinH, ACosH, ATanH, Trim, LeftTrim, RightTrim, Upper, Lower, Index, Substring, Replace, Year, Month, Day, Week, Hour, Minute, Second, CurrentDate, CurrentTimestamp, AddMonths, NullIf, NullIfZero, ZeroIfNull]\n" +
 					"(sum(col1) - movingavg(sum(col1),13)) / customwindow(stddevp(col1),13,current row)\n" +
 					"                       ^", e.getMessage());
 		}

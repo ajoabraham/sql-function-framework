@@ -9,10 +9,20 @@ import java.util.List;
 import java.util.Set;
 
 /**
+ * Inner representation of each formula element in the parsed tree.
+ * Each implementation has to have at least one public constructor.
+ * Each constructor must not do any operations with passed data, should only set internal fields.
+ *
  * @author Alexey Paramonov
  */
 public interface FormulaElement {
 
+	/**
+	 * Appends sql clauses to the collector.
+	 *
+	 * @param dialect dialect that applied to the formula
+	 * @param sb      collector
+	 */
 	void sql(Dialect dialect, StringBuilder sb);
 
 	/**

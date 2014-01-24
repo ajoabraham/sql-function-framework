@@ -1,8 +1,6 @@
 package frmw.parser;
 
-import frmw.model.hint.FunctionSpec;
-
-import java.util.List;
+import frmw.model.fun.FunctionSpec;
 
 /**
  * @author Alexey Paramonov
@@ -11,24 +9,24 @@ public enum FunctionType {
 
 	AGGREGATION {
 		@Override
-		public List<FunctionSpec> functions(Parsing p) {
-			return p.aggregationFunctions();
+		public Iterable<FunctionSpec> functions(Parsing p) {
+			return p.registry().aggregation();
 		}
 	},
 
 	SCALAR {
 		@Override
-		public List<FunctionSpec> functions(Parsing p) {
-			return p.scalarFunctions();
+		public Iterable<FunctionSpec> functions(Parsing p) {
+			return p.registry().scalar();
 		}
 	},
 
 	OLAP {
 		@Override
-		public List<FunctionSpec> functions(Parsing p) {
-			return p.olapFunctions();
+		public Iterable<FunctionSpec> functions(Parsing p) {
+			return p.registry().olap();
 		}
 	};
 
-	public abstract List<FunctionSpec> functions(Parsing p);
+	public abstract Iterable<FunctionSpec> functions(Parsing p);
 }

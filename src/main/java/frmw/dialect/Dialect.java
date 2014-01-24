@@ -1,7 +1,6 @@
 package frmw.dialect;
 
 import frmw.model.FormulaElement;
-import frmw.model.exception.SQLFrameworkException;
 import frmw.model.fun.aggregation.Aggregation;
 import frmw.model.fun.olap.RankParameters;
 import frmw.model.fun.olap.WindowParameters;
@@ -9,11 +8,9 @@ import frmw.model.fun.olap.support.Rows;
 import frmw.model.ifelse.Case;
 import frmw.model.ifelse.SimpleCase;
 
-import java.lang.UnsupportedOperationException;
-
 /**
- * All methods may throw {@link UnsupportedOperationException}
- * if dialect does not implement particular operation.
+ * Methods must throw {@link UnsupportedOperationException}
+ * if dialect does not support particular operation.
  *
  * @author Alexey Paramonov
  */

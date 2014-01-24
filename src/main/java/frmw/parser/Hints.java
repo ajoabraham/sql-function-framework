@@ -2,7 +2,7 @@ package frmw.parser;
 
 import frmw.model.exception.WrongFunctionNameException;
 import frmw.model.hint.ArgumentHint;
-import frmw.model.hint.FunctionSpec;
+import frmw.model.fun.FunctionSpec;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -136,7 +136,7 @@ public class Hints {
 		}
 
 		String reversed = reverse(currentFunction.toString());
-		FunctionSpec spec = parser.byName(reversed);
+		FunctionSpec spec = parser.registry().byName(reversed);
 		if (spec != null) {
 			functionStack.addFirst(new ArgumentHint(spec, index));
 		}
@@ -153,16 +153,16 @@ public class Hints {
 		} catch (WrongFunctionNameException ex) {
 			if (ex.index() + ex.length() != cursor) {
 				// formula has errors that are not related to taped function name
-				return matchedFunctions(taped, parser.functions());
+				return matchedFunctions(taped, parser.registry().all());
 			} else {
 				return matchedFunctions(taped, ex.expectedFunctions);
 			}
 		} catch (Exception e) {
 			// formula has errors that are not related to function names
-			return matchedFunctions(taped, parser.functions());
+			return matchedFunctions(taped, parser.registry().all());
 		}
 
-		return matchedFunctions(taped, parser.functions());
+		return matchedFunctions(taped, parser.registry().all());
 	}
 
 	private List<FunctionSpec> matchedFunctions(String taped, Iterable<FunctionSpec> functions) {

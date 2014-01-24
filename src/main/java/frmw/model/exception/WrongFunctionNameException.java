@@ -1,6 +1,6 @@
 package frmw.model.exception;
 
-import frmw.model.hint.FunctionSpec;
+import frmw.model.fun.FunctionSpec;
 import frmw.parser.FunctionType;
 
 import java.util.ArrayList;

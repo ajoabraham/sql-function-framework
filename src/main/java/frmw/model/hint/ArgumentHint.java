@@ -1,5 +1,7 @@
 package frmw.model.hint;
 
+import frmw.model.fun.FunctionSpec;
+
 /**
  * @author Alexey Paramonov
  */

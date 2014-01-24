@@ -4,9 +4,8 @@ import frmw.model.Column;
 import frmw.model.FormulaElement;
 import frmw.model.constant.NumericConstant;
 import frmw.model.constant.StringConstant;
-import frmw.model.exception.SQLFrameworkInternalException;
 import frmw.model.fun.olap.support.Rows;
-import frmw.model.hint.FunctionSpec;
+import frmw.model.fun.FunctionSpec;
 import frmw.model.ifelse.Case;
 import frmw.model.ifelse.SimpleCase;
 import frmw.model.ifelse.WhenBlock;
@@ -16,13 +15,12 @@ import frmw.parser.op.NullOp;
 import frmw.parser.op.UnaryOp;
 import org.codehaus.jparsec.OperatorTable;
 import org.codehaus.jparsec.Parser;
-import org.codehaus.jparsec.functors.*;
+import org.codehaus.jparsec.functors.Map;
 import org.codehaus.jparsec.misc.Mapper;
 import org.codehaus.jparsec.pattern.CharPredicate;
 import org.codehaus.jparsec.pattern.Pattern;
 import org.codehaus.jparsec.pattern.Patterns;
 
-import java.lang.reflect.Constructor;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -30,7 +28,6 @@ import java.util.List;
 
 import static frmw.model.constant.NumericConstant.cleanUp;
 import static java.lang.Character.isWhitespace;
-import static java.text.MessageFormat.format;
 import static org.codehaus.jparsec.Parsers.*;
 import static org.codehaus.jparsec.ProcessIllegalFunctionNameHandling.suppress;
 import static org.codehaus.jparsec.Scanners.*;
@@ -267,7 +264,8 @@ public class Common {
 		return functionName.next(body).token().map(new RegisteredForPositionMap<T, List<Object>>() {
 			@Override
 			protected FormulaElement build(List<Object> result) throws Exception {
-				return newInstance(spec.representation(), result);
+				List<Object> notNull = filterNotNull(result);
+				return spec.instance(notNull);
 			}
 		}).followedBy(TRAILED);
 	}
@@ -286,19 +284,6 @@ public class Common {
 		return list(result);
 	}
 
-	private static FormulaElement newInstance(Class<?> clazz, List<Object> values) throws Exception {
-		List<Object> notNull = filterNotNull(values);
-		Constructor<?> constructor = appropriate(clazz, notNull.size());
-		if (constructor == null) {
-			throw new SQLFrameworkInternalException(format(
-					"Function {0} - constructor not found for arguments {1}",
-					clazz.getSimpleName(), notNull));
-		}
-
-		Object[] args = notNull.toArray(new Object[notNull.size()]);
-		return (FormulaElement) constructor.newInstance(args);
-	}
-
 	private static List<Object> filterNotNull(List<Object> values) {
 		if (values == null) {
 			return Collections.emptyList();
@@ -313,15 +298,5 @@ public class Common {
 		}
 
 		return result;
-	}
-
-	private static Constructor<?> appropriate(Class<?> clazz, int argNumber) {
-		for (Constructor<?> c : clazz.getConstructors()) {
-			if (c.getParameterTypes().length == argNumber) {
-				return c;
-			}
-		}
-
-		return null;
 	}
 }

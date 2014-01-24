@@ -1,7 +1,7 @@
 package frmw.parser;
 
 import frmw.model.FormulaElement;
-import frmw.model.hint.FunctionSpec;
+import frmw.model.fun.FunctionSpec;
 import org.codehaus.jparsec.Parser;
 
 import java.util.ArrayList;
