@@ -7,6 +7,7 @@ import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.junit.Test;
 
+import static frmw.TestSupport.GENERIC_SQL;
 import static frmw.TestSupport.PARSER;
 import static frmw.TestSupport.names;
 import static java.text.MessageFormat.format;
@@ -166,6 +167,13 @@ public class HintsTest {
 	}
 
 	@Test
+	public void startsWithMo_filterByDialect() {
+		Hints hints = new Hints("moving", 2, PARSER);
+		assertTrue(hints.functionHint());
+		assertThat(names(hints.functions(GENERIC_SQL)), containsInAnyOrder("MovingAvg", "MovingSum", "MovingCount"));
+	}
+
+	@Test
 	public void plusBeforeName() {
 		Hints hints = new Hints("col1 +yea", PARSER);
 		assertThat(names(hints.functions()), containsInAnyOrder("Year"));
@@ -215,7 +223,7 @@ public class HintsTest {
 
 	@Test
 	public void severalParameters() {
-		Hints hints = new Hints("min(avg(sin(", PARSER);
+		Hints hints = new Hints(" min(avg(sin(", PARSER);
 		assertTrue(hints.argumentHint());
 		assertThat(hints.arguments(), contains(arg("min", 0), arg("avg", 0), arg("sin", 0)));
 	}
@@ -294,5 +302,12 @@ public class HintsTest {
 		Hints hints = new Hints("random(12, col1, 12, 12, \'12,13", PARSER);
 		assertTrue(hints.argumentHint());
 		assertThat(hints.arguments(), contains(arg("random", 4)));
+	}
+
+	@Test
+	public void severalParameters_filterByDialect() {
+		Hints hints = new Hints("min(trimLeft(avg(sin(", PARSER);
+		assertTrue(hints.argumentHint());
+		assertThat(hints.arguments(GENERIC_SQL), contains(arg("min", 0), arg("avg", 0)));
 	}
 }

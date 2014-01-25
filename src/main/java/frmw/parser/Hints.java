@@ -1,13 +1,18 @@
 package frmw.parser;
 
+import com.google.common.base.Predicate;
+import frmw.dialect.Dialect;
 import frmw.model.exception.WrongFunctionNameException;
-import frmw.model.hint.ArgumentHint;
 import frmw.model.fun.FunctionSpec;
+import frmw.model.hint.ArgumentHint;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
+import static com.google.common.collect.Iterables.filter;
+import static com.google.common.collect.Lists.newArrayList;
 import static frmw.parser.Common.COLUMN_CHARS;
 import static java.text.MessageFormat.format;
 import static java.util.Collections.emptyList;
@@ -29,6 +34,8 @@ public class Hints {
 	private final List<FunctionSpec> functions;
 	private final List<ArgumentHint> arguments;
 
+	private final Parsing parser;
+
 	/**
 	 * Hints will be decided as if user place cursor to the end of the input.
 	 *
@@ -46,6 +53,7 @@ public class Hints {
 	 * @throws IllegalArgumentException if input is invalid
 	 */
 	public Hints(String formula, int cursor, Parsing parser) {
+		this.parser = parser;
 		if (cursor == 0) {
 			anyFunction = true;
 			function = false;
@@ -69,11 +77,11 @@ public class Hints {
 			function = false;
 		}
 
-		functions = function ? decideSuitableFunctions(formula, cursor, parser) : EMPTY_SPEC;
-		arguments = decideParameters(formula, cursor, parser);
+		functions = function ? decideSuitableFunctions(formula, cursor) : EMPTY_SPEC;
+		arguments = decideParameters(formula, cursor);
 	}
 
-	private List<ArgumentHint> decideParameters(String formula, int cursor, Parsing parser) {
+	private List<ArgumentHint> decideParameters(String formula, int cursor) {
 		LinkedList<ArgumentHint> functionStack = new LinkedList<ArgumentHint>();
 		StringBuilder currentFunction = new StringBuilder();
 
@@ -103,7 +111,7 @@ public class Hints {
 				continue;
 			} else if (ch == '(') {
 				followingIsFunctionName = false;
-				if (tryToCollectFunction(functionStack, currentFunction, parser, argIndex)) {
+				if (tryToCollectFunction(functionStack, currentFunction, argIndex)) {
 					argIndex = 0;
 				}
 
@@ -121,16 +129,16 @@ public class Hints {
 			}
 
 			followingIsFunctionName = false;
-			if (tryToCollectFunction(functionStack, currentFunction, parser, argIndex)) {
+			if (tryToCollectFunction(functionStack, currentFunction, argIndex)) {
 				argIndex = 0;
 			}
 		}
 
-		tryToCollectFunction(functionStack, currentFunction, parser, argIndex);
+		tryToCollectFunction(functionStack, currentFunction, argIndex);
 		return functionStack;
 	}
 
-	private boolean tryToCollectFunction(LinkedList<ArgumentHint> functionStack, StringBuilder currentFunction, Parsing parser, int index) {
+	private boolean tryToCollectFunction(LinkedList<ArgumentHint> functionStack, StringBuilder currentFunction, int index) {
 		if (currentFunction.length() == 0) {
 			return false;
 		}
@@ -144,7 +152,7 @@ public class Hints {
 		return true;
 	}
 
-	private List<FunctionSpec> decideSuitableFunctions(String formula, int cursor, Parsing parser) {
+	private List<FunctionSpec> decideSuitableFunctions(String formula, int cursor) {
 		String taped = extractFunction(formula, cursor);
 		String fakeFormula = formula.substring(0, cursor) + "(";
 
@@ -206,12 +214,12 @@ public class Hints {
 
 			if (c == '"' && !single) {
 				doubleQ = !doubleQ;
-			}else if (c == '\'' && !doubleQ) {
+			} else if (c == '\'' && !doubleQ) {
 				single = !single;
 			}
 		}
 
-		return new boolean[] {single, doubleQ};
+		return new boolean[]{single, doubleQ};
 	}
 
 	/**
@@ -239,6 +247,20 @@ public class Hints {
 		return functions;
 	}
 
+	/**
+	 * @return list of suitable function names in cursor positions that user may want to tape
+	 * include filtering by supporting by dialect
+	 */
+	public List<FunctionSpec> functions(Dialect dialect) {
+		final Set<FunctionSpec> allSupported = parser.registry().all(dialect);
+		return newArrayList(filter(functions, new Predicate<FunctionSpec>() {
+			@Override
+			public boolean apply(FunctionSpec input) {
+				return allSupported.contains(input);
+			}
+		}));
+	}
+
 	public boolean argumentHint() {
 		return !arguments.isEmpty();
 	}
@@ -248,5 +270,18 @@ public class Hints {
 	 */
 	public List<ArgumentHint> arguments() {
 		return arguments;
+	}
+
+	/**
+	 * @return argument hint stack including filtering by supporting by dialect
+	 */
+	public List<ArgumentHint> arguments(Dialect dialect) {
+		final Set<FunctionSpec> allSupported = parser.registry().all(dialect);
+		return newArrayList(filter(arguments, new Predicate<ArgumentHint>() {
+			@Override
+			public boolean apply(ArgumentHint input) {
+				return allSupported.contains(input.function);
+			}
+		}));
 	}
 }

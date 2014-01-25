@@ -1,12 +1,11 @@
 package frmw.model;
 
 import com.google.common.base.Predicate;
-import com.google.common.collect.Iterables;
+import com.google.common.collect.ImmutableSet;
 import frmw.dialect.Dialect;
 import frmw.model.exception.UnsupportedFunctionException;
 import frmw.model.fun.FunctionSpec;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -23,7 +22,7 @@ public class FunctionRegistry {
 	/**
 	 * cache Dialect class -> all functions supported by this dialect
 	 */
-	private final ConcurrentHashMap<Class<?>, List<FunctionSpec>> cache = new ConcurrentHashMap<Class<?>, List<FunctionSpec>>();
+	private final ConcurrentHashMap<Class<?>, Set<FunctionSpec>> cache = new ConcurrentHashMap<Class<?>, Set<FunctionSpec>>();
 
 	private final Set<FunctionSpec> scalarSpecs;
 
@@ -31,22 +30,26 @@ public class FunctionRegistry {
 
 	private final Set<FunctionSpec> olapSpecs;
 
-	private final Iterable<FunctionSpec> all;
+	private final Set<FunctionSpec> all;
 
 	public FunctionRegistry(List<FunctionSpec> aggr, List<FunctionSpec> olap, List<FunctionSpec> scalar) {
 		aggregationSpecs = copyOf(aggr);
 		scalarSpecs = copyOf(scalar);
 		olapSpecs = copyOf(olap);
-		all = Iterables.concat(scalarSpecs, aggregationSpecs, olapSpecs);
+		all = ImmutableSet.<FunctionSpec>builder()
+				.addAll(scalarSpecs)
+				.addAll(aggregationSpecs)
+				.addAll(olapSpecs)
+				.build();
 	}
 
-	public Iterable<FunctionSpec> all() {
+	public Set<FunctionSpec> all() {
 		return all;
 	}
 
-	public Iterable<FunctionSpec> all(Dialect dialect) {
+	public Set<FunctionSpec> all(Dialect dialect) {
 		Class<? extends Dialect> key = dialect.getClass();
-		List<FunctionSpec> cached = cache.get(key);
+		Set<FunctionSpec> cached = cache.get(key);
 		if (cached == null) {
 			cached = buildFor(dialect);
 			cache.putIfAbsent(key, cached);
@@ -55,26 +58,26 @@ public class FunctionRegistry {
 		return cached;
 	}
 
-	private List<FunctionSpec> buildFor(Dialect dialect) {
-		List<FunctionSpec> result = new ArrayList<FunctionSpec>();
+	private Set<FunctionSpec> buildFor(Dialect dialect) {
+		ImmutableSet.Builder<FunctionSpec> builder = ImmutableSet.builder();
 
 		for (FunctionSpec spec : all) {
 			FormulaElement inst = spec.fakeInstance();
 
 			try {
 				inst.sql(dialect, null);
-				result.add(spec);
+				builder.add(spec);
 			} catch (UnsupportedOperationException e) {
 				// dialect doesn't support this function - just ignore it
 			} catch (UnsupportedFunctionException e) {
 				// dialect doesn't support this function - just ignore it
 			} catch (Exception ignored) {
 				// its ok because we works with fake instance
-				result.add(spec);
+				builder.add(spec);
 			}
 		}
 
-		return result;
+		return builder.build();
 	}
 
 	public Iterable<FunctionSpec> scalar() {
