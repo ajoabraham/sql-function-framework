@@ -65,6 +65,14 @@ public class Formula {
 		return traversal.names();
 	}
 
+	/**
+	 * Populates columns model by table aliases.
+	 * Take into account that map in most cases should contains keys in case insensitive order.
+	 * In these cases please use {@link java.util.TreeMap#TreeMap(java.util.Comparator)}
+	 * to instantiate the map with {@link java.lang.String.CaseInsensitiveComparator}.
+	 *
+	 * @param columnToAlias map column name -> table alias
+	 */
 	public void setTableAliases(Map<String, String> columnToAlias) {
 		SetTableAliases traversal = new SetTableAliases(columnToAlias);
 		root.traverseColumns(traversal);
