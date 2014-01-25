@@ -1,13 +1,13 @@
 package frmw.model.ifelse;
 
 import frmw.dialect.Dialect;
+import frmw.model.traverse.ColumnTraversal;
 import frmw.model.FormulaElement;
 import frmw.model.fun.aggregation.AggregationParameters;
 import frmw.model.fun.olap.RankParameters;
 import frmw.model.fun.olap.WindowParameters;
 
 import java.util.List;
-import java.util.Set;
 
 /**
  * @author Alexey Paramonov
@@ -37,14 +37,14 @@ public class Case implements FormulaElement {
 	}
 
 	@Override
-	public void collectEntities(Set<String> set) {
+	public void traverseColumns(ColumnTraversal traversal) {
 		for (WhenBlock block : when) {
-			block.when.collectEntities(set);
-			block.then.collectEntities(set);
+			block.when.traverseColumns(traversal);
+			block.then.traverseColumns(traversal);
 		}
 
 		if (elseBlock != null) {
-			elseBlock.collectEntities(set);
+			elseBlock.traverseColumns(traversal);
 		}
 	}
 

@@ -1,13 +1,13 @@
 package frmw.model.operator;
 
 import frmw.dialect.Dialect;
+import frmw.model.traverse.ColumnTraversal;
 import frmw.model.FormulaElement;
 import frmw.model.fun.aggregation.AggregationParameters;
 import frmw.model.fun.olap.RankParameters;
 import frmw.model.fun.olap.WindowParameters;
 
 import java.util.List;
-import java.util.Set;
 
 /**
  * @author Alexey Paramonov
@@ -41,9 +41,9 @@ class BinaryOperator implements FormulaElement {
 	}
 
 	@Override
-	public void collectEntities(Set<String> set) {
-		left.collectEntities(set);
-		right.collectEntities(set);
+	public void traverseColumns(ColumnTraversal traversal) {
+		left.traverseColumns(traversal);
+		right.traverseColumns(traversal);
 	}
 
 	@Override

@@ -1,7 +1,7 @@
 package frmw.parser;
 
 import frmw.model.FormulaElement;
-import frmw.model.PositionAware;
+import frmw.model.position.PositionAware;
 import frmw.model.exception.SQLFrameworkException;
 import org.codehaus.jparsec.Token;
 import org.codehaus.jparsec.functors.Map;

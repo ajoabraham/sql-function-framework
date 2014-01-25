@@ -3,9 +3,9 @@ package frmw.model;
 import frmw.model.fun.aggregation.AggregationParameters;
 import frmw.model.fun.olap.RankParameters;
 import frmw.model.fun.olap.WindowParameters;
+import frmw.model.traverse.ColumnTraversal;
 
 import java.util.List;
-import java.util.Set;
 
 /**
  * @author Alexey Paramonov
@@ -31,9 +31,9 @@ public abstract class Scalar2 implements FormulaElement {
 	}
 
 	@Override
-	public void collectEntities(Set<String> set) {
-		arg1.collectEntities(set);
-		arg2.collectEntities(set);
+	public void traverseColumns(ColumnTraversal traversal) {
+		arg1.traverseColumns(traversal);
+		arg2.traverseColumns(traversal);
 	}
 
 	@Override

@@ -1,13 +1,13 @@
 package frmw.model.fun.olap;
 
 import frmw.dialect.Dialect;
+import frmw.model.traverse.ColumnTraversal;
 import frmw.model.FormulaElement;
-import frmw.model.PositionAware;
+import frmw.model.position.PositionAware;
 import frmw.model.fun.aggregation.AggregationParameters;
 import frmw.model.position.Position;
 
 import java.util.List;
-import java.util.Set;
 
 /**
  * @author Alexey Paramonov
@@ -33,8 +33,8 @@ public class Rank implements FormulaElement, PositionAware {
 	}
 
 	@Override
-	public void collectEntities(Set<String> set) {
-		orderBy.collectEntities(set);
+	public void traverseColumns(ColumnTraversal traversal) {
+		orderBy.traverseColumns(traversal);
 	}
 
 	@Override

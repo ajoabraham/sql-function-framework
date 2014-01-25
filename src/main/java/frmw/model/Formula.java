@@ -6,10 +6,12 @@ import frmw.model.fun.aggregation.AggregationParameters;
 import frmw.model.fun.olap.RankParameters;
 import frmw.model.fun.olap.WindowParameters;
 import frmw.model.position.PositionMap;
+import frmw.model.traverse.CollectColumnNames;
+import frmw.model.traverse.SetTableAliases;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -58,9 +60,14 @@ public class Formula {
 	 * @return set of columns that formula contains
 	 */
 	public Set<String> entityNames() {
-		Set<String> result = new HashSet<String>();
-		root.collectEntities(result);
-		return result;
+		CollectColumnNames traversal = new CollectColumnNames();
+		root.traverseColumns(traversal);
+		return traversal.names();
+	}
+
+	public void setTableAliases(Map<String, String> columnToAlias) {
+		SetTableAliases traversal = new SetTableAliases(columnToAlias);
+		root.traverseColumns(traversal);
 	}
 
 	public List<WindowParameters> windowParameters() {

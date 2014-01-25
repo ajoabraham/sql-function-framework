@@ -1,4 +1,4 @@
-package frmw.model;
+package frmw.model.position;
 
 /**
  * @author Alexey Paramonov

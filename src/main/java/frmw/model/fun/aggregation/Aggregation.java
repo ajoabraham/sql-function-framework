@@ -1,13 +1,13 @@
 package frmw.model.fun.aggregation;
 
+import frmw.model.traverse.ColumnTraversal;
 import frmw.model.FormulaElement;
-import frmw.model.PositionAware;
+import frmw.model.position.PositionAware;
 import frmw.model.fun.olap.RankParameters;
 import frmw.model.fun.olap.WindowParameters;
 import frmw.model.position.Position;
 
 import java.util.List;
-import java.util.Set;
 
 /**
  * @author Alexey Paramonov
@@ -36,8 +36,8 @@ public abstract class Aggregation implements FormulaElement, PositionAware {
 	}
 
 	@Override
-	public void collectEntities(Set<String> set) {
-		column.collectEntities(set);
+	public void traverseColumns(ColumnTraversal traversal) {
+		column.traverseColumns(traversal);
 	}
 
 	@Override
