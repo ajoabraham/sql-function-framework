@@ -20,15 +20,24 @@ class FunctionBuilder {
 
 	public final List<Parser<FormulaElement>> parsers = new ArrayList<Parser<FormulaElement>>();
 
-	Parser<FormulaElement> f(Class<? extends FormulaElement> clazz) {
-		return f(clazz, (Arg) null);
+	/**
+	 * Register function with no arguments.
+	 */
+	void f(Class<? extends FormulaElement> clazz) {
+		f(clazz, (Arg) null);
 	}
 
-	Parser<FormulaElement> f(Class<? extends FormulaElement> clazz, Parser<?> expr, Arg ...args) {
-		return f(clazz, arg(expr, EXPR), args);
+	/**
+	 * Register function at least with one argument that has default hint {@link #EXPR}.
+	 */
+	void f(Class<? extends FormulaElement> clazz, Parser<?> expr, Arg ...args) {
+		f(clazz, arg(expr, EXPR), args);
 	}
 
-	Parser<FormulaElement> f(Class<? extends FormulaElement> clazz, Arg arg1, Arg ...args) {
+	/**
+	 * Register function at least with one argument
+	 */
+	void f(Class<? extends FormulaElement> clazz, Arg arg1, Arg ...args) {
 		List<Parser<?>> parserArg = new ArrayList<Parser<?>>();
 		if (arg1 != null) {
 			parserArg.add(arg1.arg);
@@ -41,7 +50,6 @@ class FunctionBuilder {
 		Parser<FormulaElement> result = fun(spec, parserArg);
 		parsers.add(result);
 		specs.add(spec);
-		return result;
 	}
 
 	private FunctionSpec spec(Class<? extends FormulaElement> clazz, Arg arg1, Arg ...args) {
@@ -56,6 +64,9 @@ class FunctionBuilder {
 		return new FunctionSpec(clazz, hints);
 	}
 
+	/**
+	 * Helper method to setup hint for appropriate argument.
+	 */
 	static Arg arg(Parser<?> arg, String hint) {
 		return new Arg(arg, hint);
 	}

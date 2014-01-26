@@ -12,6 +12,9 @@ import java.util.List;
  * Inner representation of each formula element in the parsed tree.
  * Each implementation has to have at least one public constructor.
  * Each constructor must not do any operations with passed data, should only set internal fields.
+ * <p/>
+ * Most all methods are traversal methods.
+ * In most cases theirs implementation should just invoke the same method on aggregated element.
  *
  * @author Alexey Paramonov
  */
