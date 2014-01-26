@@ -10,14 +10,21 @@ public class ArgumentHint {
 	public final FunctionSpec function;
 
 	/**
-	 * Argument index in provided formula, starts from 0.
-	 * May be bigger that {@link FunctionSpec#arguments} size.
+	 * Function argument index in provided formula, starts from 0.
+	 * May be bigger than {@link FunctionSpec#arguments} size.
 	 */
-	public final int argumentIndex;
+	public final int index;
 
-	public ArgumentHint(FunctionSpec function, int argumentIndex) {
+	/**
+	 * Position in string representation of the formula
+	 */
+	public final int position;
+
+	public ArgumentHint(FunctionSpec function, int index, int position) {
 		this.function = function;
-		this.argumentIndex = argumentIndex;
+		this.index = index;
+		this.position = position;
+
 	}
 
 	@Override
@@ -26,14 +33,14 @@ public class ArgumentHint {
 		if (o == null || getClass() != o.getClass()) return false;
 
 		ArgumentHint that = (ArgumentHint) o;
-		return argumentIndex == that.argumentIndex && function.equals(that.function);
-
+		return index == that.index && position == that.position && function.equals(that.function);
 	}
 
 	@Override
 	public int hashCode() {
 		int result = function.hashCode();
-		result = 31 * result + argumentIndex;
+		result = 31 * result + index;
+		result = 31 * result + position;
 		return result;
 	}
 
@@ -41,7 +48,8 @@ public class ArgumentHint {
 	public String toString() {
 		return "ArgumentHint{" +
 				"function=" + function +
-				", argumentIndex=" + argumentIndex +
+				", index=" + index +
+				", position=" + position +
 				'}';
 	}
 }

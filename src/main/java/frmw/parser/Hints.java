@@ -91,9 +91,10 @@ public class Hints {
 
 		int openedAndClosed = 0;
 		int argIndex = 0;
+		int argPosition = cursor - 1;
 		boolean followingIsFunctionName = false;
 
-		for (int i = cursor - 1; i >= 0; i--) {
+		for (int i = argPosition; i >= 0; i--) {
 			char ch = formula.charAt(i);
 
 			if (ch == '"' && !single) {
@@ -110,8 +111,7 @@ public class Hints {
 				currentFunction.append(ch);
 				continue;
 			} else if (ch == '(') {
-				followingIsFunctionName = false;
-				if (tryToCollectFunction(functionStack, currentFunction, argIndex)) {
+				if (tryToCollectFunction(functionStack, currentFunction, argIndex, argPosition)) {
 					argIndex = 0;
 				}
 
@@ -119,26 +119,53 @@ public class Hints {
 					openedAndClosed--;
 				} else {
 					followingIsFunctionName = true;
+					if (argIndex == 0) {
+						argPosition = updatePosition(formula, i);
+					}
 				}
 
 				continue;
 			} else if (ch == ')') {
 				openedAndClosed++;
 			} else if (ch == ',' && openedAndClosed == 0) {
+				if (argIndex == 0) {
+					argPosition = updatePosition(formula, i);
+				}
+
 				argIndex++;
 			}
 
 			followingIsFunctionName = false;
-			if (tryToCollectFunction(functionStack, currentFunction, argIndex)) {
+			if (tryToCollectFunction(functionStack, currentFunction, argIndex, argPosition)) {
 				argIndex = 0;
 			}
 		}
 
-		tryToCollectFunction(functionStack, currentFunction, argIndex);
+		tryToCollectFunction(functionStack, currentFunction, argIndex, argPosition);
 		return functionStack;
 	}
 
-	private boolean tryToCollectFunction(LinkedList<ArgumentHint> functionStack, StringBuilder currentFunction, int index) {
+	private int updatePosition(String formula, int i) {
+		i++; // ignore '(' or ','
+		return i + amountOfWhitespacesOnPosition(formula, i);
+	}
+
+	private int amountOfWhitespacesOnPosition(String formula, int position) {
+		int result = 0;
+
+		for (int i = position; i < formula.length(); i++) {
+			char ch = formula.charAt(i);
+			if (Character.isWhitespace(ch)) {
+				result++;
+			} else {
+				break;
+			}
+		}
+
+		return result;
+	}
+
+	private boolean tryToCollectFunction(LinkedList<ArgumentHint> functionStack, StringBuilder currentFunction, int index, int position) {
 		if (currentFunction.length() == 0) {
 			return false;
 		}
@@ -146,7 +173,7 @@ public class Hints {
 		String reversed = reverse(currentFunction.toString());
 		FunctionSpec spec = parser.registry().byName(reversed);
 		if (spec != null) {
-			functionStack.addFirst(new ArgumentHint(spec, index));
+			functionStack.addFirst(new ArgumentHint(spec, index, position));
 		}
 		currentFunction.delete(0, currentFunction.length());
 		return true;

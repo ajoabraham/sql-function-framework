@@ -21,17 +21,17 @@ import static org.junit.Assert.*;
 @SuppressWarnings("unchecked")
 public class HintsTest {
 
-	static Matcher<ArgumentHint> arg(final String name, final int index) {
+	static Matcher<ArgumentHint> arg(final String name, final int index, final int position) {
 		return new BaseMatcher<ArgumentHint>() {
 			@Override
 			public boolean matches(Object item) {
 				ArgumentHint hint = (ArgumentHint) item;
-				return hint.function.name().equalsIgnoreCase(name) && hint.argumentIndex == index;
+				return hint.function.name().equalsIgnoreCase(name) && hint.index == index && hint.position == position;
 			}
 
 			@Override
 			public void describeTo(Description description) {
-				description.appendText(format("name={0}, index={1}", name, index));
+				description.appendText(format("name={0}, index={1}, position={2}", name, index, position));
 			}
 		};
 	}
@@ -182,7 +182,7 @@ public class HintsTest {
 	@Test
 	public void whitespaceBeforeName() {
 		Hints hints = new Hints("sum( ran", PARSER);
-		assertThat(hints.arguments(), contains(arg("sum", 0)));
+		assertThat(hints.arguments(), contains(arg("sum", 0, 5)));
 		assertThat(names(hints.functions()), containsInAnyOrder("Random"));
 	}
 
@@ -218,96 +218,110 @@ public class HintsTest {
 	public void oneParameter() {
 		Hints hints = new Hints("min(", PARSER);
 		assertTrue(hints.argumentHint());
-		assertThat(hints.arguments(), contains(arg("min", 0)));
+		assertThat(hints.arguments(), contains(arg("min", 0, 4)));
 	}
 
 	@Test
 	public void severalParameters() {
 		Hints hints = new Hints(" min(avg(sin(", PARSER);
 		assertTrue(hints.argumentHint());
-		assertThat(hints.arguments(), contains(arg("min", 0), arg("avg", 0), arg("sin", 0)));
+		assertThat(hints.arguments(), contains(arg("min", 0, 5), arg("avg", 0, 9), arg("sin", 0, 13)));
 	}
 
 	@Test
 	public void oneFunctionIsClosed() {
 		Hints hints = new Hints("min(avg(sin() + 123", PARSER);
 		assertTrue(hints.argumentHint());
-		assertThat(hints.arguments(), contains(arg("min", 0), arg("avg", 0)));
+		assertThat(hints.arguments(), contains(arg("min", 0, 4), arg("avg", 0, 8)));
 	}
 
 	@Test
 	public void lotsOfParenthesis() {
 		Hints hints = new Hints("abs() + min((avg((sin() + 123) + (123 * (34)) + 14", PARSER);
 		assertTrue(hints.argumentHint());
-		assertThat(hints.arguments(), contains(arg("min", 0), arg("avg", 0)));
+		assertThat(hints.arguments(), contains(arg("min", 0, 12), arg("avg", 0, 17)));
 	}
 
 	@Test
 	public void secondArg() {
 		Hints hints = new Hints("random(12, col1", PARSER);
 		assertTrue(hints.argumentHint());
-		assertThat(hints.arguments(), contains(arg("random", 1)));
+		assertThat(hints.arguments(), contains(arg("random", 1, 11)));
 
 		ArgumentHint hint = hints.arguments().get(0);
-		assertEquals("upper_bound", hint.function.arguments().get(hint.argumentIndex));
+		assertEquals("upper_bound", hint.function.arguments().get(hint.index));
+	}
+
+	@Test
+	public void thirdArgBlank() {
+		Hints hints = new Hints("random(12, col1,", PARSER);
+		assertTrue(hints.argumentHint());
+		assertThat(hints.arguments(), contains(arg("random", 2, 16)));
+	}
+
+	@Test
+	public void thirdArgBlankWithWhitespace() {
+		Hints hints = new Hints("random(12, col1, \n\t\r ", PARSER);
+		assertTrue(hints.argumentHint());
+		assertThat(hints.arguments(), contains(arg("random", 2, 21)));
 	}
 
 	@Test
 	public void lotsOfArgs() {
 		Hints hints = new Hints("random(12, col1, 12, 12, 12", PARSER);
 		assertTrue(hints.argumentHint());
-		assertThat(hints.arguments(), contains(arg("random", 4)));
+		assertThat(hints.arguments(), contains(arg("random", 4, 25)));
 	}
 
 	@Test
 	public void argsComplicated1() {
 		Hints hints = new Hints("customWindow(min(12 + random(2, 12)), random(2, 13), random(2, 12)", PARSER);
 		assertTrue(hints.argumentHint());
-		assertThat(hints.arguments(), contains(arg("customWindow", 2)));
+		assertThat(hints.arguments(), contains(arg("customWindow", 2, 53)));
 
 		ArgumentHint hint = hints.arguments().get(0);
-		assertEquals("following_row", hint.function.arguments().get(hint.argumentIndex));
+		assertEquals("following_row", hint.function.arguments().get(hint.index));
 	}
 
 	@Test
 	public void argsComplicated2() {
 		Hints hints = new Hints("customWindow(min(12 + random(2, 12)), random(2, 13), random(2, 12", PARSER);
 		assertTrue(hints.argumentHint());
-		assertThat(hints.arguments(), contains(arg("customWindow", 2), arg("random", 1)));
+		assertThat(hints.arguments(), contains(arg("customWindow", 2, 53), arg("random", 1, 63)));
 	}
 
 	@Test
 	public void oneOfTheArgsIsDoubleQuotedColumnWithComma() {
 		Hints hints = new Hints("random(12, col1, \"col1,col,col\", 12, 12", PARSER);
 		assertTrue(hints.argumentHint());
-		assertThat(hints.arguments(), contains(arg("random", 4)));
+		assertThat(hints.arguments(), contains(arg("random", 4, 37)));
 	}
 
 	@Test
 	public void oneOfTheArgsIsDoubleQuotedColumnWithComma_opened() {
 		Hints hints = new Hints("random(12, col1, 12, 12, \"12,13", PARSER);
 		assertTrue(hints.argumentHint());
-		assertThat(hints.arguments(), contains(arg("random", 4)));
+		assertThat(hints.arguments(), contains(arg("random", 4, 25)));
 	}
 
 	@Test
 	public void oneOfTheArgsIsSingleQuotedColumnWithComma() {
 		Hints hints = new Hints("random(12, col1, \'col1,''col\",col\', 12, 12", PARSER);
 		assertTrue(hints.argumentHint());
-		assertThat(hints.arguments(), contains(arg("random", 4)));
+		assertThat(hints.arguments(), contains(arg("random", 4, 40)));
 	}
 
 	@Test
 	public void oneOfTheArgsIsSingleQuotedColumnWithComma_opened() {
 		Hints hints = new Hints("random(12, col1, 12, 12, \'12,13", PARSER);
 		assertTrue(hints.argumentHint());
-		assertThat(hints.arguments(), contains(arg("random", 4)));
+		assertThat(hints.arguments(), contains(arg("random", 4, 25)));
 	}
 
 	@Test
 	public void severalParameters_filterByDialect() {
 		Hints hints = new Hints("min(trimLeft(avg(sin(", PARSER);
 		assertTrue(hints.argumentHint());
-		assertThat(hints.arguments(GENERIC_SQL), contains(arg("min", 0), arg("avg", 0)));
+		assertThat(hints.arguments(GENERIC_SQL), contains(arg("min", 0, 4), arg("avg", 0, 17)));
 	}
 }
