@@ -100,6 +100,7 @@ public class Common {
 			stringCaseInsensitive("null")));
 
 	public static final Parser<Void> BETWEEN = trailed(stringCaseInsensitive("between"));
+	public static final Parser<Void> IN = trailed(stringCaseInsensitive("in"));
 	public static final Parser<Void> AND = trailed(stringCaseInsensitive("and"));
 	public static final Parser<Void> OR = trailed(stringCaseInsensitive("or"));
 
@@ -175,7 +176,13 @@ public class Common {
 				sequence(p, GE, p, CompareOp.EQUAL_GREAT),
 				sequence(p, IS_NULL, NullOp.NULL),
 				sequence(p, IS_NOT_NULL, NullOp.NOT_NULL),
-				sequence(p, BETWEEN, p, AND, p, BetweenOp.INST)));
+				sequence(p, BETWEEN, p, AND, p, BetweenOp.INST),
+				in(p)));
+	}
+
+	private static Parser<FormulaElement> in(Parser<FormulaElement> p) {
+		Parser<List<FormulaElement>> inParenthesis = p.sepBy1(COMMA).between(OPENED, CLOSED);
+		return sequence(p, IN, inParenthesis, InOp.INST);
 	}
 
 	private static Parser<FormulaElement> simpleCase(Parser<FormulaElement> all) {
@@ -303,4 +310,5 @@ public class Common {
 
 		return result;
 	}
+
 }

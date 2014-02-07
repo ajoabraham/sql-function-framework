@@ -175,4 +175,12 @@ public class CaseTest {
 		String sql = f.sql(GENERIC_SQL);
 		assertEquals("CASE WHEN col1 BETWEEN 1 AND 2 THEN 2 WHEN (col2 BETWEEN 6 AND 7 OR col3 BETWEEN col4 AND trim(col5)) THEN 3 END", sql);
 	}
+
+	@Test
+	public void in() {
+		Formula f = PARSER.parse("case when col1 in (col, \"col2\", 100_500, Avg(col3), Trim(col4)) and col2 in (12, 14) then 2 end");
+		assertThat(f.entityNames(), containsInAnyOrder("col1", "col", "col2", "col3", "col4"));
+		String sql = f.sql(GENERIC_SQL);
+		assertEquals("CASE WHEN (col1 IN (col, \"col2\", 100500, avg(col3), trim(col4)) AND col2 IN (12, 14)) THEN 2 END", sql);
+	}
 }
