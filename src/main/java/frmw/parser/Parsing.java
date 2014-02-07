@@ -3,6 +3,7 @@ package frmw.parser;
 import frmw.model.Formula;
 import frmw.model.FormulaElement;
 import frmw.model.FunctionRegistry;
+import frmw.model.Join;
 import frmw.model.exception.ParsingException;
 import frmw.model.exception.WrongFunctionNameException;
 import frmw.model.fun.FunctionSpec;
@@ -18,6 +19,7 @@ import java.util.Set;
 
 import static com.google.common.collect.Iterables.addAll;
 import static frmw.model.position.ProvidingPositionsOnExceptionAspect.currentFormulaPositions;
+import static frmw.parser.Common.conditional;
 import static frmw.parser.Common.withOperators;
 import static frmw.parser.FunctionType.*;
 import static java.lang.Character.isWhitespace;
@@ -40,6 +42,8 @@ public class Parsing {
 
 	private final Parser<FormulaElement> parser;
 
+	private final Parser<FormulaElement> joinParser;
+
 	private final FunctionRegistry registry;
 
 	public Parsing() {
@@ -56,6 +60,7 @@ public class Parsing {
 		commons.set(or(c.parsers));
 
 		parser = withOperators(or(aggregation.lazy(), this.olap.lazy(), scalar.lazy(), commons.lazy()));
+		joinParser = conditional(or(scalar.lazy(), commons.lazy()));
 		registry = new FunctionRegistry(aggr.specs, olap.specs, s.specs);
 	}
 
@@ -71,26 +76,42 @@ public class Parsing {
 			FormulaElement root = parser.parse(formula);
 			return new Formula(root, map);
 		} catch (ParserException e) {
-			ParseErrorDetails details = e.getErrorDetails();
-			List<String> expected = details.getExpected();
+			return convertException(formula, e);
+		}
+	}
 
-			Set<FunctionType> types = EnumSet.noneOf(FunctionType.class);
-			List<FunctionSpec> expectedFuncs = new ArrayList<FunctionSpec>();
-			for (FunctionType type : EnumSet.allOf(FunctionType.class)) {
-				if (expected.contains(type.name())) {
-					types.add(type);
-					Iterable<FunctionSpec> functions = type.functions(this);
-					addAll(expectedFuncs, functions);
-				}
-			}
+	public Join parseJoin(String formula) {
+		PositionMap map = new PositionMap();
+		currentFormulaPositions.set(map);
 
-			int errorAt = details.getIndex();
-			if (types.isEmpty()) {
-				throw new ParsingException(errorAt, expected, e);
-			} else {
-				String wrongName = findFunctionName(formula, errorAt);
-				throw new WrongFunctionNameException(formula, errorAt, wrongName, types, expectedFuncs);
+		try {
+			FormulaElement root = joinParser.parse(formula);
+			return new Join(root, map);
+		} catch (ParserException e) {
+			return convertException(formula, e);
+		}
+	}
+
+	private <T> T convertException(String formula, ParserException e) {
+		ParseErrorDetails details = e.getErrorDetails();
+		List<String> expected = details.getExpected();
+
+		Set<FunctionType> types = EnumSet.noneOf(FunctionType.class);
+		List<FunctionSpec> expectedFuncs = new ArrayList<FunctionSpec>();
+		for (FunctionType type : EnumSet.allOf(FunctionType.class)) {
+			if (expected.contains(type.name())) {
+				types.add(type);
+				Iterable<FunctionSpec> functions = type.functions(this);
+				addAll(expectedFuncs, functions);
 			}
+		}
+
+		int errorAt = details.getIndex();
+		if (types.isEmpty()) {
+			throw new ParsingException(errorAt, expected, e);
+		} else {
+			String wrongName = findFunctionName(formula, errorAt);
+			throw new WrongFunctionNameException(formula, errorAt, wrongName, types, expectedFuncs);
 		}
 	}
 

@@ -165,7 +165,7 @@ public class Common {
 	}
 
 	@SuppressWarnings("unchecked")
-	private static Parser<FormulaElement> conditional(Parser<FormulaElement> p) {
+	public static Parser<FormulaElement> conditional(Parser<FormulaElement> p) {
 		return withAndOr(or(
 				sequence(p, EQ, p, CompareOp.EQUAL),
 				sequence(p, EQ, p, CompareOp.EQUAL),
