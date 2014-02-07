@@ -12,7 +12,8 @@ public class ParsingException extends SQLFrameworkException {
 	 */
 	public final List<String> expected;
 
-	public ParsingException(int errorAt, List<String> expected) {
+	public ParsingException(int errorAt, List<String> expected, Exception cause) {
+		super(cause);
 		this.expected = expected;
 		position(errorAt, -1);
 	}

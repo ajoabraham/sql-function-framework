@@ -5,9 +5,9 @@ import frmw.model.FormulaElement;
 /**
  * @author Alexey Paramonov
  */
-public final class CompareOperations {
+public final class ConditionalOperators {
 
-	private CompareOperations() {
+	private ConditionalOperators() {
 	}
 
 	public static BinaryOperator eq(FormulaElement left, FormulaElement right) {
@@ -32,5 +32,9 @@ public final class CompareOperations {
 
 	public static BinaryOperator le(FormulaElement left, FormulaElement right) {
 		return new BinaryOperator(left, right, "<=");
+	}
+
+	public static BetweenOperator between(FormulaElement tested, FormulaElement left, FormulaElement right) {
+		return new BetweenOperator(tested, left, right);
 	}
 }

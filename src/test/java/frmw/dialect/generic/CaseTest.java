@@ -167,4 +167,12 @@ public class CaseTest {
 		System.out.println(f.sql(GENERIC_SQL));
 		assertEquals("CASE WHEN ((col1 / (col_longer_name3 + (col_9 / col10))) = 2) THEN col2 ELSE col5 END", f.sql(GENERIC_SQL));
 	}
+
+	@Test
+	public void between() {
+		Formula f = PARSER.parse("case when col1 between 1 and 2 then 2 when col2 between 6 and 7 or col3 between col4 and Trim(col5) then 3 end");
+		assertThat(f.entityNames(), containsInAnyOrder("col1", "col2", "col3", "col4", "col5"));
+		String sql = f.sql(GENERIC_SQL);
+		assertEquals("CASE WHEN col1 BETWEEN 1 AND 2 THEN 2 WHEN (col2 BETWEEN 6 AND 7 OR col3 BETWEEN col4 AND trim(col5)) THEN 3 END", sql);
+	}
 }

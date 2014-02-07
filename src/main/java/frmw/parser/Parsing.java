@@ -86,7 +86,7 @@ public class Parsing {
 
 			int errorAt = details.getIndex();
 			if (types.isEmpty()) {
-				throw new ParsingException(errorAt, expected);
+				throw new ParsingException(errorAt, expected, e);
 			} else {
 				String wrongName = findFunctionName(formula, errorAt);
 				throw new WrongFunctionNameException(formula, errorAt, wrongName, types, expectedFuncs);

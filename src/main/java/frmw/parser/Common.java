@@ -4,15 +4,12 @@ import frmw.model.Column;
 import frmw.model.FormulaElement;
 import frmw.model.constant.NumericConstant;
 import frmw.model.constant.StringConstant;
-import frmw.model.fun.olap.support.Rows;
 import frmw.model.fun.FunctionSpec;
+import frmw.model.fun.olap.support.Rows;
 import frmw.model.ifelse.Case;
 import frmw.model.ifelse.SimpleCase;
 import frmw.model.ifelse.WhenBlock;
-import frmw.parser.op.BinaryOp;
-import frmw.parser.op.CompareOp;
-import frmw.parser.op.NullOp;
-import frmw.parser.op.UnaryOp;
+import frmw.parser.op.*;
 import org.codehaus.jparsec.OperatorTable;
 import org.codehaus.jparsec.Parser;
 import org.codehaus.jparsec.functors.Map;
@@ -102,6 +99,7 @@ public class Common {
 			stringCaseInsensitive("not"), WHITESPACES.many1(),
 			stringCaseInsensitive("null")));
 
+	public static final Parser<Void> BETWEEN = trailed(stringCaseInsensitive("between"));
 	public static final Parser<Void> AND = trailed(stringCaseInsensitive("and"));
 	public static final Parser<Void> OR = trailed(stringCaseInsensitive("or"));
 
@@ -148,7 +146,7 @@ public class Common {
 		return or(all, current, exact);
 	}
 
-	private Parser<FormulaElement> caseStatement(Parser<FormulaElement> all) {
+	private static Parser<FormulaElement> caseStatement(Parser<FormulaElement> all) {
 		Parser<?> CASE = trailed(stringCaseInsensitive("case"));
 		Parser<?> END = trailed(stringCaseInsensitive("end"));
 
@@ -158,23 +156,29 @@ public class Common {
 		return searched.or(simple).between(CASE, END);
 	}
 
-	private Parser<FormulaElement> searchedCase(Parser<FormulaElement> all) {
-		Parser<FormulaElement> conditionals = withAndOr(or(
-				sequence(all, EQ, all, CompareOp.EQUAL),
-				sequence(all, NE, all, CompareOp.NOT_EQUAL),
-				sequence(all, LT, all, CompareOp.LESS),
-				sequence(all, GT, all, CompareOp.GREAT),
-				sequence(all, LE, all, CompareOp.EQUAL_LESS),
-				sequence(all, GE, all, CompareOp.EQUAL_GREAT),
-				sequence(all, IS_NULL, NullOp.NULL),
-				sequence(all, IS_NOT_NULL, NullOp.NOT_NULL)));
-
+	private static Parser<FormulaElement> searchedCase(Parser<FormulaElement> all) {
+		Parser<FormulaElement> conditionals = conditional(all);
 		Parser<WhenBlock> when = trailed(curry(WhenBlock.class).sequence(WHEN.next(conditionals), THEN.next(all)));
 		Parser<FormulaElement> elseBlock = ELSE.next(all).optional();
 		return Mapper.<FormulaElement>curry(Case.class).sequence(when.many1(), elseBlock);
 	}
 
-	private Parser<FormulaElement> simpleCase(Parser<FormulaElement> all) {
+	@SuppressWarnings("unchecked")
+	private static Parser<FormulaElement> conditional(Parser<FormulaElement> p) {
+		return withAndOr(or(
+				sequence(p, EQ, p, CompareOp.EQUAL),
+				sequence(p, EQ, p, CompareOp.EQUAL),
+				sequence(p, NE, p, CompareOp.NOT_EQUAL),
+				sequence(p, LT, p, CompareOp.LESS),
+				sequence(p, GT, p, CompareOp.GREAT),
+				sequence(p, LE, p, CompareOp.EQUAL_LESS),
+				sequence(p, GE, p, CompareOp.EQUAL_GREAT),
+				sequence(p, IS_NULL, NullOp.NULL),
+				sequence(p, IS_NOT_NULL, NullOp.NOT_NULL),
+				sequence(p, BETWEEN, p, AND, p, BetweenOp.INST)));
+	}
+
+	private static Parser<FormulaElement> simpleCase(Parser<FormulaElement> all) {
 		Parser<WhenBlock> when = trailed(curry(WhenBlock.class).sequence(WHEN.next(all), THEN.next(all)));
 		Parser<FormulaElement> elseBlock = ELSE.next(all).optional();
 		return Mapper.<FormulaElement>curry(SimpleCase.class).sequence(all, when.many1(), elseBlock);
