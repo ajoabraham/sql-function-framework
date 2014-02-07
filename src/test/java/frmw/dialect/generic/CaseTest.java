@@ -84,6 +84,13 @@ public class CaseTest {
 	}
 
 	@Test
+	public void searchedCaseWithFunction() {
+		Formula f = PARSER.parse("case when col1 < Trim(col2) then 2 else 5 end");
+		String sql = f.sql(GENERIC_SQL);
+		assertEquals("CASE WHEN (col1 < trim(col2)) THEN 2 ELSE 5 END", sql);
+	}
+
+	@Test
 	public void searchedCaseLE() {
 		Formula f = PARSER.parse("case when col1<=1 then 2 else 5 end");
 		String sql = f.sql(GENERIC_SQL);
