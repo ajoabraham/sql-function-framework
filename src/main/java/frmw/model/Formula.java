@@ -19,15 +19,13 @@ import java.util.Set;
  *
  * @author Alexey Paramonov
  */
-public class Formula {
+public class Formula extends PositionProvider {
 
 	private final FormulaElement root;
 
-	private final PositionMap positions;
-
 	public Formula(FormulaElement root, PositionMap map) {
+		super(map);
 		this.root = root;
-		this.positions = map;
 	}
 
 	/**
@@ -94,9 +92,5 @@ public class Formula {
 		List<RankParameters> result = new ArrayList<RankParameters>();
 		root.collectRankParams(result);
 		return result;
-	}
-
-	public PositionMap elementPositions() {
-		return positions;
 	}
 }

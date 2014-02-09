@@ -1,8 +1,8 @@
 package frmw.model.position;
 
 import frmw.dialect.Dialect;
-import frmw.model.Formula;
 import frmw.model.FormulaElement;
+import frmw.model.PositionProvider;
 import frmw.model.exception.SQLFrameworkException;
 import frmw.model.exception.UnsupportedFunctionException;
 import org.aspectj.lang.ProceedingJoinPoint;
@@ -21,12 +21,12 @@ public class ProvidingPositionsOnExceptionAspect {
 
 	public final static ThreadLocal<PositionMap> currentFormulaPositions = new ThreadLocal<PositionMap>();
 
-	@Pointcut("execution(* frmw.model.Formula+.elementPositions(..))")
+	@Pointcut("execution(* frmw.model.PositionProvider+.elementPositions(..))")
 	public void elementPositions() {
 	}
 
-	@Pointcut("execution(* frmw.model.Formula+.*(..))")
-	public void formula() {
+	@Pointcut("execution(* frmw.model.PositionProvider+.*(..))")
+	public void positionProvider() {
 	}
 
 	@Pointcut("execution(* frmw.model.FormulaElement+.*(..))")
@@ -37,7 +37,7 @@ public class ProvidingPositionsOnExceptionAspect {
 	public void dialect() {
 	}
 
-	@Around("cflow(formula()) && formulaElement() && this(e)")
+	@Around("cflow(positionProvider()) && formulaElement() && this(e)")
 	public Object providePosition(ProceedingJoinPoint pjp, FormulaElement e) {
 		try {
 			return pjp.proceed();
@@ -59,9 +59,9 @@ public class ProvidingPositionsOnExceptionAspect {
 		}
 	}
 
-	@Before("formula() && !elementPositions() && this(f)")
-	public void onFormulaCall(Formula f) {
-		currentFormulaPositions.set(f.elementPositions());
+	@Before("positionProvider() && !elementPositions() && this(p)")
+	public void onFormulaCall(PositionProvider p) {
+		currentFormulaPositions.set(p.elementPositions());
 	}
 
 	@Around("dialect() && this(e) && target(d)")
@@ -76,9 +76,7 @@ public class ProvidingPositionsOnExceptionAspect {
 			if (t instanceof UnsupportedOperationException) {
 				String function = e.getClass().getSimpleName();
 				String dialect = d.getClass().getSimpleName();
-				UnsupportedFunctionException ex = new UnsupportedFunctionException(function, dialect);
-				savePosition(e, ex);
-				throw ex;
+				throw new UnsupportedFunctionException(function, dialect);
 			}
 
 			throw wrap(t);
