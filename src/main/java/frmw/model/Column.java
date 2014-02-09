@@ -88,4 +88,8 @@ public class Column implements FormulaElement {
 	public boolean quoted() {
 		return quoted;
 	}
+
+	public String tableAlias() {
+		return tableAlias;
+	}
 }
