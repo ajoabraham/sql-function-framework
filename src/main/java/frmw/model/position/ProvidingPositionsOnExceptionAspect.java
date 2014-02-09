@@ -47,11 +47,15 @@ public class ProvidingPositionsOnExceptionAspect {
 			}
 
 			SQLFrameworkException ex = wrap(t);
-			Position pos = currentFormulaPositions.get().find(e);
-			if (pos != null && !ex.positionSet()) {
-				ex.position(pos.index, pos.length);
-			}
+			savePosition(e, ex);
 			throw ex;
+		}
+	}
+
+	private void savePosition(FormulaElement e, SQLFrameworkException ex) {
+		Position pos = currentFormulaPositions.get().find(e);
+		if (pos != null && !ex.positionSet()) {
+			ex.position(pos.index, pos.length);
 		}
 	}
 
@@ -72,7 +76,9 @@ public class ProvidingPositionsOnExceptionAspect {
 			if (t instanceof UnsupportedOperationException) {
 				String function = e.getClass().getSimpleName();
 				String dialect = d.getClass().getSimpleName();
-				throw new UnsupportedFunctionException(function, dialect);
+				UnsupportedFunctionException ex = new UnsupportedFunctionException(function, dialect);
+				savePosition(e, ex);
+				throw ex;
 			}
 
 			throw wrap(t);

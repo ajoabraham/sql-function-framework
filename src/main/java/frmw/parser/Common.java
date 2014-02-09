@@ -62,7 +62,7 @@ public class Common {
 	public static final CharPredicate COLUMN_CHARS = new CharPredicate() {
 		@Override
 		public boolean isChar(char c) {
-			return c != '(' && c != ')' && c != ',' && c != '|' && c!= '.' &&
+			return c != '(' && c != ')' && c != ',' && c != '|' && c != '.' &&
 					c != '=' && c != '<' && c != '>' && c != '!' &&
 					c != '*' && c != '/' && c != '+' && c != '-' &&
 					!isWhitespace(c);
@@ -284,7 +284,13 @@ public class Common {
 	}
 
 	private Parser<FormulaElement> columnWithTableAlias() {
-		return sequence(column(), DOT, column(), COLUMN_WITH_TABLE);
+		return sequence(column(), DOT, column(), COLUMN_WITH_TABLE).token().map(
+				new RegisteredForPositionMap<FormulaElement, FormulaElement>() {
+					@Override
+					protected FormulaElement build(FormulaElement result) throws Exception {
+						return result;
+					}
+				});
 	}
 
 	public static <T> Parser<T> trailed(Parser<T> parser) {

@@ -1,6 +1,7 @@
 package frmw.parser;
 
 import frmw.model.Formula;
+import frmw.model.Join;
 import frmw.model.exception.ParsingException;
 import frmw.model.exception.UnsupportedFunctionException;
 import frmw.model.exception.WrongFunctionNameException;
@@ -111,6 +112,33 @@ public class ParsingErrorTest {
 			assertEquals("Function name \"sum\", but expected one of the function types [SCALAR] [Abs, Exp, Ln, Log, Mod, Pow, Round, Sqrt, Random, Sin, Cos, Tan, SinH, CosH, TanH, ASin, ACos, ATan, ATan2, ASinH, ACosH, ATanH, Trim, LeftTrim, RightTrim, Upper, Lower, Index, Substring, Replace, Year, Month, Day, Week, Hour, Minute, Second, CurrentDate, CurrentTimestamp, AddMonths, NullIf, NullIfZero, ZeroIfNull]\n" +
 					"(sum(col1) - movingavg(sum(col1),13)) / customwindow(stddevp(col1),13,current row)\n" +
 					"                       ^", e.getMessage());
+		}
+	}
+
+	@Test
+	public void notExistedFunction_join() {
+		try {
+			Join j = PARSER.parseJoin("  ranl(T1.\"name\") >= 12");
+			fail(j.sql(GENERIC_SQL));
+		} catch (WrongFunctionNameException e) {
+			assertEquals("ranl", e.function);
+			assertEquals(2, e.index());
+			assertEquals(4, e.length());
+			assertThat(e.expectedTypes, contains(SCALAR));
+			assertThat(names(e.expectedFunctions), hasItems("Trim", "Ln"));
+		}
+	}
+
+	@Test
+	public void unsupportedOperation_join() {
+		try {
+			Join j = PARSER.parseJoin("ln(T2.\"name\") = T1.col1");
+			fail(j.sql(GENERIC_SQL));
+		} catch (UnsupportedFunctionException e) {
+			assertEquals("Ln", e.function);
+			assertEquals("GenericSQL", e.dialect);
+			assertEquals(0, e.index());
+			assertEquals(13, e.length());
 		}
 	}
 }
