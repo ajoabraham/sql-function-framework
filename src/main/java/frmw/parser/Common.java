@@ -13,6 +13,7 @@ import frmw.parser.op.*;
 import org.codehaus.jparsec.OperatorTable;
 import org.codehaus.jparsec.Parser;
 import org.codehaus.jparsec.functors.Map;
+import org.codehaus.jparsec.functors.Map3;
 import org.codehaus.jparsec.misc.Mapper;
 import org.codehaus.jparsec.pattern.CharPredicate;
 import org.codehaus.jparsec.pattern.Pattern;
@@ -45,14 +46,23 @@ public class Common {
 	};
 	private static final RegisteredForPositionMap<FormulaElement, String> COLUMN = new RegisteredForPositionMap<FormulaElement, String>() {
 		@Override
-		protected FormulaElement build(String value) {
+		protected Column build(String value) {
 			return new Column(value, false);
 		}
 	};
+	private static final Map3<FormulaElement, Object, FormulaElement, FormulaElement> COLUMN_WITH_TABLE = new Map3<FormulaElement, Object, FormulaElement, FormulaElement>() {
+		@Override
+		public FormulaElement map(FormulaElement ta, Object o, FormulaElement c) {
+			Column tableAlias = (Column) ta;
+			Column column = (Column) c;
+			return new Column(tableAlias.name(), column.name(), column.quoted());
+		}
+	};
+
 	public static final CharPredicate COLUMN_CHARS = new CharPredicate() {
 		@Override
 		public boolean isChar(char c) {
-			return c != '(' && c != ')' && c != ',' && c != '|' &&
+			return c != '(' && c != ')' && c != ',' && c != '|' && c!= '.' &&
 					c != '=' && c != '<' && c != '>' && c != '!' &&
 					c != '*' && c != '/' && c != '+' && c != '-' &&
 					!isWhitespace(c);
@@ -70,6 +80,7 @@ public class Common {
 	public static final Parser<Void> TRAILED = WHITESPACES.skipAtLeast(0);
 
 	public static final Parser<?> COMMA = trailed(isChar(','));
+	public static final Parser<?> DOT = isChar('.');
 	public static final Parser<Void> OPENED = trailed(isChar('('));
 	public static final Parser<Void> CLOSED_TRIM_LEFT = TRAILED.next(isChar(')'));
 	public static final Parser<Void> CLOSED = CLOSED_TRIM_LEFT.next(TRAILED);
@@ -122,13 +133,20 @@ public class Common {
 				}
 			});
 
-	public Common(Parser<FormulaElement> scalar, Parser<FormulaElement> aggregation, Parser<FormulaElement> common, Parser<FormulaElement> olap) {
-		Parser<FormulaElement> all = withOperators(or(scalar, aggregation, olap, common));
-
+	public Common(Parser<FormulaElement> p) {
 		parsers.add(stringLiteral());
 		parsers.add(number());
-		parsers.add(caseStatement(all));
+		parsers.add(caseStatement(p));
+	}
+
+	public Common withColumn() {
 		parsers.add(column());
+		return this;
+	}
+
+	public Common withTableColumn() {
+		parsers.add(columnWithTableAlias());
+		return this;
 	}
 
 	public static Parser<Rows> rows() {
@@ -265,6 +283,10 @@ public class Common {
 		return trailed(or(quoted, plain));
 	}
 
+	private Parser<FormulaElement> columnWithTableAlias() {
+		return sequence(column(), DOT, column(), COLUMN_WITH_TABLE);
+	}
+
 	public static <T> Parser<T> trailed(Parser<T> parser) {
 		return parser.between(TRAILED, TRAILED);
 	}
@@ -310,5 +332,4 @@ public class Common {
 
 		return result;
 	}
-
 }

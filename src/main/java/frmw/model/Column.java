@@ -21,6 +21,12 @@ public class Column implements FormulaElement {
 
 	private String tableAlias;
 
+	public Column(String tableAlias, String name, boolean quoted) {
+		this.tableAlias = tableAlias;
+		this.name = name.trim();
+		this.quoted = quoted;
+	}
+
 	public Column(String name, boolean quoted) {
 		this.name = name.trim();
 		this.quoted = quoted;
@@ -77,5 +83,9 @@ public class Column implements FormulaElement {
 
 	public String name() {
 		return name;
+	}
+
+	public boolean quoted() {
+		return quoted;
 	}
 }

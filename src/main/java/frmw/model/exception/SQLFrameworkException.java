@@ -9,11 +9,12 @@ public class SQLFrameworkException extends RuntimeException {
 
 	private int length = -1;
 
-	public SQLFrameworkException() {
-	}
-
 	public SQLFrameworkException(String message) {
 		super(message);
+	}
+
+	public SQLFrameworkException(String message, Throwable cause) {
+		super(message, cause);
 	}
 
 	public SQLFrameworkException(Throwable t) {

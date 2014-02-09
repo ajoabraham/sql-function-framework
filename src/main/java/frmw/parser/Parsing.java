@@ -12,10 +12,7 @@ import org.codehaus.jparsec.Parser;
 import org.codehaus.jparsec.error.ParseErrorDetails;
 import org.codehaus.jparsec.error.ParserException;
 
-import java.util.ArrayList;
-import java.util.EnumSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 import static com.google.common.collect.Iterables.addAll;
 import static frmw.model.position.ProvidingPositionsOnExceptionAspect.currentFormulaPositions;
@@ -23,6 +20,8 @@ import static frmw.parser.Common.conditional;
 import static frmw.parser.Common.withOperators;
 import static frmw.parser.FunctionType.*;
 import static java.lang.Character.isWhitespace;
+import static org.codehaus.jparsec.Parser.Reference;
+import static org.codehaus.jparsec.Parser.newReference;
 import static org.codehaus.jparsec.Parsers.or;
 
 /**
@@ -35,10 +34,10 @@ import static org.codehaus.jparsec.Parsers.or;
  */
 public class Parsing {
 
-	private final Parser.Reference<FormulaElement> scalar = Parser.newReference();
-	private final Parser.Reference<FormulaElement> aggregation = Parser.newReference();
-	private final Parser.Reference<FormulaElement> olap = Parser.newReference();
-	private final Parser.Reference<FormulaElement> commons = Parser.newReference();
+	private final Reference<FormulaElement> scalar = newReference();
+	private final Reference<FormulaElement> aggregation = newReference();
+	private final Reference<FormulaElement> olap = newReference();
+	private final Reference<FormulaElement> commons = newReference();
 
 	private final Parser<FormulaElement> parser;
 
@@ -47,21 +46,36 @@ public class Parsing {
 	private final FunctionRegistry registry;
 
 	public Parsing() {
+		Parser<FormulaElement> p = withOperators(or(scalar.lazy(), aggregation.lazy(), this.olap.lazy(), commons.lazy()));
+
 		Aggregations aggr = new Aggregations(scalar.lazy(), commons.lazy());
 		aggregation.set(or(aggr.parsers).label(AGGREGATION.name()));
 
 		Olap olap = new Olap(aggregation.lazy(), scalar.lazy(), commons.lazy());
 		this.olap.set(or(olap.parsers).label(OLAP.name()));
 
-		Scalars s = new Scalars(scalar.lazy(), aggregation.lazy(), this.olap.lazy(), commons.lazy());
+		Scalars s = new Scalars(p);
 		scalar.set(or(s.parsers).label(SCALAR.name()));
-
-		Common c = new Common(scalar.lazy(), aggregation.lazy(), commons.lazy(), this.olap.lazy());
-		commons.set(or(c.parsers));
+		commons.set(or(new Common(p).withColumn().parsers));
 
 		parser = withOperators(or(aggregation.lazy(), this.olap.lazy(), scalar.lazy(), commons.lazy()));
-		joinParser = conditional(or(scalar.lazy(), commons.lazy()));
+		joinParser = joinParser();
+
 		registry = new FunctionRegistry(aggr.specs, olap.specs, s.specs);
+	}
+
+	private Parser<FormulaElement> joinParser() {
+		Reference<FormulaElement> commons = newReference();
+		Reference<FormulaElement> scalar = newReference();
+
+		Parser<FormulaElement> p = withOperators(or(scalar.lazy(), commons.lazy()));
+
+		Scalars s = new Scalars(p);
+		scalar.set(or(s.parsers).label(SCALAR.name()));
+
+		Common c = new Common(p).withTableColumn();
+		commons.set(or(c.parsers));
+		return conditional(or(scalar.lazy(), commons.lazy()));
 	}
 
 	/**
@@ -108,7 +122,7 @@ public class Parsing {
 
 		int errorAt = details.getIndex();
 		if (types.isEmpty()) {
-			throw new ParsingException(errorAt, expected, e);
+			throw new ParsingException(errorAt, new HashSet<String>(expected), e);
 		} else {
 			String wrongName = findFunctionName(formula, errorAt);
 			throw new WrongFunctionNameException(formula, errorAt, wrongName, types, expectedFuncs);
