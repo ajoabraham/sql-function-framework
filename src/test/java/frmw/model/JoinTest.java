@@ -34,6 +34,13 @@ public class JoinTest {
 		assertEquals("trim(\"T1\".col1) BETWEEN \"T2\".col2 AND \"T2\".col4", sql);
 	}
         
+         @Test
+	public void userInputsAllQuotes() {
+		Join j = PARSER.parseJoin("trim(\"T1\".\"col1\") = \"T2\".\"col2\" and \"T1\".\"col3\" = \"T2\".\"col4\"");
+		String sql = j.sql(GENERIC_SQL);
+		assertEquals("((trim(\"T1\".\"col1\") = \"T2\".\"col2\") AND (\"T1\".\"col3\" = \"T2\".\"col4\"))", sql);
+	}
+        
         @Test
 	public void betweenDateRange() {
 		Join j = PARSER.parseJoin("trim(T1.col1) between T2.col2-30 and currentDate()");
