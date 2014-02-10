@@ -33,7 +33,14 @@ public class JoinTest {
 		String sql = j.sql(GENERIC_SQL);
 		assertEquals("trim(\"T1\".col1) BETWEEN \"T2\".col2 AND \"T2\".col4", sql);
 	}
-
+        
+        @Test
+	public void betweenDateRange() {
+		Join j = PARSER.parseJoin("trim(T1.col1) between T2.col2-30 and currentDate()");
+		String sql = j.sql(GENERIC_SQL);
+		assertEquals("trim(\"T1\".col1) BETWEEN \"T2\".col2-30 AND current_date", sql);
+	}
+        
 	@Test
 	public void in() {
 		Join j = PARSER.parseJoin("trim(T1.col1) in (T2.col2 , T2.col4)");
