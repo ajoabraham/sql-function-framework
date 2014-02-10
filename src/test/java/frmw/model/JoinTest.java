@@ -107,6 +107,16 @@ public class JoinTest {
 		String sql = j.sql(GENERIC_SQL);
 		assertEquals("((\"tRight\".col3 = \"tLeft\".col1) AND (\"tRight\".col_b = \"tLeft\".col_b))", sql);
 	}
+        
+        @Test
+	public void updateAliases_convertToIndexedAlias() {
+		Join j = PARSER.parseJoin("T10.col3 = T9.col1 and T10.col_b = T9.col_b");
+		j.changeTableAliases("tLeft", "tRight");
+		String sql = j.sql(GENERIC_SQL);
+		assertEquals("((\"tRight\".col3 = \"tLeft\".col1) AND (\"tRight\".col_b = \"tLeft\".col_b))", sql);
+                j.changeTableAliases("T10", "T12");
+                assertEquals("((\"T12\".col3 = \"T10\".col1) AND (\"T12\".col_b = \"T10\".col_b))", sql);
+	}
 
 	@Test(expected = UnexpectedTablesAmountInJoin.class)
 	public void updateAliases_3AliasesThrowError() {
