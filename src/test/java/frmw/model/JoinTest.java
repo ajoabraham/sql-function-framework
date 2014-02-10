@@ -1,12 +1,12 @@
 package frmw.model;
 
+import frmw.model.exception.InvalidTableAlias;
 import frmw.model.exception.UnexpectedTablesAmountInJoin;
 import org.junit.Test;
 
 import static frmw.TestSupport.GENERIC_SQL;
 import static frmw.TestSupport.PARSER;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
 
 /**
  * @author Alexey Paramonov
@@ -97,14 +97,30 @@ public class JoinTest {
 	@Test(expected = UnexpectedTablesAmountInJoin.class)
 	public void updateAliases_3AliasesThrowError() {
 		Join j = PARSER.parseJoin("T1.col1 = T2.col3 and T1.col_b = T3.col_b");
-		j.changeTableAliases("tLeft", "tRight");
-		fail(j.sql(GENERIC_SQL));
+		j.validate(GENERIC_SQL);
 	}
 
 	@Test(expected = UnexpectedTablesAmountInJoin.class)
 	public void updateAliases_1AliasesThrowError() {
 		Join j = PARSER.parseJoin("T1.col1 = T1.col3");
-		j.changeTableAliases("tLeft", "tRight");
-		fail(j.sql(GENERIC_SQL));
+		j.validate(GENERIC_SQL);
+	}
+
+	@Test
+	public void validationPassed() {
+		Join j = PARSER.parseJoin("T1.col1 = t1000.col3");
+		j.validate(GENERIC_SQL);
+	}
+
+	@Test(expected = InvalidTableAlias.class)
+	public void aliasHasWrongLetter() {
+		Join j = PARSER.parseJoin("N1.col1 = N2.col3");
+		j.validate(GENERIC_SQL);
+	}
+
+	@Test(expected = InvalidTableAlias.class)
+	public void aliasHasWrongLetter2() {
+		Join j = PARSER.parseJoin("Tt1.col1 = TT2.col3");
+		j.validate(GENERIC_SQL);
 	}
 }
