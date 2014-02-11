@@ -29,7 +29,7 @@ import java.util.Comparator;
  * This is an updated version with enhancements made by Daniel Migowski,
  * Andre Bogus, and David Koelle
  */
-public class AlphanumComparator implements Comparator<String> {
+public class AlphanumComparator implements Comparator<Object> {
 
 	public static final AlphanumComparator INST = new AlphanumComparator();
 
@@ -65,7 +65,10 @@ public class AlphanumComparator implements Comparator<String> {
 		return chunk.toString();
 	}
 
-	public int compare(String s1, String s2) {
+	public int compare(Object o1, Object o2) {
+		String s1 = o1.toString();
+		String s2 = o2.toString();
+
 		int thisMarker = 0;
 		int thatMarker = 0;
 		int s1Length = s1.length();

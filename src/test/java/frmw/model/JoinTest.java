@@ -6,6 +6,7 @@ import org.junit.Test;
 
 import static frmw.TestSupport.GENERIC_SQL;
 import static frmw.TestSupport.PARSER;
+import static frmw.TestSupport.TERADATA_SQL;
 import static org.junit.Assert.assertEquals;
 
 /**
@@ -77,45 +78,58 @@ public class JoinTest {
 	}
 
 	@Test
-	public void updateAliases() {
+	public void updateAliases_convertToIndexedAlias() {
+		Join j = PARSER.parseJoin("leftTrim(T10.col3) = T9.col1 and T10.col_b = T9.col_b");
+		String rewritten = j.rewriteFormula();
+
+		Join rewrittenJoin = PARSER.parseJoin(rewritten);
+		String doubledRewritten = rewrittenJoin.rewriteFormula("T10", "T12");
+		assertEquals("leftTrim(T12.col3) = T10.col1 and T12.col_b = T10.col_b", doubledRewritten);
+
+		String sql = PARSER.parseJoin(doubledRewritten).sql(TERADATA_SQL);
+		assertEquals("((trim(Leading ' ' From \"T12\".col3) = \"T10\".col1) AND (\"T12\".col_b = \"T10\".col_b))", sql);
+	}
+
+	@Test
+	public void rewriteFormula() {
 		Join j = PARSER.parseJoin("T1.col1 = T2.col3 and T1.col_b = T2.col_b");
-		j.changeTableAliases("tLeft", "tRight");
-		String sql = j.sql(GENERIC_SQL);
-		assertEquals("((\"tLeft\".col1 = \"tRight\".col3) AND (\"tLeft\".col_b = \"tRight\".col_b))", sql);
+		String result = j.rewriteFormula();
+		assertEquals("tLeft.col1 = tRight.col3 and tLeft.col_b = tRight.col_b", result);
+	}
+
+	@Test
+	public void rewriteFormula_tableAliasesInQuotes() {
+		Join j = PARSER.parseJoin("\"T1\".col1 = \"T2\".col3 and \"T1\".col_b = \"T2\".col_b");
+		String result = j.rewriteFormula();
+		assertEquals("\"tLeft\".col1 = \"tRight\".col3 and \"tLeft\".col_b = \"tRight\".col_b", result);
+	}
+
+	@Test
+	public void rewriteFormula_onlyTableAliasRewritten() {
+		Join j = PARSER.parseJoin(" T1.colT1 = T2.col3 and T1.col_b = T2.col_b");
+		String result = j.rewriteFormula();
+		assertEquals(" tLeft.colT1 = tRight.col3 and tLeft.col_b = tRight.col_b", result);
 	}
 
 	@Test
 	public void updateAliases_oneElementSwapped() {
 		Join j = PARSER.parseJoin("T1.col1 = T2.col3 and T2.col_b = T1.col_b");
-		j.changeTableAliases("tLeft", "tRight");
-		String sql = j.sql(GENERIC_SQL);
-		assertEquals("((\"tLeft\".col1 = \"tRight\".col3) AND (\"tRight\".col_b = \"tLeft\".col_b))", sql);
+		String result = j.rewriteFormula();
+		assertEquals("tLeft.col1 = tRight.col3 and tRight.col_b = tLeft.col_b", result);
 	}
 
 	@Test
-	public void updateAliases_allElementsSwapped() {
+	public void updateAliases_allElementSwapped() {
 		Join j = PARSER.parseJoin("T2.col3 = T1.col1 and T2.col_b = T1.col_b");
-		j.changeTableAliases("tLeft", "tRight");
-		String sql = j.sql(GENERIC_SQL);
-		assertEquals("((\"tRight\".col3 = \"tLeft\".col1) AND (\"tRight\".col_b = \"tLeft\".col_b))", sql);
+		String result = j.rewriteFormula();
+		assertEquals("tRight.col3 = tLeft.col1 and tRight.col_b = tLeft.col_b", result);
 	}
 
 	@Test
 	public void updateAliases_inAlphanumericOrder() {
 		Join j = PARSER.parseJoin("T10.col3 = T9.col1 and T10.col_b = T9.col_b");
-		j.changeTableAliases("tLeft", "tRight");
-		String sql = j.sql(GENERIC_SQL);
-		assertEquals("((\"tRight\".col3 = \"tLeft\".col1) AND (\"tRight\".col_b = \"tLeft\".col_b))", sql);
-	}
-
-	@Test
-	public void updateAliases_convertToIndexedAlias() {
-		Join j = PARSER.parseJoin("T10.col3 = T9.col1 and T10.col_b = T9.col_b");
-		j.changeTableAliases("tLeft", "tRight");
-		String sql = j.sql(GENERIC_SQL);
-		assertEquals("((\"tRight\".col3 = \"tLeft\".col1) AND (\"tRight\".col_b = \"tLeft\".col_b))", sql);
-		j.changeTableAliases("T10", "T12");
-		assertEquals("((\"T12\".col3 = \"T10\".col1) AND (\"T12\".col_b = \"T10\".col_b))", sql);
+		String result = j.rewriteFormula();
+		assertEquals("tRight.col3 = tLeft.col1 and tRight.col_b = tLeft.col_b", result);
 	}
 
 	@Test(expected = UnexpectedTablesAmountInJoin.class)

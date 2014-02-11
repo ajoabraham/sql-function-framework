@@ -100,7 +100,7 @@ public class Parsing {
 
 		try {
 			FormulaElement root = joinParser.parse(formula);
-			return new Join(root, map);
+			return new Join(formula, root, map);
 		} catch (ParserException e) {
 			return convertException(formula, e);
 		}
