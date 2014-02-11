@@ -81,6 +81,7 @@ public class JoinTest {
 	public void updateAliases_convertToIndexedAlias() {
 		Join j = PARSER.parseJoin("leftTrim(T10.col3) = T9.col1 and T10.col_b = T9.col_b");
 		String rewritten = j.rewriteFormula();
+		assertEquals("leftTrim(tRight.col3) = tLeft.col1 and tRight.col_b = tLeft.col_b", rewritten);
 
 		Join rewrittenJoin = PARSER.parseJoin(rewritten);
 		String doubledRewritten = rewrittenJoin.rewriteFormula("T10", "T12");
