@@ -38,213 +38,213 @@ public class HintsTest {
 
 	@Test
 	public void cursorInTheEnd() {
-		Hints hints = new Hints("func", 4, PARSER);
+		Hints hints = Hints.select("func", 4, PARSER);
 		assertTrue(hints.functionHint());
 	}
 
 	@Test
 	public void cursorDefault() {
-		Hints hints = new Hints("func", PARSER);
+		Hints hints = Hints.select("func", PARSER);
 		assertTrue(hints.functionHint());
 	}
 
 	@Test
 	public void cursorInStart() {
-		Hints hints = new Hints("func", 0, PARSER);
+		Hints hints = Hints.select("func", 0, PARSER);
 		assertFalse(hints.functionHint());
 		assertTrue(hints.anyFunction());
 	}
 
 	@Test
 	public void cursorInMiddle() {
-		Hints hints = new Hints("func", 2, PARSER);
+		Hints hints = Hints.select("func", 2, PARSER);
 		assertTrue(hints.functionHint());
 		assertFalse(hints.anyFunction());
 	}
 
 	@Test(expected = IllegalArgumentException.class)
 	public void cursorNegative() {
-		new Hints("func", -1, PARSER);
+		Hints.select("func", -1, PARSER);
 	}
 
 	@Test(expected = IllegalArgumentException.class)
 	public void cursorLongerThanFormula() {
-		new Hints("func", 5, PARSER);
+		Hints.select("func", 5, PARSER);
 	}
 
 	@Test
 	public void doubleQuoteOpened() {
-		Hints hints = new Hints("\"func", PARSER);
+		Hints hints = Hints.select("\"func", PARSER);
 		assertFalse(hints.functionHint());
 		assertFalse(hints.anyFunction());
 	}
 
 	@Test
 	public void doubleQuoteOpened_middle() {
-		Hints hints = new Hints("\"func", 2, PARSER);
+		Hints hints = Hints.select("\"func", 2, PARSER);
 		assertFalse(hints.functionHint());
 		assertFalse(hints.anyFunction());
 	}
 
 	@Test
 	public void singleQuoteOpened() {
-		Hints hints = new Hints("'func", PARSER);
+		Hints hints = Hints.select("'func", PARSER);
 		assertFalse(hints.functionHint());
 		assertFalse(hints.anyFunction());
 	}
 
 	@Test
 	public void singleQuoteOpened_middle() {
-		Hints hints = new Hints("'func", PARSER);
+		Hints hints = Hints.select("'func", PARSER);
 		assertFalse(hints.functionHint());
 		assertFalse(hints.anyFunction());
 	}
 
 	@Test
 	public void onlyOpenedSingleQuote() {
-		Hints hints = new Hints("'", PARSER);
+		Hints hints = Hints.select("'", PARSER);
 		assertFalse(hints.functionHint());
 		assertFalse(hints.anyFunction());
 	}
 
 	@Test
 	public void onlyOpenedDoubleQuote() {
-		Hints hints = new Hints("\"", PARSER);
+		Hints hints = Hints.select("\"", PARSER);
 		assertFalse(hints.functionHint());
 		assertFalse(hints.anyFunction());
 	}
 
 	@Test
 	public void doubleQuoteInSingleQuoted() {
-		Hints hints = new Hints("'fu\"nc' + bar", PARSER);
+		Hints hints = Hints.select("'fu\"nc' + bar", PARSER);
 		assertTrue(hints.functionHint());
 	}
 
 	@Test
 	public void doubleQuoteInSingleQuoted_middle() {
-		Hints hints = new Hints("'fu\"nc' + bar", 11, PARSER);
+		Hints hints = Hints.select("'fu\"nc' + bar", 11, PARSER);
 		assertTrue(hints.functionHint());
 	}
 
 	@Test
 	public void escapedQuotesInStringLiteral() {
-		Hints hints = new Hints("'fu''nc' + bar", PARSER);
+		Hints hints = Hints.select("'fu''nc' + bar", PARSER);
 		assertTrue(hints.functionHint());
 	}
 
 	@Test
 	public void singleQuoteInDoubleQuoted() {
-		Hints hints = new Hints("\"fu'nc\" + bar", PARSER);
+		Hints hints = Hints.select("\"fu'nc\" + bar", PARSER);
 		assertTrue(hints.functionHint());
 	}
 
 	@Test
 	public void cursorAfterWhitespace() {
-		Hints hints = new Hints("func ", PARSER);
+		Hints hints = Hints.select("func ", PARSER);
 		assertFalse(hints.functionHint());
 		assertTrue(hints.anyFunction());
 	}
 
 	@Test
 	public void cursorAfterWhitespace_middle() {
-		Hints hints = new Hints("func func2 ", 5, PARSER);
+		Hints hints = Hints.select("func func2 ", 5, PARSER);
 		assertFalse(hints.functionHint());
 		assertTrue(hints.anyFunction());
 	}
 
 	@Test
 	public void startsWithMoving() {
-		Hints hints = new Hints("moving", PARSER);
+		Hints hints = Hints.select("moving", PARSER);
 		assertTrue(hints.functionHint());
 		assertThat(names(hints.functions()), containsInAnyOrder("MovingAvg", "MovingSum", "MovingCount"));
 	}
 
 	@Test
 	public void startsWithMo() {
-		Hints hints = new Hints("moving", 2, PARSER);
+		Hints hints = Hints.select("moving", 2, PARSER);
 		assertTrue(hints.functionHint());
 		assertThat(names(hints.functions()), containsInAnyOrder("MovingAvg", "MovingSum", "MovingCount", "Mod", "Month"));
 	}
 
 	@Test
 	public void startsWithMo_filterByDialect() {
-		Hints hints = new Hints("moving", 2, PARSER);
+		Hints hints = Hints.select("moving", 2, PARSER);
 		assertTrue(hints.functionHint());
 		assertThat(names(hints.functions(GENERIC_SQL)), containsInAnyOrder("MovingAvg", "MovingSum", "MovingCount"));
 	}
 
 	@Test
 	public void plusBeforeName() {
-		Hints hints = new Hints("col1 +yea", PARSER);
+		Hints hints = Hints.select("col1 +yea", PARSER);
 		assertThat(names(hints.functions()), containsInAnyOrder("Year"));
 	}
 
 	@Test
 	public void whitespaceBeforeName() {
-		Hints hints = new Hints("sum( ran", PARSER);
+		Hints hints = Hints.select("sum( ran", PARSER);
 		assertThat(hints.arguments(), contains(arg("sum", 0, 5)));
 		assertThat(names(hints.functions()), containsInAnyOrder("Random"));
 	}
 
 	@Test
 	public void noInputAfterSpecialSymbol() {
-		Hints hints = new Hints("col1+col2", 5, PARSER);
+		Hints hints = Hints.select("col1+col2", 5, PARSER);
 		assertFalse(hints.functionHint());
 		assertTrue(hints.anyFunction());
 	}
 
 	@Test
 	public void userCannotInsertAggregationAndOLAPInAggregation() {
-		Hints hints = new Hints("min(c", PARSER);
+		Hints hints = Hints.select("min(c", PARSER);
 		assertTrue(hints.functionHint());
 		assertThat(names(hints.functions()), containsInAnyOrder("Cos", "CosH", "CurrentDate", "CurrentTimestamp"));
 	}
 
 	@Test
 	public void userCanInsertOnlyAggregationInOLAP() {
-		Hints hints = new Hints("customWindow(co", PARSER);
+		Hints hints = Hints.select("customWindow(co", PARSER);
 		assertTrue(hints.functionHint());
 		assertThat(names(hints.functions()), contains("Count"));
 	}
 
 	@Test
 	public void mistakeInFunctionNameBeforeCursorPosition() {
-		Hints hints = new Hints("customWindow(customWind(co", PARSER);
+		Hints hints = Hints.select("customWindow(customWind(co", PARSER);
 		assertTrue(hints.functionHint());
 		assertThat(names(hints.functions()), containsInAnyOrder("Cos", "CosH", "Count"));
 	}
 
 	@Test
 	public void oneParameter() {
-		Hints hints = new Hints("min(", PARSER);
+		Hints hints = Hints.select("min(", PARSER);
 		assertTrue(hints.argumentHint());
 		assertThat(hints.arguments(), contains(arg("min", 0, 4)));
 	}
 
 	@Test
 	public void severalParameters() {
-		Hints hints = new Hints(" min(avg(sin(", PARSER);
+		Hints hints = Hints.select(" min(avg(sin(", PARSER);
 		assertTrue(hints.argumentHint());
 		assertThat(hints.arguments(), contains(arg("min", 0, 5), arg("avg", 0, 9), arg("sin", 0, 13)));
 	}
 
 	@Test
 	public void oneFunctionIsClosed() {
-		Hints hints = new Hints("min(avg(sin() + 123", PARSER);
+		Hints hints = Hints.select("min(avg(sin() + 123", PARSER);
 		assertTrue(hints.argumentHint());
 		assertThat(hints.arguments(), contains(arg("min", 0, 4), arg("avg", 0, 8)));
 	}
 
 	@Test
 	public void lotsOfParenthesis() {
-		Hints hints = new Hints("abs() + min((avg((sin() + 123) + (123 * (34)) + 14", PARSER);
+		Hints hints = Hints.select("abs() + min((avg((sin() + 123) + (123 * (34)) + 14", PARSER);
 		assertTrue(hints.argumentHint());
 		assertThat(hints.arguments(), contains(arg("min", 0, 12), arg("avg", 0, 17)));
 	}
 
 	@Test
 	public void secondArg() {
-		Hints hints = new Hints("random(12, col1", PARSER);
+		Hints hints = Hints.select("random(12, col1", PARSER);
 		assertTrue(hints.argumentHint());
 		assertThat(hints.arguments(), contains(arg("random", 1, 11)));
 
@@ -254,28 +254,28 @@ public class HintsTest {
 
 	@Test
 	public void thirdArgBlank() {
-		Hints hints = new Hints("random(12, col1,", PARSER);
+		Hints hints = Hints.select("random(12, col1,", PARSER);
 		assertTrue(hints.argumentHint());
 		assertThat(hints.arguments(), contains(arg("random", 2, 16)));
 	}
 
 	@Test
 	public void thirdArgBlankWithWhitespace() {
-		Hints hints = new Hints("random(12, col1, \n\t\r ", PARSER);
+		Hints hints = Hints.select("random(12, col1, \n\t\r ", PARSER);
 		assertTrue(hints.argumentHint());
 		assertThat(hints.arguments(), contains(arg("random", 2, 21)));
 	}
 
 	@Test
 	public void lotsOfArgs() {
-		Hints hints = new Hints("random(12, col1, 12, 12, 12", PARSER);
+		Hints hints = Hints.select("random(12, col1, 12, 12, 12", PARSER);
 		assertTrue(hints.argumentHint());
 		assertThat(hints.arguments(), contains(arg("random", 4, 25)));
 	}
 
 	@Test
 	public void argsComplicated1() {
-		Hints hints = new Hints("customWindow(min(12 + random(2, 12)), random(2, 13), random(2, 12)", PARSER);
+		Hints hints = Hints.select("customWindow(min(12 + random(2, 12)), random(2, 13), random(2, 12)", PARSER);
 		assertTrue(hints.argumentHint());
 		assertThat(hints.arguments(), contains(arg("customWindow", 2, 53)));
 
@@ -285,43 +285,57 @@ public class HintsTest {
 
 	@Test
 	public void argsComplicated2() {
-		Hints hints = new Hints("customWindow(min(12 + random(2, 12)), random(2, 13), random(2, 12", PARSER);
+		Hints hints = Hints.select("customWindow(min(12 + random(2, 12)), random(2, 13), random(2, 12", PARSER);
 		assertTrue(hints.argumentHint());
 		assertThat(hints.arguments(), contains(arg("customWindow", 2, 53), arg("random", 1, 63)));
 	}
 
 	@Test
 	public void oneOfTheArgsIsDoubleQuotedColumnWithComma() {
-		Hints hints = new Hints("random(12, col1, \"col1,col,col\", 12, 12", PARSER);
+		Hints hints = Hints.select("random(12, col1, \"col1,col,col\", 12, 12", PARSER);
 		assertTrue(hints.argumentHint());
 		assertThat(hints.arguments(), contains(arg("random", 4, 37)));
 	}
 
 	@Test
 	public void oneOfTheArgsIsDoubleQuotedColumnWithComma_opened() {
-		Hints hints = new Hints("random(12, col1, 12, 12, \"12,13", PARSER);
+		Hints hints = Hints.select("random(12, col1, 12, 12, \"12,13", PARSER);
 		assertTrue(hints.argumentHint());
 		assertThat(hints.arguments(), contains(arg("random", 4, 25)));
 	}
 
 	@Test
 	public void oneOfTheArgsIsSingleQuotedColumnWithComma() {
-		Hints hints = new Hints("random(12, col1, \'col1,''col\",col\', 12, 12", PARSER);
+		Hints hints = Hints.select("random(12, col1, \'col1,''col\",col\', 12, 12", PARSER);
 		assertTrue(hints.argumentHint());
 		assertThat(hints.arguments(), contains(arg("random", 4, 40)));
 	}
 
 	@Test
 	public void oneOfTheArgsIsSingleQuotedColumnWithComma_opened() {
-		Hints hints = new Hints("random(12, col1, 12, 12, \'12,13", PARSER);
+		Hints hints = Hints.select("random(12, col1, 12, 12, \'12,13", PARSER);
 		assertTrue(hints.argumentHint());
 		assertThat(hints.arguments(), contains(arg("random", 4, 25)));
 	}
 
 	@Test
 	public void severalParameters_filterByDialect() {
-		Hints hints = new Hints("min(trimLeft(avg(sin(", PARSER);
+		Hints hints = Hints.select("min(trimLeft(avg(sin(", PARSER);
 		assertTrue(hints.argumentHint());
 		assertThat(hints.arguments(GENERIC_SQL), contains(arg("min", 0, 4), arg("avg", 0, 17)));
+	}
+
+	@Test
+	public void join_fun() {
+		Hints hints = Hints.join("T1.col1 = m", PARSER);
+		assertTrue(hints.functionHint());
+		assertThat(names(hints.functions()), containsInAnyOrder("Mod", "Month", "Minute"));
+	}
+
+	@Test
+	public void join_arg() {
+		Hints hints = Hints.join("12 >= min(trimLeft(avg(sin(", PARSER);
+		assertTrue(hints.argumentHint());
+		assertThat(hints.arguments(GENERIC_SQL), contains(arg("min", 0, 10), arg("avg", 0, 23)));
 	}
 }

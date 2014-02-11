@@ -37,22 +37,68 @@ public class Hints {
 	private final Parsing parser;
 
 	/**
+	 * Hints for select formula {@link frmw.model.Formula}.
 	 * Hints will be decided as if user place cursor to the end of the input.
 	 *
 	 * @param formula taped formula
 	 * @param parser  parser
 	 */
-	public Hints(String formula, Parsing parser) {
-		this(formula, formula.length(), parser);
+	public static Hints select(String formula, Parsing parser) {
+		return select(formula, formula.length(), parser);
 	}
 
 	/**
+	 * Hints for select formula {@link frmw.model.Formula}.
+	 *
 	 * @param formula taped formula
 	 * @param cursor  cursor position in the formula
 	 * @param parser  parser
 	 * @throws IllegalArgumentException if input is invalid
 	 */
+	public static Hints select(String formula, int cursor, Parsing parser) {
+		return new Hints(formula, cursor, parser, HintType.SELECT);
+	}
+
+	/**
+	 * Hints for join formula {@link frmw.model.Join}.
+	 * Hints will be decided as if user place cursor to the end of the input.
+	 *
+	 * @param formula taped formula
+	 * @param parser  parser
+	 */
+	public static Hints join(String formula, Parsing parser) {
+		return join(formula, formula.length(), parser);
+	}
+
+	/**
+	 * Hints for join formula {@link frmw.model.Join}.
+	 *
+	 * @param formula taped formula
+	 * @param cursor  cursor position in the formula
+	 * @param parser  parser
+	 * @throws IllegalArgumentException if input is invalid
+	 */
+	public static Hints join(String formula, int cursor, Parsing parser) {
+		return new Hints(formula, cursor, parser, HintType.JOIN);
+	}
+
+	/**
+	 * @deprecated use {@link #select(String, Parsing)} instead
+	 */
+	@Deprecated
+	public Hints(String formula, Parsing parser) {
+		this(formula, formula.length(), parser, HintType.SELECT);
+	}
+
+	/**
+	 * @deprecated use {@link #select(String, Parsing)} instead
+	 */
+	@Deprecated
 	public Hints(String formula, int cursor, Parsing parser) {
+		this(formula, cursor, parser, HintType.SELECT);
+	}
+
+	private Hints(String formula, int cursor, Parsing parser, HintType type) {
 		this.parser = parser;
 		if (cursor == 0) {
 			anyFunction = true;
@@ -77,7 +123,7 @@ public class Hints {
 			function = false;
 		}
 
-		functions = function ? decideSuitableFunctions(formula, cursor) : EMPTY_SPEC;
+		functions = function ? decideSuitableFunctions(formula, cursor, type) : EMPTY_SPEC;
 		arguments = decideParameters(formula, cursor);
 	}
 
@@ -179,12 +225,12 @@ public class Hints {
 		return true;
 	}
 
-	private List<FunctionSpec> decideSuitableFunctions(String formula, int cursor) {
+	private List<FunctionSpec> decideSuitableFunctions(String formula, int cursor, HintType type) {
 		String taped = extractFunction(formula, cursor);
 		String fakeFormula = formula.substring(0, cursor) + "(";
 
 		try {
-			parser.parse(fakeFormula);
+			type.parse(parser, fakeFormula);
 		} catch (WrongFunctionNameException ex) {
 			if (ex.index() + ex.length() != cursor) {
 				// formula has errors that are not related to taped function name
