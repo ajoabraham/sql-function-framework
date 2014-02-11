@@ -33,21 +33,21 @@ public class JoinTest {
 		String sql = j.sql(GENERIC_SQL);
 		assertEquals("trim(\"T1\".col1) BETWEEN \"T2\".col2 AND \"T2\".col4", sql);
 	}
-        
-         @Test
+
+	@Test
 	public void userInputsAllQuotes() {
 		Join j = PARSER.parseJoin("trim(\"T1\".\"col1\") = \"T2\".\"col2\" and \"T1\".\"col3\" = \"T2\".\"col4\"");
 		String sql = j.sql(GENERIC_SQL);
 		assertEquals("((trim(\"T1\".\"col1\") = \"T2\".\"col2\") AND (\"T1\".\"col3\" = \"T2\".\"col4\"))", sql);
 	}
-        
-        @Test
+
+	@Test
 	public void betweenDateRange() {
 		Join j = PARSER.parseJoin("trim(T1.col1) between T2.col2-30 and currentDate()");
 		String sql = j.sql(GENERIC_SQL);
-		assertEquals("trim(\"T1\".col1) BETWEEN \"T2\".col2-30 AND current_date", sql);
+		assertEquals("trim(\"T1\".col1) BETWEEN (\"T2\".col2 - 30) AND CURRENT_DATE", sql);
 	}
-        
+
 	@Test
 	public void in() {
 		Join j = PARSER.parseJoin("trim(T1.col1) in (T2.col2 , T2.col4)");
@@ -107,15 +107,15 @@ public class JoinTest {
 		String sql = j.sql(GENERIC_SQL);
 		assertEquals("((\"tRight\".col3 = \"tLeft\".col1) AND (\"tRight\".col_b = \"tLeft\".col_b))", sql);
 	}
-        
-        @Test
+
+	@Test
 	public void updateAliases_convertToIndexedAlias() {
 		Join j = PARSER.parseJoin("T10.col3 = T9.col1 and T10.col_b = T9.col_b");
 		j.changeTableAliases("tLeft", "tRight");
 		String sql = j.sql(GENERIC_SQL);
 		assertEquals("((\"tRight\".col3 = \"tLeft\".col1) AND (\"tRight\".col_b = \"tLeft\".col_b))", sql);
-                j.changeTableAliases("T10", "T12");
-                assertEquals("((\"T12\".col3 = \"T10\".col1) AND (\"T12\".col_b = \"T10\".col_b))", sql);
+		j.changeTableAliases("T10", "T12");
+		assertEquals("((\"T12\".col3 = \"T10\".col1) AND (\"T12\".col_b = \"T10\".col_b))", sql);
 	}
 
 	@Test(expected = UnexpectedTablesAmountInJoin.class)

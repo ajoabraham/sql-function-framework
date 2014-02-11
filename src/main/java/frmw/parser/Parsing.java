@@ -75,7 +75,7 @@ public class Parsing {
 
 		Common c = new Common(p).withTableColumn();
 		commons.set(or(c.parsers));
-		return conditional(or(scalar.lazy(), commons.lazy()));
+		return conditional(p);
 	}
 
 	/**
