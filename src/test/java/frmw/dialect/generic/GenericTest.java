@@ -122,14 +122,21 @@ public class GenericTest {
 		String sql = f.sql(GENERIC_SQL);
 		assertEquals("(\"col1\" || \"col2\")", sql);
 	}
+        
+        @Test
+	public void concatWithSpace() {
+		Formula f = PARSER.parse("\"col1\" || ' ' || \"col2\"");
+		String sql = f.sql(GENERIC_SQL);
+		assertEquals("(\"col1\" || ' ' || \"col2\")", sql);
+	}
 
 	@Test
-	public void concatInFunction() {
-		Formula f = PARSER.parse("count(trim(\"col1\" || \"col2\"))");
+	public void concatWithPaddedWord() {
+		Formula f = PARSER.parse("count(trim(\"col1\" || '  hello   ' || \"col2\"))");
 		String sql = f.sql(GENERIC_SQL);
 
 		assertThat(f.entityNames(), containsInAnyOrder("col1", "col2"));
-		assertEquals("count(trim((\"col1\" || \"col2\")))", sql);
+		assertEquals("count(trim((\"col1\" || '  hello    ' || \"col2\")))", sql);
 	}
 
 	@Test
