@@ -225,7 +225,7 @@ public class Common {
 	}
 
 	private static Parser<FormulaElement> stringLiteral() {
-		return literal(STRING_LITERAL_ID).many1().source().between(SQ, SQ).token().map(
+		return literal(STRING_LITERAL_ID).token().map(
 				new RegisteredForPositionMap<FormulaElement, String>() {
 					@Override
 					protected FormulaElement build(String value) {

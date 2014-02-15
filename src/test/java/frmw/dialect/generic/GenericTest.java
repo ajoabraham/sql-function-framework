@@ -108,7 +108,7 @@ public class GenericTest {
 		assertEquals(new Position(3, 17), f.aggregationParameters().get(0).position());
 		assertEquals("avg(\"name\")", sql);
 	}
-        
+
 	@Test
 	public void trim() {
 		Formula f = PARSER.parse("trim(\"name\")");
@@ -122,12 +122,12 @@ public class GenericTest {
 		String sql = f.sql(GENERIC_SQL);
 		assertEquals("(\"col1\" || \"col2\")", sql);
 	}
-        
-        @Test
+
+	@Test
 	public void concatWithSpace() {
 		Formula f = PARSER.parse("\"col1\" || ' ' || \"col2\"");
 		String sql = f.sql(GENERIC_SQL);
-		assertEquals("(\"col1\" || ' ' || \"col2\")", sql);
+		assertEquals("((\"col1\" || ' ') || \"col2\")", sql);
 	}
 
 	@Test
@@ -136,7 +136,7 @@ public class GenericTest {
 		String sql = f.sql(GENERIC_SQL);
 
 		assertThat(f.entityNames(), containsInAnyOrder("col1", "col2"));
-		assertEquals("count(trim((\"col1\" || '  hello    ' || \"col2\")))", sql);
+		assertEquals("count(trim(((\"col1\" || '  hello   ') || \"col2\")))", sql);
 	}
 
 	@Test

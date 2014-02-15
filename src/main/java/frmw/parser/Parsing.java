@@ -5,6 +5,7 @@ import frmw.model.FormulaElement;
 import frmw.model.FunctionRegistry;
 import frmw.model.Join;
 import frmw.model.exception.ParsingException;
+import frmw.model.exception.SQLFrameworkInternalException;
 import frmw.model.exception.WrongFunctionNameException;
 import frmw.model.fun.FunctionSpec;
 import frmw.model.position.PositionMap;
@@ -108,6 +109,10 @@ public class Parsing {
 
 	private <T> T convertException(String formula, ParserException e) {
 		ParseErrorDetails details = e.getErrorDetails();
+		if (details == null) {
+			throw SQLFrameworkInternalException.wrap(e);
+		}
+
 		List<String> expected = details.getExpected();
 
 		Set<FunctionType> types = EnumSet.noneOf(FunctionType.class);

@@ -3,7 +3,7 @@ package org.codehaus.jparsec;
 /**
  * @author Alexey Paramonov
  */
-public final class StringLiteralScanner extends Parser<Void> {
+public final class StringLiteralScanner extends Parser<String> {
 
 	private final String name;
 
@@ -11,7 +11,7 @@ public final class StringLiteralScanner extends Parser<Void> {
 		this.name = name;
 	}
 
-	public static Parser<Void> literal(String name) {
+	public static Parser<String> literal(String name) {
 		return new StringLiteralScanner(name);
 	}
 
@@ -24,33 +24,38 @@ public final class StringLiteralScanner extends Parser<Void> {
 
 		char c = ctxt.peekChar();
 		if (c != '\'') {
-			ctxt.next();
-			ctxt.result = null;
-			return true;
+			ctxt.expected(name);
+			return false;
 		}
 
+		StringBuilder result = new StringBuilder();
+
 		ctxt.next();
-		if (!ctxt.isEof()) {
-			char nextC = ctxt.peekChar();
-			if (nextC == '\'') {
-				// escaped
-				ctxt.next();
-				ctxt.result = null;
+		while (!ctxt.isEof()) {
+			c = ctxt.peekChar();
+			ctxt.next();
+
+			if (c == '\'') {
+				if (nextCharIsSingleQuote(ctxt)) {
+					// escaped
+					ctxt.next();
+					result.append("''");
+					continue;
+				}
+
+				ctxt.result = result.toString();
 				return true;
 			} else {
-				reset(ctxt);
+				result.append(c);
 			}
-		} else {
-			reset(ctxt);
 		}
 
 		ctxt.expected(name);
 		return false;
 	}
 
-	private void reset(ParseContext ctxt) {
-		ctxt.step--;
-		ctxt.at--;
+	private boolean nextCharIsSingleQuote(ParseContext ctxt) {
+		return !ctxt.isEof() && ctxt.peekChar() == '\'';
 	}
 
 	@Override
