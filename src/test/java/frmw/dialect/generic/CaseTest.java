@@ -57,9 +57,9 @@ public class CaseTest {
 
 	@Test
 	public void searchedCaseNE() {
-		Formula f = PARSER.parse("case when col1!=1 then 2 else 5 end");
+		Formula f = PARSER.parse("case when col1<>1 then 2 else 5 end");
 		String sql = f.sql(GENERIC_SQL);
-		assertEquals("CASE WHEN (\"col1\" != 1) THEN 2 ELSE 5 END", sql);
+		assertEquals("CASE WHEN (\"col1\" <> 1) THEN 2 ELSE 5 END", sql);
 	}
 
 	@Test

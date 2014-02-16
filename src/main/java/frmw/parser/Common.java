@@ -94,7 +94,7 @@ public class Common {
 	public static final Parser<Void> LT = trailed(isChar('<'));
 	public static final Parser<Void> GE = trailed(string(">="));
 	public static final Parser<Void> LE = trailed(string("<="));
-	public static final Parser<Void> NE = trailed(string("!="));
+	public static final Parser<Void> NE = trailed(string("<>"));
 	public static final Parser<Void> IS_NULL = trailed(sequence(
 			stringCaseInsensitive("is"), WHITESPACES.many1(),
 			stringCaseInsensitive("null")));
@@ -179,7 +179,6 @@ public class Common {
 	@SuppressWarnings("unchecked")
 	public static Parser<FormulaElement> conditional(Parser<FormulaElement> p) {
 		return withAndOr(or(
-				sequence(p, EQ, p, CompareOp.EQUAL),
 				sequence(p, EQ, p, CompareOp.EQUAL),
 				sequence(p, NE, p, CompareOp.NOT_EQUAL),
 				sequence(p, LT, p, CompareOp.LESS),

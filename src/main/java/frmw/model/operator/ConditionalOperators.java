@@ -15,7 +15,7 @@ public final class ConditionalOperators {
 	}
 
 	public static BinaryOperator ne(FormulaElement left, FormulaElement right) {
-		return new BinaryOperator(left, right, "!=");
+		return new BinaryOperator(left, right, "<>");
 	}
 
 	public static BinaryOperator gt(FormulaElement left, FormulaElement right) {

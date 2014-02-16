@@ -357,7 +357,7 @@ public class TeradataTest {
 	public void complicatedFormula() {
 		Formula f = PARSER.parse("" +
 				"case when customWindow(avg(ln(col1) + 12), all, all) + count(sin(col3)) > customWindow(min(abs(col2) + 12), 12, 14) " +
-				"or runningAvg(ln(col8)) + count(col9) != col4 " +
+				"or runningAvg(ln(col8)) + count(col9) <> col4 " +
 				"then avg(col5) || customWindow(max(14), 100, 800) " +
 				"else count(col6) + customWindow(count(col7), 1000, 15_000) end");
 
@@ -365,7 +365,7 @@ public class TeradataTest {
 		assertEquals(4, f.aggregationParameters().size());
 		assertEquals(0, f.rankParameters().size());
 		assertThat(f.entityNames(), containsInAnyOrder("col1", "col2", "col3", "col4", "col5", "col6", "col7", "col8", "col9"));
-		assertEquals("CASE WHEN (((avg((ln(\"col1\") + 12)) OVER ( ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) + count(sin(\"col3\"))) > min((abs(\"col2\") + 12)) OVER ( ROWS BETWEEN 12 PRECEDING AND 14 FOLLOWING)) OR ((avg(ln(\"col8\")) OVER ( ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW) + count(\"col9\")) != \"col4\")) THEN (avg(\"col5\") || max(14) OVER ( ROWS BETWEEN 100 PRECEDING AND 800 FOLLOWING)) ELSE (count(\"col6\") + count(\"col7\") OVER ( ROWS BETWEEN 1000 PRECEDING AND 15000 FOLLOWING)) END", f.sql(TERADATA_SQL));
+		assertEquals("CASE WHEN (((avg((ln(\"col1\") + 12)) OVER ( ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) + count(sin(\"col3\"))) > min((abs(\"col2\") + 12)) OVER ( ROWS BETWEEN 12 PRECEDING AND 14 FOLLOWING)) OR ((avg(ln(\"col8\")) OVER ( ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW) + count(\"col9\")) <> \"col4\")) THEN (avg(\"col5\") || max(14) OVER ( ROWS BETWEEN 100 PRECEDING AND 800 FOLLOWING)) ELSE (count(\"col6\") + count(\"col7\") OVER ( ROWS BETWEEN 1000 PRECEDING AND 15000 FOLLOWING)) END", f.sql(TERADATA_SQL));
 	}
 
 
