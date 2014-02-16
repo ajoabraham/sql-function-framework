@@ -16,6 +16,6 @@ public class Teradata14Test {
 	public void replace() {
 		Formula f = PARSER.parse("replace(col1, 'old_data', 'new_data')");
 		String sql = f.sql(TERADATA_14);
-		assertEquals("oreplace(col1 from 'old_data' for 'new_data')", sql);
+		assertEquals("oreplace(\"col1\" from 'old_data' for 'new_data')", sql);
 	}
 }

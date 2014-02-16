@@ -30,13 +30,13 @@ public class ColumnParserTest {
 	public void columnName() {
 		Formula f = PARSER.parse("name");
 		String sql = f.sql(GENERIC_SQL);
-		assertEquals("name", sql);
+		assertEquals("\"name\"", sql);
 	}
 
 	@Test
 	public void columnNameWithBlanks() {
 		Formula f = PARSER.parse(" \t name  \n");
 		String sql = f.sql(GENERIC_SQL);
-		assertEquals("name", sql);
+		assertEquals("\"name\"", sql);
 	}
 }

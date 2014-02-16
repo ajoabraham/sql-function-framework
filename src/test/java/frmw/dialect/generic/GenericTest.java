@@ -148,7 +148,7 @@ public class GenericTest {
 		assertEquals(0, f.windowParameters().size());
 		assertEquals(0, f.rankParameters().size());
 		assertThat(f.entityNames(), containsInAnyOrder("col1", "col2", "col3", "col4", "col5"));
-		assertEquals("(((col1 + col2) - col3) || (col4 - col5))", sql);
+		assertEquals("(((\"col1\" + \"col2\") - \"col3\") || (\"col4\" - \"col5\"))", sql);
 	}
 
 	@Test
@@ -173,14 +173,14 @@ public class GenericTest {
 	public void upper() {
 		Formula f = PARSER.parse("upper(col1)");
 		String sql = f.sql(GENERIC_SQL);
-		assertEquals("upper(col1)", sql);
+		assertEquals("upper(\"col1\")", sql);
 	}
 
 	@Test
 	public void lower() {
 		Formula f = PARSER.parse("lower(col1)");
 		String sql = f.sql(GENERIC_SQL);
-		assertEquals("lower(col1)", sql);
+		assertEquals("lower(\"col1\")", sql);
 	}
 
 	@Test
@@ -200,6 +200,6 @@ public class GenericTest {
 		Formula f = PARSER.parse("sum(\"column name\"+2-4*col1/3)");
 
 		assertEquals(new Position(0, 29), f.aggregationParameters().get(0).position());
-		assertEquals("sum(((\"column name\" + 2) - ((4 * col1) / 3)))", f.sql(GENERIC_SQL));
+		assertEquals("sum(((\"column name\" + 2) - ((4 * \"col1\") / 3)))", f.sql(GENERIC_SQL));
 	}
 }

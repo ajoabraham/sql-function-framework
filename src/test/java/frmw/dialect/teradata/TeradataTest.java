@@ -27,7 +27,7 @@ public class TeradataTest {
 	public void abs_withoutQuotes() {
 		Formula f = PARSER.parse("abs(name)");
 		String sql = f.sql(TERADATA_SQL);
-		assertEquals("abs(name)", sql);
+		assertEquals("abs(\"name\")", sql);
 	}
 
 	@Test
@@ -48,7 +48,7 @@ public class TeradataTest {
 	public void mixScalarWithAggregation_withoutQuotes() {
 		Formula f = PARSER.parse("abs(sum(name))");
 		String sql = f.sql(TERADATA_SQL);
-		assertEquals("abs(sum(name))", sql);
+		assertEquals("abs(sum(\"name\"))", sql);
 	}
 
 	@Test
@@ -62,49 +62,49 @@ public class TeradataTest {
 	public void ln() {
 		Formula f = PARSER.parse("ln(name)");
 		String sql = f.sql(TERADATA_SQL);
-		assertEquals("ln(name)", sql);
+		assertEquals("ln(\"name\")", sql);
 	}
 
 	@Test
 	public void log() {
 		Formula f = PARSER.parse("log(name)");
 		String sql = f.sql(TERADATA_SQL);
-		assertEquals("log(name)", sql);
+		assertEquals("log(\"name\")", sql);
 	}
 
 	@Test
 	public void mod() {
 		Formula f = PARSER.parse("mod(name)");
 		String sql = f.sql(TERADATA_SQL);
-		assertEquals("mod(name)", sql);
+		assertEquals("mod(\"name\")", sql);
 	}
 
 	@Test
 	public void pow() {
 		Formula f = PARSER.parse("pow(name)");
 		String sql = f.sql(TERADATA_SQL);
-		assertEquals("pow(name)", sql);
+		assertEquals("pow(\"name\")", sql);
 	}
 
 	@Test
 	public void round() {
 		Formula f = PARSER.parse("round(name)");
 		String sql = f.sql(TERADATA_SQL);
-		assertEquals("round(name)", sql);
+		assertEquals("round(\"name\")", sql);
 	}
 
 	@Test
 	public void sqrt() {
 		Formula f = PARSER.parse("sqrt(name)");
 		String sql = f.sql(TERADATA_SQL);
-		assertEquals("sqrt(name)", sql);
+		assertEquals("sqrt(\"name\")", sql);
 	}
 
 	@Test
 	public void stdDevS() {
 		Formula f = PARSER.parse("stdDevS(name)");
 		String sql = f.sql(TERADATA_SQL);
-		assertEquals("stddev_samp(name)", sql);
+		assertEquals("stddev_samp(\"name\")", sql);
 	}
 
 	@Test
@@ -112,14 +112,14 @@ public class TeradataTest {
 		Formula f = PARSER.parse("stdDevS(name)");
 		f.aggregationParameters().get(0).distinct(true);
 		String sql = f.sql(TERADATA_SQL);
-		assertEquals("stddev_samp(DISTINCT name)", sql);
+		assertEquals("stddev_samp(DISTINCT \"name\")", sql);
 	}
 
 	@Test
 	public void stdDevP() {
 		Formula f = PARSER.parse("stdDevP(name)");
 		String sql = f.sql(TERADATA_SQL);
-		assertEquals("stddev_pop(name)", sql);
+		assertEquals("stddev_pop(\"name\")", sql);
 	}
 
 	@Test
@@ -127,42 +127,42 @@ public class TeradataTest {
 		Formula f = PARSER.parse("stdDevP(name)");
 		f.aggregationParameters().get(0).distinct(true);
 		String sql = f.sql(TERADATA_SQL);
-		assertEquals("stddev_pop(DISTINCT name)", sql);
+		assertEquals("stddev_pop(DISTINCT \"name\")", sql);
 	}
 
 	@Test
 	public void aCos() {
 		Formula f = PARSER.parse("acos(name)");
 		String sql = f.sql(TERADATA_SQL);
-		assertEquals("aCos(name)", sql);
+		assertEquals("aCos(\"name\")", sql);
 	}
 
 	@Test
 	public void aCosH() {
 		Formula f = PARSER.parse("acosh(name)");
 		String sql = f.sql(TERADATA_SQL);
-		assertEquals("aCosH(name)", sql);
+		assertEquals("aCosH(\"name\")", sql);
 	}
 
 	@Test
 	public void aSin() {
 		Formula f = PARSER.parse("asin(name)");
 		String sql = f.sql(TERADATA_SQL);
-		assertEquals("aSin(name)", sql);
+		assertEquals("aSin(\"name\")", sql);
 	}
 
 	@Test
 	public void aSinH() {
 		Formula f = PARSER.parse("asinh(name)");
 		String sql = f.sql(TERADATA_SQL);
-		assertEquals("aSinH(name)", sql);
+		assertEquals("aSinH(\"name\")", sql);
 	}
 
 	@Test
 	public void aTan() {
 		Formula f = PARSER.parse("atan(name)");
 		String sql = f.sql(TERADATA_SQL);
-		assertEquals("aTan(name)", sql);
+		assertEquals("aTan(\"name\")", sql);
 	}
 
 	@Test
@@ -176,63 +176,63 @@ public class TeradataTest {
 	public void aTanH() {
 		Formula f = PARSER.parse("atanh(name)");
 		String sql = f.sql(TERADATA_SQL);
-		assertEquals("aTanH(name)", sql);
+		assertEquals("aTanH(\"name\")", sql);
 	}
 
 	@Test
 	public void cos() {
 		Formula f = PARSER.parse("cos(name)");
 		String sql = f.sql(TERADATA_SQL);
-		assertEquals("cos(name)", sql);
+		assertEquals("cos(\"name\")", sql);
 	}
 
 	@Test
 	public void cosH() {
 		Formula f = PARSER.parse("cosh(name)");
 		String sql = f.sql(TERADATA_SQL);
-		assertEquals("cosH(name)", sql);
+		assertEquals("cosH(\"name\")", sql);
 	}
 
 	@Test
 	public void sin() {
 		Formula f = PARSER.parse("sin(name)");
 		String sql = f.sql(TERADATA_SQL);
-		assertEquals("sin(name)", sql);
+		assertEquals("sin(\"name\")", sql);
 	}
 
 	@Test
 	public void sinH() {
 		Formula f = PARSER.parse("sinh(name)");
 		String sql = f.sql(TERADATA_SQL);
-		assertEquals("sinH(name)", sql);
+		assertEquals("sinH(\"name\")", sql);
 	}
 
 	@Test
 	public void tan() {
 		Formula f = PARSER.parse("tan(name)");
 		String sql = f.sql(TERADATA_SQL);
-		assertEquals("tan(name)", sql);
+		assertEquals("tan(\"name\")", sql);
 	}
 
 	@Test
 	public void tanH() {
 		Formula f = PARSER.parse("tanH(name)");
 		String sql = f.sql(TERADATA_SQL);
-		assertEquals("tanH(name)", sql);
+		assertEquals("tanH(\"name\")", sql);
 	}
 
 	@Test
 	public void year() {
 		Formula f = PARSER.parse("year(col1)");
 		String sql = f.sql(TERADATA_SQL);
-		assertEquals("extract(Year from col1)", sql);
+		assertEquals("extract(Year from \"col1\")", sql);
 	}
 
 	@Test
 	public void month() {
 		Formula f = PARSER.parse("month(col1)");
 		String sql = f.sql(TERADATA_SQL);
-		assertEquals("extract(Month from col1)", sql);
+		assertEquals("extract(Month from \"col1\")", sql);
 	}
 
 	@Test
@@ -246,7 +246,7 @@ public class TeradataTest {
 	public void week() {
 		Formula f = PARSER.parse("week(col1)");
 		String sql = f.sql(TERADATA_SQL);
-		assertEquals("extract(Week from col1)", sql);
+		assertEquals("extract(Week from \"col1\")", sql);
 	}
 
 	@Test
@@ -260,21 +260,21 @@ public class TeradataTest {
 	public void minute() {
 		Formula f = PARSER.parse("minute(col1)");
 		String sql = f.sql(TERADATA_SQL);
-		assertEquals("extract(Minute from col1)", sql);
+		assertEquals("extract(Minute from \"col1\")", sql);
 	}
 
 	@Test
 	public void second() {
 		Formula f = PARSER.parse("second(col1)");
 		String sql = f.sql(TERADATA_SQL);
-		assertEquals("extract(Second from col1)", sql);
+		assertEquals("extract(Second from \"col1\")", sql);
 	}
 
 	@Test
 	public void addMonths() {
 		Formula f = PARSER.parse("addMonths(col1, 5)");
 		String sql = f.sql(TERADATA_SQL);
-		assertEquals("add_months(col1, 5)", sql);
+		assertEquals("add_months(\"col1\", 5)", sql);
 	}
 
 	@Test
@@ -294,21 +294,21 @@ public class TeradataTest {
 	public void substring() {
 		Formula f = PARSER.parse("substring(col1, 2, 10)");
 		String sql = f.sql(TERADATA_SQL);
-		assertEquals("substring(col1 from 2 for 10)", sql);
+		assertEquals("substring(\"col1\" from 2 for 10)", sql);
 	}
 
 	@Test
 	public void index() {
 		Formula f = PARSER.parse("index(col1, 'data')");
 		String sql = f.sql(TERADATA_SQL);
-		assertEquals("index(col1, 'data')", sql);
+		assertEquals("index(\"col1\", 'data')", sql);
 	}
 
 	@Test
 	public void leftTrim() {
 		Formula f = PARSER.parse("leftTrim(col1)");
 		String sql = f.sql(TERADATA_SQL);
-		assertEquals("trim(Leading ' ' From col1)", sql);
+		assertEquals("trim(Leading ' ' From \"col1\")", sql);
 	}
 
 	@Test
@@ -365,7 +365,7 @@ public class TeradataTest {
 		assertEquals(4, f.aggregationParameters().size());
 		assertEquals(0, f.rankParameters().size());
 		assertThat(f.entityNames(), containsInAnyOrder("col1", "col2", "col3", "col4", "col5", "col6", "col7", "col8", "col9"));
-		assertEquals("CASE WHEN (((avg((ln(col1) + 12)) OVER ( ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) + count(sin(col3))) > min((abs(col2) + 12)) OVER ( ROWS BETWEEN 12 PRECEDING AND 14 FOLLOWING)) OR ((avg(ln(col8)) OVER ( ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW) + count(col9)) != col4)) THEN (avg(col5) || max(14) OVER ( ROWS BETWEEN 100 PRECEDING AND 800 FOLLOWING)) ELSE (count(col6) + count(col7) OVER ( ROWS BETWEEN 1000 PRECEDING AND 15000 FOLLOWING)) END", f.sql(TERADATA_SQL));
+		assertEquals("CASE WHEN (((avg((ln(\"col1\") + 12)) OVER ( ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) + count(sin(\"col3\"))) > min((abs(\"col2\") + 12)) OVER ( ROWS BETWEEN 12 PRECEDING AND 14 FOLLOWING)) OR ((avg(ln(\"col8\")) OVER ( ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW) + count(\"col9\")) != \"col4\")) THEN (avg(\"col5\") || max(14) OVER ( ROWS BETWEEN 100 PRECEDING AND 800 FOLLOWING)) ELSE (count(\"col6\") + count(\"col7\") OVER ( ROWS BETWEEN 1000 PRECEDING AND 15000 FOLLOWING)) END", f.sql(TERADATA_SQL));
 	}
 
 
@@ -380,9 +380,9 @@ public class TeradataTest {
 	public void zScoreComplexFormulaTest() {
 		Formula f = PARSER.parse("(col1 - movingavg(col1,13)) / customwindow(stddevp(col1),13,current row)");
 		Formula f2 = PARSER.parse("week(col_date)");
-		f.windowParameters().get(0).partition(f2.sql(TERADATA_SQL)).order("col_date", Order.DESC);
-		f.windowParameters().get(1).partition(f2.sql(TERADATA_SQL)).order("col_date", Order.DESC);
-		String expected = "((col1 - avg(col1) OVER ( PARTITION BY extract(Week from col_date) ORDER BY col_date DESC ROWS 13 PRECEDING)) / stddev_pop(col1) OVER ( PARTITION BY extract(Week from col_date) ORDER BY col_date DESC ROWS BETWEEN 13 PRECEDING AND CURRENT ROW))";
+		f.windowParameters().get(0).partition(f2.sql(TERADATA_SQL)).order("\"col_date\"", Order.DESC);
+		f.windowParameters().get(1).partition(f2.sql(TERADATA_SQL)).order("\"col_date\"", Order.DESC);
+		String expected = "((\"col1\" - avg(\"col1\") OVER ( PARTITION BY extract(Week from \"col_date\") ORDER BY \"col_date\" DESC ROWS 13 PRECEDING)) / stddev_pop(\"col1\") OVER ( PARTITION BY extract(Week from \"col_date\") ORDER BY \"col_date\" DESC ROWS BETWEEN 13 PRECEDING AND CURRENT ROW))";
 		//System.out.println(f.sql(TERADATA_SQL));
 		assertEquals(expected, f.sql(TERADATA_SQL));
 	}

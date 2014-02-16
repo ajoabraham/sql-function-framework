@@ -17,37 +17,24 @@ public class Column implements FormulaElement {
 
 	private final String name;
 
-	private final boolean quoted;
-
 	private String tableAlias;
 
-	public Column(String tableAlias, String name, boolean quoted) {
+	public Column(String tableAlias, String name) {
 		this.tableAlias = tableAlias;
 		this.name = name.trim();
-		this.quoted = quoted;
 	}
 
-	public Column(String name, boolean quoted) {
+	public Column(String name) {
 		this.name = name.trim();
-		this.quoted = quoted;
 	}
 
 	@Override
 	public void sql(Dialect dialect, StringBuilder sb) {
-		if (tableAlias == null) {
-			appendColumn(sb);
-		} else {
+		if (tableAlias != null) {
 			sb.append('\"').append(tableAlias).append("\".");
-			appendColumn(sb);
 		}
-	}
 
-	private void appendColumn(StringBuilder sb) {
-		if (quoted) {
-			sb.append('"').append(name).append('"');
-		} else {
-			sb.append(name);
-		}
+		sb.append('"').append(name).append('"');
 	}
 
 	@Override
@@ -83,10 +70,6 @@ public class Column implements FormulaElement {
 
 	public String name() {
 		return name;
-	}
-
-	public boolean quoted() {
-		return quoted;
 	}
 
 	public String tableAlias() {

@@ -16,13 +16,13 @@ public class CommonRulesTest {
 	public void functionsWithoutParenthesisShouldMapToColumnName() {
 		Formula f = PARSER.parse("currentDate");
 		String sql = f.sql(GENERIC_SQL);
-		assertEquals("currentDate", sql);
+		assertEquals("\"currentDate\"", sql);
 	}
 
 	@Test
 	public void lotsOfWhitespacesInFunction() {
 		Formula f = PARSER.parse("  \n \t min \n\r \t ( \n\t col1 \t  \r\n ) \t \t \n \r");
 		String sql = f.sql(GENERIC_SQL);
-		assertEquals("min(col1)", sql);
+		assertEquals("min(\"col1\")", sql);
 	}
 }

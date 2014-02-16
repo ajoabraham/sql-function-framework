@@ -38,16 +38,10 @@ import static org.codehaus.jparsec.pattern.Patterns.among;
  */
 public class Common {
 
-	private static final RegisteredForPositionMap<FormulaElement, String> QUOTED_COLUMN = new RegisteredForPositionMap<FormulaElement, String>() {
-		@Override
-		protected FormulaElement build(String value) {
-			return new Column(value, true);
-		}
-	};
 	private static final RegisteredForPositionMap<FormulaElement, String> COLUMN = new RegisteredForPositionMap<FormulaElement, String>() {
 		@Override
 		protected Column build(String value) {
-			return new Column(value, false);
+			return new Column(value);
 		}
 	};
 	private static final Map3<FormulaElement, Object, FormulaElement, FormulaElement> COLUMN_WITH_TABLE = new Map3<FormulaElement, Object, FormulaElement, FormulaElement>() {
@@ -55,7 +49,7 @@ public class Common {
 		public FormulaElement map(FormulaElement ta, Object o, FormulaElement c) {
 			Column tableAlias = (Column) ta;
 			Column column = (Column) c;
-			return new Column(tableAlias.name(), column.name(), column.quoted());
+			return new Column(tableAlias.name(), column.name());
 		}
 	};
 
@@ -275,7 +269,7 @@ public class Common {
 	 */
 	public static Parser<FormulaElement> column() {
 		Parser<FormulaElement> quoted = isChar(QUOTED_COLUMN_CHARS, COLUMN_NAME_ID).
-				many1().source().between(DQ, DQ).token().map(QUOTED_COLUMN);
+				many1().source().between(DQ, DQ).token().map(COLUMN);
 		Parser<FormulaElement> plain = suppress(isChar(COLUMN_CHARS, COLUMN_NAME_ID).many1()
 				.source().token().map(COLUMN)
 				.followedBy(WHITESPACES.many().<FormulaElement>cast()));

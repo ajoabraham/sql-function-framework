@@ -43,7 +43,7 @@ public class FormulaTest {
 		Formula f = PARSER.parse("case when col1 = (case when sum(col2) = 1 then \"col 3\" when sum(col1) = 2 then 11 else col4 end) then col5 else 5 end");
 		f.setTableAliases(of("col1", "t1", "col2", "t2", "col 3", "t3", "col6", "t6"));
 		String sql = f.sql(GENERIC_SQL);
-		assertEquals(sql, "CASE WHEN (\"t1\".col1 = CASE WHEN (sum(\"t2\".col2) = 1) THEN \"t3\".\"col 3\" WHEN (sum(\"t1\".col1) = 2) THEN 11 ELSE col4 END) THEN col5 ELSE 5 END");
+		assertEquals(sql, "CASE WHEN (\"t1\".\"col1\" = CASE WHEN (sum(\"t2\".\"col2\") = 1) THEN \"t3\".\"col 3\" WHEN (sum(\"t1\".\"col1\") = 2) THEN 11 ELSE \"col4\" END) THEN \"col5\" ELSE 5 END");
 	}
 
 	@Test
