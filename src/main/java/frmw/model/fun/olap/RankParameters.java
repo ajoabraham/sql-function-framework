@@ -22,28 +22,28 @@ public class RankParameters {
 	private Order order = Order.ASC;
 
 	/**
-	 * If column already present, it will be removed and added to the tail.
+	 * If expression already present, it will be removed and added to the tail.
 	 *
-	 * @param column column name, not empty
+	 * @param expr column name or another valid sql-expression, not empty
 	 * @throws IllegalArgumentException on illegal arguments
 	 */
-	public RankParameters partition(final String column) throws IllegalArgumentException {
-		checkColumn(column);
+	public RankParameters partition(final String expr) throws IllegalArgumentException {
+		checkColumn(expr);
 
 		Iterables.removeIf(partitions, new Predicate<String>() {
 			@Override
 			public boolean apply(String part) {
-				return part.equalsIgnoreCase(column);
+				return part.equalsIgnoreCase(expr);
 			}
 		});
 
-		partitions.add(column);
+		partitions.add(expr);
 		return this;
 	}
 
-	private static void checkColumn(String column) {
-		if (column == null || column.trim().isEmpty()) {
-			throw new IllegalArgumentException("Column should not be empty");
+	private static void checkColumn(String expr) {
+		if (expr == null || expr.trim().isEmpty()) {
+			throw new IllegalArgumentException("Expression should not be empty");
 		}
 	}
 

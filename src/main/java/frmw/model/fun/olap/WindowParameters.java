@@ -4,8 +4,8 @@ import com.google.common.base.Predicate;
 import com.google.common.collect.Iterables;
 import frmw.model.fun.aggregation.Aggregation;
 import frmw.model.fun.aggregation.AggregationParameters;
-import frmw.model.fun.olap.support.OrderBy;
 import frmw.model.fun.olap.support.Order;
+import frmw.model.fun.olap.support.OrderBy;
 import frmw.model.position.Position;
 
 import java.util.ArrayList;
@@ -32,14 +32,14 @@ public class WindowParameters extends AggregationParameters {
 	}
 
 	/**
-	 * If column already present, it will be removed and added to the tail.
+	 * If expression already present, it will be removed and added to the tail.
 	 *
-	 * @param column column name, not empty
-	 * @param order  order type, {@link frmw.model.fun.olap.support.Order#ASC} will be used if null
+	 * @param expr  column name or another valid sql-expression, not empty
+	 * @param order order type, {@link frmw.model.fun.olap.support.Order#ASC} will be used if null
 	 * @throws IllegalArgumentException on illegal arguments
 	 */
-	public WindowParameters order(final String column, Order order) throws IllegalArgumentException {
-		checkColumn(column);
+	public WindowParameters order(final String expr, Order order) throws IllegalArgumentException {
+		checkColumn(expr);
 
 		if (order == null) {
 			order = Order.ASC;
@@ -48,37 +48,37 @@ public class WindowParameters extends AggregationParameters {
 		Iterables.removeIf(orders, new Predicate<OrderBy>() {
 			@Override
 			public boolean apply(OrderBy input) {
-				return input.column.equalsIgnoreCase(column);
+				return input.column.equalsIgnoreCase(expr);
 			}
 		});
 
-		orders.add(new OrderBy(column, order));
+		orders.add(new OrderBy(expr, order));
 		return this;
 	}
 
 	/**
-	 * If column already present, it will be removed and added to the tail.
+	 * If expression already present, it will be removed and added to the tail.
 	 *
-	 * @param column column name, not empty
+	 * @param expr column name or another valid sql-expression, not empty
 	 * @throws IllegalArgumentException on illegal arguments
 	 */
-	public WindowParameters partition(final String column) throws IllegalArgumentException {
-		checkColumn(column);
+	public WindowParameters partition(final String expr) throws IllegalArgumentException {
+		checkColumn(expr);
 
 		Iterables.removeIf(partitions, new Predicate<String>() {
 			@Override
 			public boolean apply(String part) {
-				return part.equalsIgnoreCase(column);
+				return part.equalsIgnoreCase(expr);
 			}
 		});
 
-		partitions.add(column);
+		partitions.add(expr);
 		return this;
 	}
 
-	private static void checkColumn(String column) {
-		if (column == null || column.trim().isEmpty()) {
-			throw new IllegalArgumentException("Column should not be empty");
+	private static void checkColumn(String expr) {
+		if (expr == null || expr.trim().isEmpty()) {
+			throw new IllegalArgumentException("Expression should not be empty");
 		}
 	}
 
