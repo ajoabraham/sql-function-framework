@@ -49,20 +49,25 @@ public class Parsing {
 	public Parsing() {
 		Parser<FormulaElement> p = withOperators(or(scalar.lazy(), aggregation.lazy(), this.olap.lazy(), commons.lazy()));
 
+		Common c = new Common(p).withColumn();
+		commons.set(or(c.parsers));
+
 		Aggregations aggr = new Aggregations(scalar.lazy(), commons.lazy());
+		aggr.parsers.add(c.customFun);
 		aggregation.set(or(aggr.parsers).label(AGGREGATION.name()));
 
 		Olap olap = new Olap(aggregation.lazy(), scalar.lazy(), commons.lazy());
+		aggr.parsers.add(c.customFun);
 		this.olap.set(or(olap.parsers).label(OLAP.name()));
 
 		Scalars s = new Scalars(p);
+		aggr.parsers.add(c.customFun);
 		scalar.set(or(s.parsers).label(SCALAR.name()));
-		commons.set(or(new Common(p).withColumn().parsers));
 
 		parser = withOperators(or(aggregation.lazy(), this.olap.lazy(), scalar.lazy(), commons.lazy()));
 		joinParser = joinParser();
 
-		registry = new FunctionRegistry(aggr.specs, olap.specs, s.specs);
+		registry = new FunctionRegistry(aggr.specs, olap.specs, s.specs, c.specs);
 	}
 
 	private Parser<FormulaElement> joinParser() {

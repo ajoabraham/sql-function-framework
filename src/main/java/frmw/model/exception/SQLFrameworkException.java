@@ -21,6 +21,11 @@ public class SQLFrameworkException extends RuntimeException {
 		super(t);
 	}
 
+	public SQLFrameworkException(String message, int index) {
+		super(message);
+		this.index = index;
+	}
+
 	public void position(int index, int length) {
 		this.index = index;
 		this.length = length;
@@ -39,6 +44,6 @@ public class SQLFrameworkException extends RuntimeException {
 	}
 
 	public boolean positionSet() {
-		return index >= 0 && length >= 0;
+		return index >= 0 || length >= 0;
 	}
 }

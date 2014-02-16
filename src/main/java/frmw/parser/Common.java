@@ -4,6 +4,7 @@ import frmw.model.Column;
 import frmw.model.FormulaElement;
 import frmw.model.constant.NumericConstant;
 import frmw.model.constant.StringConstant;
+import frmw.model.fun.Custom;
 import frmw.model.fun.FunctionSpec;
 import frmw.model.fun.olap.support.Rows;
 import frmw.model.ifelse.Case;
@@ -12,6 +13,7 @@ import frmw.model.ifelse.WhenBlock;
 import frmw.parser.op.*;
 import org.codehaus.jparsec.OperatorTable;
 import org.codehaus.jparsec.Parser;
+import org.codehaus.jparsec.Token;
 import org.codehaus.jparsec.functors.Map;
 import org.codehaus.jparsec.functors.Map3;
 import org.codehaus.jparsec.misc.Mapper;
@@ -26,6 +28,7 @@ import java.util.List;
 
 import static frmw.model.constant.NumericConstant.cleanUp;
 import static java.lang.Character.isWhitespace;
+import static java.util.Arrays.asList;
 import static org.codehaus.jparsec.Parsers.*;
 import static org.codehaus.jparsec.ProcessIllegalFunctionNameHandling.suppress;
 import static org.codehaus.jparsec.Scanners.*;
@@ -36,7 +39,7 @@ import static org.codehaus.jparsec.pattern.Patterns.among;
 /**
  * @author Alexey Paramonov
  */
-public class Common {
+public class Common extends FunctionBuilder {
 
 	private static final RegisteredForPositionMap<FormulaElement, String> COLUMN = new RegisteredForPositionMap<FormulaElement, String>() {
 		@Override
@@ -69,8 +72,6 @@ public class Common {
 		}
 	};
 
-	public final List<Parser<FormulaElement>> parsers = new ArrayList<Parser<FormulaElement>>();
-
 	public static final Parser<Void> TRAILED = WHITESPACES.skipAtLeast(0);
 
 	public static final Parser<?> COMMA = trailed(isChar(','));
@@ -81,7 +82,6 @@ public class Common {
 	public static final Parser<Void> NO_ARG = OPENED.next(CLOSED);
 
 	public static final Parser<Void> DQ = trailed(isChar('"'));
-	public static final Parser<Void> SQ = trailed(isChar('\''));
 
 	public static final Parser<Void> CONCAT = trailed(string("||"));
 	public static final Parser<Void> PLUS = trailed(isChar('+'));
@@ -127,10 +127,13 @@ public class Common {
 				}
 			});
 
+	public final Parser<FormulaElement> customFun;
+
 	public Common(Parser<FormulaElement> p) {
 		parsers.add(stringLiteral());
 		parsers.add(number());
 		parsers.add(caseStatement(p));
+		customFun = customFunction(p);
 	}
 
 	public Common withColumn() {
@@ -141,6 +144,27 @@ public class Common {
 	public Common withTableColumn() {
 		parsers.add(columnWithTableAlias());
 		return this;
+	}
+
+	private Parser<FormulaElement> customFunction(Parser<FormulaElement> p) {
+		final FunctionSpec spec = new FunctionSpec(Custom.class, "sql", "comma-separated formula expressions");
+		specs.add(spec);
+
+		Parser<?> sql = literal("CUSTOM_FUNCTION").token();
+		Parser<?> varArg = COMMA.next(p.sepBy1(COMMA)).optional();
+
+		Parser<?> body = list(asList(sql, varArg)).between(OPENED, CLOSED_TRIM_LEFT);
+		Parser<Void> functionName = trailed(stringCaseInsensitive("custom"));
+		Parser<FormulaElement> parser = functionName.next(body).token().map(new RegisteredForPositionMap<FormulaElement, List<Object>>() {
+			@Override
+			protected FormulaElement build(List<Object> result) throws Exception {
+				Token token = (Token) result.get(0);
+				Object args = result.size() == 1 ? null : result.get(1);
+				return spec.instance(asList(token.value(), token.index(), args));
+			}
+		}).followedBy(TRAILED);
+
+		return parser;
 	}
 
 	public static Parser<Rows> rows() {

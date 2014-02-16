@@ -2,7 +2,6 @@ package frmw.dialect;
 
 import com.google.common.base.Joiner;
 import frmw.model.FormulaElement;
-import frmw.model.fun.aggregation.Aggregation;
 import frmw.model.fun.olap.RankParameters;
 import frmw.model.fun.olap.WindowParameters;
 import frmw.model.fun.olap.support.OrderBy;
@@ -328,7 +327,7 @@ public class GenericSQL implements Dialect {
 	}
 
 	@Override
-	public void window(StringBuilder sb, Aggregation arg, Rows preceding, Rows following, WindowParameters params) {
+	public void window(StringBuilder sb, FormulaElement arg, Rows preceding, Rows following, WindowParameters params) {
 		arg.sql(this, sb);
 		sb.append(" OVER ").append('(');
 

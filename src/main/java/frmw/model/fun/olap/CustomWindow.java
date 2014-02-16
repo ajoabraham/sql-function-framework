@@ -16,7 +16,7 @@ import java.util.List;
  */
 public class CustomWindow implements FormulaElement, PositionAware {
 
-	private final Aggregation arg;
+	private final FormulaElement arg;
 
 	private final Rows preceding;
 
@@ -27,7 +27,7 @@ public class CustomWindow implements FormulaElement, PositionAware {
 
 	private final WindowParameters params;
 
-	public CustomWindow(Aggregation arg, Rows preceding, Rows following) {
+	public CustomWindow(FormulaElement arg, Rows preceding, Rows following) {
 		this.arg = arg;
 		this.preceding = preceding;
 		this.following = following;

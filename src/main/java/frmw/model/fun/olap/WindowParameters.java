@@ -2,7 +2,7 @@ package frmw.model.fun.olap;
 
 import com.google.common.base.Predicate;
 import com.google.common.collect.Iterables;
-import frmw.model.fun.aggregation.Aggregation;
+import frmw.model.FormulaElement;
 import frmw.model.fun.aggregation.AggregationParameters;
 import frmw.model.fun.olap.support.Order;
 import frmw.model.fun.olap.support.OrderBy;
@@ -27,7 +27,7 @@ public class WindowParameters extends AggregationParameters {
 
 	private final List<String> partitions = new ArrayList<String>();
 
-	public WindowParameters(Aggregation element) {
+	public WindowParameters(FormulaElement element) {
 		super(element);
 	}
 

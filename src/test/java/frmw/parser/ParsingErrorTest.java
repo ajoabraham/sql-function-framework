@@ -29,7 +29,7 @@ public class ParsingErrorTest {
 			assertEquals(2, e.index());
 			assertEquals(4, e.length());
 			assertThat(e.expectedTypes, containsInAnyOrder(SCALAR, AGGREGATION, OLAP));
-			assertThat(names(e.expectedFunctions), hasItems("Min", "Ln", "RunningAvg"));
+			assertThat(names(e.expectedFunctions), hasItems("Min", "Ln", "RunningAvg", "Custom"));
 			assertThat(names(e.closestFunctions), containsInAnyOrder("Rank"));
 		}
 	}
@@ -44,7 +44,7 @@ public class ParsingErrorTest {
 			assertEquals(5, e.index());
 			assertEquals(3, e.length());
 			assertThat(e.expectedTypes, contains(SCALAR));
-			assertThat(names(e.expectedFunctions), hasItem("Ln"));
+			assertThat(names(e.expectedFunctions), hasItems("Ln", "Custom"));
 			assertThat(names(e.expectedFunctions), not(hasItems("Count", "RunningAvg")));
 			assertThat(names(e.closestFunctions), containsInAnyOrder("Sin"));
 		}
@@ -60,7 +60,7 @@ public class ParsingErrorTest {
 			assertEquals(13, e.index());
 			assertEquals(2, e.length());
 			assertThat(e.expectedTypes, contains(AGGREGATION));
-			assertThat(names(e.expectedFunctions), hasItems("Count", "Min"));
+			assertThat(names(e.expectedFunctions), hasItems("Count", "Min", "Custom"));
 			assertThat(names(e.expectedFunctions), not(hasItems("Abs", "Ln", "RunningAvg")));
 		}
 	}
@@ -109,7 +109,7 @@ public class ParsingErrorTest {
 			Formula f = PARSER.parse("(sum(col1) - movingavg(sum(col1),13)) / customwindow(stddevp(col1),13,current row)");
 			fail(f.sql(TERADATA_SQL));
 		} catch (WrongFunctionNameException e) {
-			assertEquals("Function name \"sum\", but expected one of the function types [SCALAR] [Abs, Exp, Ln, Log, Mod, Pow, Round, Sqrt, Random, Sin, Cos, Tan, SinH, CosH, TanH, ASin, ACos, ATan, ATan2, ASinH, ACosH, ATanH, Trim, LeftTrim, RightTrim, Upper, Lower, Index, Substring, Replace, Year, Month, Day, Week, Hour, Minute, Second, CurrentDate, CurrentTimestamp, AddMonths, NullIf, NullIfZero, ZeroIfNull]\n" +
+			assertEquals("Function name \"sum\", but expected one of the function types [SCALAR] [Abs, Exp, Ln, Log, Mod, Pow, Round, Sqrt, Random, Sin, Cos, Tan, SinH, CosH, TanH, ASin, ACos, ATan, ATan2, ASinH, ACosH, ATanH, Trim, LeftTrim, RightTrim, Upper, Lower, Index, Substring, Replace, Year, Month, Day, Week, Hour, Minute, Second, CurrentDate, CurrentTimestamp, AddMonths, NullIf, NullIfZero, ZeroIfNull, Custom]\n" +
 					"(sum(col1) - movingavg(sum(col1),13)) / customwindow(stddevp(col1),13,current row)\n" +
 					"                       ^", e.getMessage());
 		}
@@ -125,7 +125,7 @@ public class ParsingErrorTest {
 			assertEquals(2, e.index());
 			assertEquals(4, e.length());
 			assertThat(e.expectedTypes, contains(SCALAR));
-			assertThat(names(e.expectedFunctions), hasItems("Trim", "Ln"));
+			assertThat(names(e.expectedFunctions), hasItems("Trim", "Ln", "Custom"));
 		}
 	}
 

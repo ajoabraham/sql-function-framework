@@ -197,7 +197,7 @@ public class HintsTest {
 	public void userCannotInsertAggregationAndOLAPInAggregation() {
 		Hints hints = Hints.select("min(c", PARSER);
 		assertTrue(hints.functionHint());
-		assertThat(names(hints.functions()), containsInAnyOrder("Cos", "CosH", "CurrentDate", "CurrentTimestamp"));
+		assertThat(names(hints.functions()), containsInAnyOrder("Cos", "CosH", "CurrentDate", "CurrentTimestamp", "Custom"));
 	}
 
 	@Test

@@ -1,15 +1,19 @@
 package frmw.model.fun.aggregation;
 
+import frmw.model.FormulaElement;
 import frmw.model.position.Position;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author Alexey Paramonov
  */
 public class AggregationParameters {
 
-	private final Aggregation element;
+	private final FormulaElement element;
 
-	public AggregationParameters(Aggregation element) {
+	public AggregationParameters(FormulaElement element) {
 		this.element = element;
 	}
 
@@ -30,10 +34,25 @@ public class AggregationParameters {
 	 * @return is aggregation distinct like {@code sum(distinct col1)}
 	 */
 	public boolean distinct() {
-		return element.distinct;
+		AggregationParameters params = params();
+		return params != null && params.distinct();
 	}
 
 	public void distinct(boolean distinct) {
-		element.distinct = distinct;
+		if (element instanceof Aggregation) {
+			((Aggregation) element).distinct = distinct;
+			return;
+		}
+
+		AggregationParameters params = params();
+		if (params != null) {
+			params.distinct(distinct);
+		}
+	}
+
+	private AggregationParameters params() {
+		List<AggregationParameters> list = new ArrayList<AggregationParameters>();
+		element.collectAggregationParams(list);
+		return list.isEmpty() ? null : list.get(0);
 	}
 }

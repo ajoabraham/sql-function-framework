@@ -1,7 +1,6 @@
 package frmw.dialect;
 
 import frmw.model.FormulaElement;
-import frmw.model.fun.aggregation.Aggregation;
 import frmw.model.fun.olap.RankParameters;
 import frmw.model.fun.olap.WindowParameters;
 import frmw.model.fun.olap.support.Rows;
@@ -116,5 +115,5 @@ public interface Dialect {
 
 	void nullIf(StringBuilder sb, FormulaElement arg, FormulaElement nullable);
 
-	void window(StringBuilder sb, Aggregation arg, Rows preceding, Rows following, WindowParameters params);
+	void window(StringBuilder sb, FormulaElement arg, Rows preceding, Rows following, WindowParameters params);
 }

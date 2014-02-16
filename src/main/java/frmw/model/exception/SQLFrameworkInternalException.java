@@ -10,6 +10,6 @@ public class SQLFrameworkInternalException extends SQLFrameworkException {
 	}
 
 	public static SQLFrameworkException wrap(Throwable t) {
-		return t instanceof SQLFrameworkException ? (SQLFrameworkInternalException) t : new SQLFrameworkException(t);
+		return t instanceof SQLFrameworkInternalException ? (SQLFrameworkInternalException) t : new SQLFrameworkException(t);
 	}
 }

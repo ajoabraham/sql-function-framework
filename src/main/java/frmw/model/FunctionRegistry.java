@@ -11,6 +11,7 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import static com.google.common.collect.ImmutableSet.copyOf;
+import static com.google.common.collect.Iterables.concat;
 import static com.google.common.collect.Iterables.filter;
 import static org.apache.commons.lang3.StringUtils.equalsIgnoreCase;
 
@@ -32,10 +33,10 @@ public class FunctionRegistry {
 
 	private final Set<FunctionSpec> all;
 
-	public FunctionRegistry(List<FunctionSpec> aggr, List<FunctionSpec> olap, List<FunctionSpec> scalar) {
-		aggregationSpecs = copyOf(aggr);
-		scalarSpecs = copyOf(scalar);
-		olapSpecs = copyOf(olap);
+	public FunctionRegistry(List<FunctionSpec> aggr, List<FunctionSpec> olap, List<FunctionSpec> scalar, List<FunctionSpec> common) {
+		aggregationSpecs = copyOf(concat(aggr, common));
+		scalarSpecs = copyOf(concat(scalar, common));
+		olapSpecs = copyOf(concat(olap, common));
 		all = ImmutableSet.<FunctionSpec>builder()
 				.addAll(scalarSpecs)
 				.addAll(aggregationSpecs)
