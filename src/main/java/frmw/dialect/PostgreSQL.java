@@ -219,16 +219,16 @@ public class PostgreSQL extends GenericSQL {
 
 	@Override
 	public void zeroIfNull(StringBuilder sb, FormulaElement arg) {
-		sb.append("ZeroIfNull(");
+		sb.append("coalesce(");
 		arg.sql(this, sb);
-		sb.append(')');
+		sb.append(", 0)");
 	}
 
 	@Override
 	public void nullIfZero(StringBuilder sb, FormulaElement arg) {
-		sb.append("NullIfZero(");
+		sb.append("NullIf(");
 		arg.sql(this, sb);
-		sb.append(')');
+		sb.append(", 0)");
 	}
 
 	@Override
