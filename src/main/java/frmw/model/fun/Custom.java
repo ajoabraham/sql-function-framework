@@ -26,7 +26,7 @@ public class Custom implements FormulaElement {
 
 	public Custom(String sql, Integer sqlIndex, List<FormulaElement> args) {
 		this.sql = sql;
-		this.sqlIndex = sqlIndex == null ? 0 : sqlIndex;
+		this.sqlIndex = sqlIndex == null ? 0 : sqlIndex + 1 /* count one quote */;
 		this.args = args == null ? Collections.<FormulaElement>emptyList() : args;
 	}
 
@@ -35,7 +35,7 @@ public class Custom implements FormulaElement {
 		for (int i = 0; i < sql.length(); i++) {
 			char c = sql.charAt(i);
 
-			if (c == '\'' && i != sql.length() - 1) {
+			if (c == '\'' && !atEnd(i)) {
 				char nextC = sql.charAt(i + 1);
 				if (nextC == '\'') {
 					i++;
@@ -45,6 +45,10 @@ public class Custom implements FormulaElement {
 			if (c != '$') {
 				sb.append(c);
 				continue;
+			}
+
+			if (atEnd(i)) {
+				throw noNumber(i);
 			}
 
 			i++;
@@ -63,6 +67,10 @@ public class Custom implements FormulaElement {
 
 			i += numStr.length() - 1;
 		}
+	}
+
+	private boolean atEnd(int i) {
+		return i == sql.length() - 1;
 	}
 
 	private void validateArgNumber(int i, int argNum) {
@@ -90,10 +98,16 @@ public class Custom implements FormulaElement {
 		}
 
 		if (sb.length() == 0) {
-			throw new SQLFrameworkException("A number should following symbol '$' or just type '$$' to escape '$'", sqlIndex + i);
+			throw noNumber(i);
 		}
 
 		return sb.toString();
+	}
+
+	private SQLFrameworkException noNumber(int i) {
+		return new SQLFrameworkException(
+				"A number should following symbol '$' or just type '$$' to escape '$'",
+				sqlIndex + i);
 	}
 
 	@Override

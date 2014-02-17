@@ -22,8 +22,9 @@ public class SQLFrameworkException extends RuntimeException {
 	}
 
 	public SQLFrameworkException(String message, int index) {
-		super(message);
+		super(message + ", position(" + index + ", 1)");
 		this.index = index;
+		this.length = 1;
 	}
 
 	public void position(int index, int length) {
