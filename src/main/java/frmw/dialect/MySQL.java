@@ -3,9 +3,9 @@ package frmw.dialect;
 import frmw.model.FormulaElement;
 
 /**
- * Supported versions are 8.3 and above.
+ * Supported versions are 5.0 and above.
  */
-public class PostgreSQL extends GenericSQL {
+public class MySQL extends GenericSQL {
 
 	@Override
 	public void abs(StringBuilder sb, FormulaElement column) {
@@ -173,16 +173,16 @@ public class PostgreSQL extends GenericSQL {
 
 	@Override
 	public void addMonths(StringBuilder sb, FormulaElement date, FormulaElement number) {
-		sb.append('(');
+		sb.append("DATE_ADD(");
 		date.sql(this, sb);
-		sb.append(" + cast('");
+		sb.append(", INTERVAL ");
 		number.sql(this, sb);
-		sb.append(" months' as interval))");
+		sb.append(" MONTH)");
 	}
 
 	@Override
 	public void random(StringBuilder sb, FormulaElement lower, FormulaElement upper) {
-		sb.append("(random() * (");
+		sb.append("(RAND() * (");
 		upper.sql(this, sb);
 		sb.append(" - ");
 		lower.sql(this, sb);
@@ -211,16 +211,16 @@ public class PostgreSQL extends GenericSQL {
 
 	@Override
 	public void index(StringBuilder sb, FormulaElement str, FormulaElement searched) {
-		sb.append("position(");
+		sb.append("INSTR(");
 		searched.sql(this, sb);
-		sb.append(" in ");
+		sb.append(", ");
 		str.sql(this, sb);
 		sb.append(')');
 	}
 
 	@Override
 	public void zeroIfNull(StringBuilder sb, FormulaElement arg) {
-		sb.append("coalesce(");
+		sb.append("IFNULL(");
 		arg.sql(this, sb);
 		sb.append(", 0)");
 	}
