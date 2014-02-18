@@ -210,24 +210,6 @@ public class TeradataSQL extends GenericSQL {
 	}
 
 	@Override
-	public void leftTrim(StringBuilder sb, FormulaElement str, FormulaElement trimmed) {
-		sb.append("trim(Leading ");
-		trimmed.sql(this, sb);
-		sb.append(" From ");
-		str.sql(this, sb);
-		sb.append(')');
-	}
-
-	@Override
-	public void rightTrim(StringBuilder sb, FormulaElement str, FormulaElement trimmed) {
-		sb.append("trim(Trailing ");
-		trimmed.sql(this, sb);
-		sb.append(" From ");
-		str.sql(this, sb);
-		sb.append(')');
-	}
-
-	@Override
 	public void index(StringBuilder sb, FormulaElement str, FormulaElement searched) {
 		sb.append("index(");
 		str.sql(this, sb);

@@ -270,13 +270,21 @@ public class GenericSQL implements Dialect {
 	}
 
 	@Override
-	public void rightTrim(StringBuilder sb, FormulaElement str, FormulaElement trimmed) {
-		throw new UnsupportedOperationException();
+	public void leftTrim(StringBuilder sb, FormulaElement str, FormulaElement trimmed) {
+		sb.append("trim(Leading ");
+		trimmed.sql(this, sb);
+		sb.append(" From ");
+		str.sql(this, sb);
+		sb.append(')');
 	}
 
 	@Override
-	public void leftTrim(StringBuilder sb, FormulaElement str, FormulaElement trimmed) {
-		throw new UnsupportedOperationException();
+	public void rightTrim(StringBuilder sb, FormulaElement str, FormulaElement trimmed) {
+		sb.append("trim(Trailing ");
+		trimmed.sql(this, sb);
+		sb.append(" From ");
+		str.sql(this, sb);
+		sb.append(')');
 	}
 
 	@Override

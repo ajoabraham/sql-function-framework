@@ -232,4 +232,32 @@ public class GenericTest {
 		String sql = f.sql(GENERIC_SQL);
 		assertEquals("stddev_pop(DISTINCT \"name\")", sql);
 	}
+
+	@Test
+	public void leftTrim() {
+		Formula f = PARSER.parse("leftTrim(col1)");
+		String sql = f.sql(GENERIC_SQL);
+		assertEquals("trim(Leading ' ' From \"col1\")", sql);
+	}
+
+	@Test
+	public void leftTrimWithTrimmedSymbol() {
+		Formula f = PARSER.parse("leftTrim(\"col1\", 'x')");
+		String sql = f.sql(GENERIC_SQL);
+		assertEquals("trim(Leading 'x' From \"col1\")", sql);
+	}
+
+	@Test
+	public void rightTrim() {
+		Formula f = PARSER.parse("rightTrim(\"col1\")");
+		String sql = f.sql(GENERIC_SQL);
+		assertEquals("trim(Trailing ' ' From \"col1\")", sql);
+	}
+
+	@Test
+	public void rightTrimWithTrimmedSymbol() {
+		Formula f = PARSER.parse("rightTrim(\"col1\", 'x')");
+		String sql = f.sql(GENERIC_SQL);
+		assertEquals("trim(Trailing 'x' From \"col1\")", sql);
+	}
 }

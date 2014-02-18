@@ -275,34 +275,6 @@ public class TeradataTest {
 	}
 
 	@Test
-	public void leftTrim() {
-		Formula f = PARSER.parse("leftTrim(col1)");
-		String sql = f.sql(TERADATA_SQL);
-		assertEquals("trim(Leading ' ' From \"col1\")", sql);
-	}
-
-	@Test
-	public void leftTrimWithTrimmedSymbol() {
-		Formula f = PARSER.parse("leftTrim(\"col1\", 'x')");
-		String sql = f.sql(TERADATA_SQL);
-		assertEquals("trim(Leading 'x' From \"col1\")", sql);
-	}
-
-	@Test
-	public void rightTrim() {
-		Formula f = PARSER.parse("rightTrim(\"col1\")");
-		String sql = f.sql(TERADATA_SQL);
-		assertEquals("trim(Trailing ' ' From \"col1\")", sql);
-	}
-
-	@Test
-	public void rightTrimWithTrimmedSymbol() {
-		Formula f = PARSER.parse("rightTrim(\"col1\", 'x')");
-		String sql = f.sql(TERADATA_SQL);
-		assertEquals("trim(Trailing 'x' From \"col1\")", sql);
-	}
-
-	@Test
 	public void nullIf() {
 		Formula f = PARSER.parse("nullIf(\"col1\", 0)");
 		String sql = f.sql(TERADATA_SQL);
