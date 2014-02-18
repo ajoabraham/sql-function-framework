@@ -14,7 +14,7 @@ import java.util.Iterator;
 import java.util.List;
 
 /**
- * @author Alexey Paramonov
+ * Represents ANSI SQL:2008 standard.
  */
 public class GenericSQL implements Dialect {
 
@@ -225,7 +225,37 @@ public class GenericSQL implements Dialect {
 
 	@Override
 	public void extractDateTime(StringBuilder sb, DateTimeElement e, FormulaElement arg) {
-		throw new UnsupportedOperationException();
+		String element;
+
+		switch (e) {
+			case DAY:
+				element = "Day";
+				break;
+			case HOUR:
+				element = "Hour";
+				break;
+			case MINUTE:
+				element = "Minute";
+				break;
+			case MONTH:
+				element = "Month";
+				break;
+			case SECOND:
+				element = "Second";
+				break;
+			case WEEK:
+				element = "Week";
+				break;
+			case YEAR:
+				element = "Year";
+				break;
+			default:
+				throw new UnsupportedOperationException();
+		}
+
+		sb.append("extract(").append(element).append(" from ");
+		arg.sql(this, sb);
+		sb.append(')');
 	}
 
 	@Override

@@ -170,7 +170,7 @@ public class HintsTest {
 	public void startsWithMo_filterByDialect() {
 		Hints hints = Hints.select("moving", 2, PARSER);
 		assertTrue(hints.functionHint());
-		assertThat(names(hints.functions(GENERIC_SQL)), containsInAnyOrder("MovingAvg", "MovingSum", "MovingCount"));
+		assertThat(names(hints.functions(GENERIC_SQL)), containsInAnyOrder("MovingAvg", "MovingSum", "MovingCount", "Month"));
 	}
 
 	@Test

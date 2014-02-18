@@ -192,55 +192,6 @@ public class TeradataTest {
 	}
 
 	@Test
-	public void year() {
-		Formula f = PARSER.parse("year(col1)");
-		String sql = f.sql(TERADATA_SQL);
-		assertEquals("extract(Year from \"col1\")", sql);
-	}
-
-	@Test
-	public void month() {
-		Formula f = PARSER.parse("month(col1)");
-		String sql = f.sql(TERADATA_SQL);
-		assertEquals("extract(Month from \"col1\")", sql);
-	}
-
-	@Test
-	public void day() {
-		Formula f = PARSER.parse("day(currentDate())");
-		String sql = f.sql(TERADATA_SQL);
-		assertEquals("extract(Day from CURRENT_DATE)", sql);
-	}
-
-	@Test
-	public void week() {
-		Formula f = PARSER.parse("week(col1)");
-		String sql = f.sql(TERADATA_SQL);
-		assertEquals("extract(Week from \"col1\")", sql);
-	}
-
-	@Test
-	public void hour() {
-		Formula f = PARSER.parse("hour(currentTimestamp())");
-		String sql = f.sql(TERADATA_SQL);
-		assertEquals("extract(Hour from CURRENT_TIMESTAMP)", sql);
-	}
-
-	@Test
-	public void minute() {
-		Formula f = PARSER.parse("minute(col1)");
-		String sql = f.sql(TERADATA_SQL);
-		assertEquals("extract(Minute from \"col1\")", sql);
-	}
-
-	@Test
-	public void second() {
-		Formula f = PARSER.parse("second(col1)");
-		String sql = f.sql(TERADATA_SQL);
-		assertEquals("extract(Second from \"col1\")", sql);
-	}
-
-	@Test
 	public void addMonths() {
 		Formula f = PARSER.parse("addMonths(col1, 5)");
 		String sql = f.sql(TERADATA_SQL);
