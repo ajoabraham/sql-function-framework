@@ -64,28 +64,6 @@ public class PostgreSQL extends GenericSQL {
 	}
 
 	@Override
-	public void stdDevS(StringBuilder sb, FormulaElement column, boolean distinct) {
-		sb.append("stddev_samp(");
-		if (distinct) {
-			sb.append("DISTINCT ");
-		}
-
-		column.sql(this, sb);
-		sb.append(')');
-	}
-
-	@Override
-	public void stdDevP(StringBuilder sb, FormulaElement column, boolean distinct) {
-		sb.append("stddev_pop(");
-		if (distinct) {
-			sb.append("DISTINCT ");
-		}
-
-		column.sql(this, sb);
-		sb.append(')');
-	}
-
-	@Override
 	public void aCos(StringBuilder sb, FormulaElement arg) {
 		sb.append("aCos(");
 		arg.sql(this, sb);

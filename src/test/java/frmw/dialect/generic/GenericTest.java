@@ -202,4 +202,34 @@ public class GenericTest {
 		assertEquals(new Position(0, 29), f.aggregationParameters().get(0).position());
 		assertEquals("sum(((\"column name\" + 2) - ((4 * \"col1\") / 3)))", f.sql(GENERIC_SQL));
 	}
+
+	@Test
+	public void stdDevS() {
+		Formula f = PARSER.parse("stdDevS(name)");
+		String sql = f.sql(GENERIC_SQL);
+		assertEquals("stddev_samp(\"name\")", sql);
+	}
+
+	@Test
+	public void stdDevS_distinct() {
+		Formula f = PARSER.parse("stdDevS(name)");
+		f.aggregationParameters().get(0).distinct(true);
+		String sql = f.sql(GENERIC_SQL);
+		assertEquals("stddev_samp(DISTINCT \"name\")", sql);
+	}
+
+	@Test
+	public void stdDevP() {
+		Formula f = PARSER.parse("stdDevP(name)");
+		String sql = f.sql(GENERIC_SQL);
+		assertEquals("stddev_pop(\"name\")", sql);
+	}
+
+	@Test
+	public void stdDevP_distinct() {
+		Formula f = PARSER.parse("stdDevP(name)");
+		f.aggregationParameters().get(0).distinct(true);
+		String sql = f.sql(GENERIC_SQL);
+		assertEquals("stddev_pop(DISTINCT \"name\")", sql);
+	}
 }

@@ -101,36 +101,6 @@ public class TeradataTest {
 	}
 
 	@Test
-	public void stdDevS() {
-		Formula f = PARSER.parse("stdDevS(name)");
-		String sql = f.sql(TERADATA_SQL);
-		assertEquals("stddev_samp(\"name\")", sql);
-	}
-
-	@Test
-	public void stdDevS_distinct() {
-		Formula f = PARSER.parse("stdDevS(name)");
-		f.aggregationParameters().get(0).distinct(true);
-		String sql = f.sql(TERADATA_SQL);
-		assertEquals("stddev_samp(DISTINCT \"name\")", sql);
-	}
-
-	@Test
-	public void stdDevP() {
-		Formula f = PARSER.parse("stdDevP(name)");
-		String sql = f.sql(TERADATA_SQL);
-		assertEquals("stddev_pop(\"name\")", sql);
-	}
-
-	@Test
-	public void stdDevP_distinct() {
-		Formula f = PARSER.parse("stdDevP(name)");
-		f.aggregationParameters().get(0).distinct(true);
-		String sql = f.sql(TERADATA_SQL);
-		assertEquals("stddev_pop(DISTINCT \"name\")", sql);
-	}
-
-	@Test
 	public void aCos() {
 		Formula f = PARSER.parse("acos(name)");
 		String sql = f.sql(TERADATA_SQL);
