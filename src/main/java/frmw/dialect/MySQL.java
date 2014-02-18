@@ -30,7 +30,7 @@ public class MySQL extends GenericSQL {
 
 	@Override
 	public void log(StringBuilder sb, FormulaElement arg) {
-		sb.append("log(");
+		sb.append("log10(");
 		arg.sql(this, sb);
 		sb.append(')');
 	}
