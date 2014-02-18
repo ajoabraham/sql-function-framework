@@ -302,7 +302,12 @@ public class GenericSQL implements Dialect {
 	@Override
 	public void leftTrim(StringBuilder sb, FormulaElement str, FormulaElement trimmed) {
 		sb.append("trim(Leading ");
-		trimmed.sql(this, sb);
+		if (trimmed == FormulaElement.EMPTY) {
+			sb.append("' '");
+		} else {
+			trimmed.sql(this, sb);
+		}
+
 		sb.append(" From ");
 		str.sql(this, sb);
 		sb.append(')');
@@ -311,7 +316,12 @@ public class GenericSQL implements Dialect {
 	@Override
 	public void rightTrim(StringBuilder sb, FormulaElement str, FormulaElement trimmed) {
 		sb.append("trim(Trailing ");
-		trimmed.sql(this, sb);
+		if (trimmed == FormulaElement.EMPTY) {
+			sb.append("' '");
+		} else {
+			trimmed.sql(this, sb);
+		}
+
 		sb.append(" From ");
 		str.sql(this, sb);
 		sb.append(')');

@@ -226,14 +226,24 @@ public class MSSQL extends GenericSQL {
 
 	@Override
 	public void leftTrim(StringBuilder sb, FormulaElement str, FormulaElement trimmed) {
-		// TODO
-		throw new UnsupportedOperationException();
+		if (trimmed != FormulaElement.EMPTY) {
+			throw new UnsupportedOperationException();
+		}
+
+		sb.append("LTRIM(");
+		str.sql(this, sb);
+		sb.append(')');
 	}
 
 	@Override
 	public void rightTrim(StringBuilder sb, FormulaElement str, FormulaElement trimmed) {
-		// TODO
-		throw new UnsupportedOperationException();
+		if (trimmed != FormulaElement.EMPTY) {
+			throw new UnsupportedOperationException();
+		}
+
+		sb.append("RTRIM(");
+		str.sql(this, sb);
+		sb.append(')');
 	}
 
 	@Override

@@ -20,6 +20,33 @@ import java.util.List;
  */
 public interface FormulaElement {
 
+	static final FormulaElement EMPTY = new FormulaElement() {
+		@Override
+		public void sql(Dialect dialect, StringBuilder sb) {
+		}
+
+		@Override
+		public boolean hasAggregation() {
+			return false;
+		}
+
+		@Override
+		public void traverseColumns(ColumnTraversal traversal) {
+		}
+
+		@Override
+		public void collectWindowParams(List<WindowParameters> list) {
+		}
+
+		@Override
+		public void collectAggregationParams(List<AggregationParameters> list) {
+		}
+
+		@Override
+		public void collectRankParams(List<RankParameters> list) {
+		}
+	};
+
 	/**
 	 * Appends sql clauses to the collector.
 	 *

@@ -3,7 +3,6 @@ package frmw.model.fun.string;
 import frmw.dialect.Dialect;
 import frmw.model.FormulaElement;
 import frmw.model.Scalar2;
-import frmw.model.constant.StringConstant;
 
 /**
  * @author Alexey Paramonov
@@ -11,7 +10,7 @@ import frmw.model.constant.StringConstant;
 public class RightTrim extends Scalar2 {
 
 	public RightTrim(FormulaElement str) {
-		super(str, new StringConstant(" "));
+		super(str, EMPTY);
 	}
 
 	public RightTrim(FormulaElement str, FormulaElement trimmed) {
