@@ -154,4 +154,28 @@ public class Join extends PositionProvider {
 		root.traverseColumns(collectNames);
 		return collectNames.names();
 	}
+	
+	/**
+	 * Build a map from table aliases to column names
+	 * 
+	 * @return A map of table alias to column names
+	 */
+	public Map<String, List<String>> getTableAliasColumnMap() {
+	    List<Holder> allColumns = tableAliases();
+	    Map<String, List<String>> tableAliasColumnMap = new HashMap<String, List<String>>();
+	    
+	    for (Holder column : allColumns) {
+	        String tableAlias = column.column.tableAlias();
+	        List<String> columnNames = tableAliasColumnMap.get(tableAlias);
+	        
+	        if (columnNames == null) {
+	            columnNames = new ArrayList<String>();
+	            tableAliasColumnMap.put(tableAlias, columnNames);
+	        }
+	        
+	        columnNames.add(column.column.name());
+	    }
+	    
+	    return tableAliasColumnMap;
+	}
 }
